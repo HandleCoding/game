@@ -1,5 +1,5 @@
-import json,urllib.request,re
-base='http://127.0.0.1:3211'
+import json,urllib.request,re,sys
+base=sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:3211'
 with urllib.request.urlopen(base+'/healthz',timeout=5) as r:h=json.load(r)
 assert h['version']=='2.1.0'
 with urllib.request.urlopen(base+'/api/catalog',timeout=5) as r:catalog=json.load(r)
@@ -15,4 +15,4 @@ svgs={'cat','sheep','goose','fox','deer','alpaca','peacock','hedgehog','turtle',
 for id in ids:
  with urllib.request.urlopen(base+'/ranch/'+id+('.svg' if id in svgs else '.png'),timeout=5) as r:
   assert r.status==200 and len(r.read())>100
-print('Development cloud HTML, lazy-build entry, catalog and all 36 animal assets checked')
+print('HTML, build entry, catalog and all 36 animal assets checked:',base)

@@ -12,7 +12,7 @@ def sql(db,query):
 assert database.startswith('playroom_restorecheck_')
 if sql('postgres',f"SELECT count(*) FROM pg_database WHERE datname='{database}'")!='0':
  raise RuntimeError('Restore target already exists')
-tables=['users','sessions','results','result_players','active_rooms','import_runs']
+tables=['users','sessions','results','result_players','active_rooms','import_runs','persistent_profiles','action_receipts','world_jobs','schema_migrations','ranch_wallets','ranch_animals','ranch_inventory','ranch_ledger']
 run(['createdb','--template=template0',database])
 try:
  with source.open('rb') as backup_input:

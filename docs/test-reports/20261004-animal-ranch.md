@@ -29,9 +29,31 @@
 
 ## 发布结果
 
-源码已提交并推送：41468e1（codex/animal-ranch）。
-已准备运行构建目录：/opt/pair-play/releases/v2.1.0-20261004-132702，npm ci --omit=dev --ignore-scripts 成功；尚未激活。
-开发服务已为 2.1.0。正式 healthz 实际仍为 2.0.0 / PostgreSQL，未变更正式数据库或服务。
-正式部署请求被自动审批拒绝：审批认为当前人类指令没有明确批准本次维护、Caddy/systemd 切换与生产 schema 写入。已向用户请求明确上线批准，等待答复。不能用其他命令绕过拒绝。
-批准后先备份、确认无活动对局、新增 schema v2、核验原数据和有效会话再恢复入口。发布不重新执行 SQLite 导入。
+用户明确批准“现在正式上线”后，于 2026-10-04T13:28:24+0800 完成发布。
+正式源提交：b30c80334fd0e5eb800d9d0c90d2e7073a96e6bc；发布目录：/opt/pair-play/releases/v2.1.0-20261004-132821。
+公网 https://game.aicoding.ltd/ 已运行 2.1.0 / PostgreSQL / schema v2；猜数字和一起牧场均在大厅目录。
+维护前备份：/var/backups/pair-play/postgres-prod-20261004-132823.dump。旧用户 2、会话 3、猜数字结果 3、参与记录 6，切换前后数量一致；有效登录会话经身份接口验证。
+维护恢复后公网 HTML、JS/CSS 入口、游戏目录、全部 36 个动物资源返回正常。未导入开发账号或修改无关服务。
+上线后再次备份：/var/backups/pair-play/postgres-prod-20261004-133120.dump，在独立临时库恢复并核对 14 张表的数量，包含新增牧场表及 schema v2；临时验证库已删除，生产库未被恢复覆盖。
+尚未完成的手机真机、前端视觉和交互验收见上文限制，不能把 HTTP 成功当成全部体验验收。
+GitHub 仓库 https://github.com/HandleCoding/game；发布后的文档提交不会改变运行构建。
 
+完整恢复数量（不含玩家内容、密钥）：
+```json
+{
+  "users": 2,
+  "sessions": 3,
+  "results": 3,
+  "result_players": 6,
+  "active_rooms": 0,
+  "import_runs": 1,
+  "persistent_profiles": 0,
+  "action_receipts": 1,
+  "world_jobs": 0,
+  "schema_migrations": 2,
+  "ranch_wallets": 0,
+  "ranch_animals": 0,
+  "ranch_inventory": 0,
+  "ranch_ledger": 0
+}
+```

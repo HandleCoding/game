@@ -1,0 +1,50 @@
+{
+  "deployment": {
+    "sourceCommit": "b30c80334fd0e5eb800d9d0c90d2e7073a96e6bc",
+    "release": "/opt/pair-play/releases/v2.1.0-20261004-132821",
+    "version": "2.1.0",
+    "databaseBackup": "/var/backups/pair-play/postgres-prod-20261004-132823.dump",
+    "before": {
+      "users": 2,
+      "sessions": 3,
+      "results": 3,
+      "result_players": 6,
+      "persistent_profiles": 0
+    },
+    "after": {
+      "users": 2,
+      "sessions": 3,
+      "results": 3,
+      "result_players": 6,
+      "persistent_profiles": 0
+    },
+    "unitBackup": "/var/backups/pair-play/pair-play-before-20261004-132823.service",
+    "caddyBackup": "/var/backups/pair-play/Caddyfile-before-20261004-132823",
+    "schemaVersion": 2,
+    "completedAt": "2026-10-04T13:28:24+0800"
+  },
+  "restoreVerification": {
+    "backup": "/var/backups/pair-play/postgres-prod-20261004-133120.dump",
+    "restoredAt": "2026-10-04T13:31:21+0800",
+    "counts": {
+      "users": 2,
+      "sessions": 3,
+      "results": 3,
+      "result_players": 6,
+      "active_rooms": 0,
+      "import_runs": 1,
+      "persistent_profiles": 0,
+      "action_receipts": 1,
+      "world_jobs": 0,
+      "schema_migrations": 2,
+      "ranch_wallets": 0,
+      "ranch_animals": 0,
+      "ranch_inventory": 0,
+      "ranch_ledger": 0
+    },
+    "verified": true,
+    "targetWasIndependent": true
+  },
+  "publicResourcesVerified": true,
+  "browserUiVerified": false
+}

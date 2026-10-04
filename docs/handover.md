@@ -1,13 +1,13 @@
 # 新架构接手状态
 
-更新：2026-10-04。本次按用户授权实施架构和现有注册数据迁移。正式切换结果、最终版本、备份路径与数据数量以 [迁移报告](test-reports/20261004-architecture-migration.md) 为准。
+更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户明确授权上线一起牧场 2.1.0。当前发布、备份与验证见 [牧场上线报告](test-reports/20261004-animal-ranch.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
 
 ## 环境
 
 | 项目 | 正式 | 开发 |
 | --- | --- | --- |
 | 主机 | 京东云 117.72.116.83 | 同一主机 |
-| 代码 | /opt/pair-play/releases/v2-20261004-124956 | /opt/pair-play-dev |
+| 代码 | /opt/pair-play/releases/v2.1.0-20261004-132821 | /opt/pair-play-dev |
 | 服务 | pair-play.service | pair-play-dev.service |
 | 用户 | pairplay | pairplaydev |
 | 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 dd15692fb726032493e4b9be5c1212a6ae8cbc43；后续验收文档提交看 git log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 b30c80334fd0e5eb800d9d0c90d2e7073a96e6bc；后续验收文档提交看 git log。
 
 ## 已落地
 
@@ -37,14 +37,16 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 | apps/api/src/platform/rooms.ts | 房间、在线 / 邀请、串行调度、事务、按用户广播 |
 | apps/api/src/platform/db/ | PostgreSQL 连接、事务、schema migration |
 | apps/api/src/platform/persistent.ts | 持续档案、时间结算、事务动作 |
-| apps/api/src/games/ | 注册、契约、guess-number 定义 / 引擎 |
+| apps/api/src/games/ | 注册、契约、guess-number 与 animal-ranch 定义 / 引擎 / 存储 |
 | apps/web/src/platform/ | 大厅、连接和通用玩家界面 |
-| apps/web/src/games/ | 界面注册与猜数字组件 / 骰子 |
+| apps/web/src/games/ | 界面注册、猜数字组件 / 骰子、RanchGame.vue |
 | packages/contracts/src/ | 公开协议；平台视图与猜数字专属视图区分 |
 | scripts/import-sqlite.ts | 一次性导入与逐字段校验，拒绝非空目标 |
 | scripts/backup-sqlite.py | 旧库一致性私有备份 |
 | scripts/prepare-release.py、cutover.py | 本次首次迁移发布；不可当成日常部署脚本反复执行 |
-| test-v2/ | 新架构的 14 项云端测试 |
+| scripts/release-postgres.py | 日常 PostgreSQL 发布；准备构建或经授权 --deploy，备份与会话验证、只回退代码 |
+| scripts/backup-postgres.py、verify-backup-restore.py | 私有备份与独立库恢复验证 |
+| test-v2/ | 新架构的 18 项云端测试 |
 
 旧 server.mjs / game.mjs / public / test 留作兼容参考，服务不再以其为新入口。
 
@@ -58,6 +60,8 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 - `GET /api/results/:id`：仅参与者可读；available=false 表示旧结果没有保存复盘。
 - `GET /api/games/:gameId/me`、`GET /api/games/:gameId/players/:owner`。
 - `POST /api/games/:gameId/actions`：长期型动作，版本和请求去重。
+- `GET /api/games/:gameId/players`：可参观牧场目录，包含离线玩家。
+- `POST /api/presence`：长期游戏浏览状态；可被大厅邀请，房间状态优先。
 
 已注册 guess-number 和 animal-ranch（一起牧场，36 个独立物种）。一起牧场为每个账号自动创建独立档案，支持喂养 / 成长 / 收获 / 出售 / 扩建 / 等级解锁 / 只读参观。默认世界 default；具体长期游戏需要实现定义和资源规则。
 
@@ -71,10 +75,10 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 
 已经实现动物牧场与 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger；作物种植、交易、偷取、赠送和后台事件 worker 尚未实现。普通动物成长在访问或操作时结算，不依赖浏览器和后台逐秒写入。
 
-浏览器已验证桌面和 390px 手机视口、日夜主题、双账号完整记忆模式对局、草稿 / 最新提示、结束复盘 / 刷新 / 筛选。真实手机键盘与后台行为仍需要用户实际设备验收。
+此前猜数字浏览器验证覆盖桌面和 390px 手机视口、日夜主题、双账号完整记忆模式对局、草稿 / 最新提示、结束复盘 / 刷新 / 筛选。新增牧场因浏览器自动控制超时，未完成实际前端交互和手机视口验收；不要将既有猜数字验收当成牧场验收。真实手机键盘与后台行为仍待实机验证。
 
 下一游戏先实现后端定义和 Vue 模块，补专属测试，再注册。持续游戏要完成资源事务 / 时间 / 权限规则，不能将档案塞进 active_rooms。
 
 ## 2026-10-04 动物牧场扩展
 
-版本 2.1.0，schema v2。游戏 ID animal-ranch，36 种动物覆盖家禽家畜、宠物、动物园。源码 games/animal-ranch 与共享 ranch-catalog.ts；前端 RanchGame.vue。资料、数值、素材、规则见 animal-ranch.md、ranch-balance.md、ranch-assets.md。正式发布目录和源提交以 test-reports/20261004-animal-ranch.md 的发布结果为准，环境表在发布后更新。
+版本 2.1.0，schema v2。游戏 ID animal-ranch，36 种动物覆盖家禽家畜、宠物、动物园。源码 games/animal-ranch 与共享 ranch-catalog.ts；前端 RanchGame.vue。资料、数值、素材、规则见 animal-ranch.md、ranch-balance.md、ranch-assets.md。正式发布目录和源提交以 test-reports/20261004-animal-ranch.md 的发布结果为准，上方环境表已更新，旧账号和猜数字记录保留。
