@@ -1,0 +1,114 @@
+{
+  "sourceCommit": "30dbcbd9fd5b1a705e47facb06956eb0c1452144",
+  "release": "/opt/pair-play/releases/v2.5.3-20261004-190443",
+  "version": "2.5.3",
+  "databaseBackup": "/var/backups/pair-play/postgres-prod-20261004-190445.dump",
+  "before": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "after": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "unitBackup": "/var/backups/pair-play/pair-play-before-20261004-190445.service",
+  "caddyBackup": "/var/backups/pair-play/Caddyfile-before-20261004-190445",
+  "schemaVersion": 2,
+  "completedAt": "2026-10-04T19:04:46+0800",
+  "publicHealth": {
+    "ok": true,
+    "version": "2.5.3",
+    "database": "postgresql"
+  },
+  "publicAssets": [
+    {
+      "path": "/assets/RanchGame-UfUDRGX6.js",
+      "bytes": 44766,
+      "sha256": "13ce6305b44d2beac145d3de212c4ab6e2252f4e4285b8400524ccd7ce1abe78",
+      "matchesBuild": true
+    },
+    {
+      "path": "/assets/RanchGame-vGqUXbnN.css",
+      "bytes": 38392,
+      "sha256": "f60a3e544473257e1a8ec49c62c7b6858d17a9b8ab9d258c2c1f23ee63184d5f",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/scene/pasture-v1.webp",
+      "bytes": 2163724,
+      "sha256": "14c76ecfafede4b6cf21ee16d76bd8c1c00f32ba2b0132e7a5878bf26979e9b8",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/ui/ranch-tools-v1.webp",
+      "bytes": 1620078,
+      "sha256": "1415e9c0149c5e6b646ed7235322636ef6bd3062c97cf1abd2a96b0c8d0c6c5a",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/scene/soft/baby-3-v1.webp",
+      "bytes": 1156224,
+      "sha256": "61038d548f82351fb0a9a3745086374054b359f369400121c2dc268a85effd01",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/scene/soft/adult-2-v1.webp",
+      "bytes": 1211290,
+      "sha256": "501de3fb71678a3280471715f0369d98de66e10dbe3d1c7152ba30b89249207a",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/scene/soft/adult-1-v1.webp",
+      "bytes": 1217642,
+      "sha256": "d411f2ec60589c882f961849ae232744754d2a33fad045ba8c98d6cc6afec9de",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/scene/soft/baby-0-v1.webp",
+      "bytes": 1243234,
+      "sha256": "7f05bbb6918a0ebb25a8ef5903a7f422e4a5a7915399c95ec2b79c5299ea9ef8",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/scene/soft/rabbit-stages-v1.webp",
+      "bytes": 804832,
+      "sha256": "231ac4af4eeb8fec7b6544a0cc983314ca564618d237663c49e3d5f1c6f46fa0",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/scene/soft/adult-0-v1.webp",
+      "bytes": 1264004,
+      "sha256": "b4619dee4c2283f28cd92ff3a56c656aa594a62f08ab0b68cdd0d69162509ce2",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/scene/soft/adult-3-v1.webp",
+      "bytes": 1278650,
+      "sha256": "5fd4f7102dfb9f776a5619b6ab6c38befe0cc0df17fb6747018aa7ebdfaf9c9e",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/scene/soft/baby-2-v1.webp",
+      "bytes": 1202304,
+      "sha256": "1e4593bf2411bb7c6f46721c0186fc20d2346c3bd4bb76ccbbc6bc912758c614",
+      "matchesBuild": true
+    },
+    {
+      "path": "/ranch/scene/soft/baby-1-v1.webp",
+      "bytes": 1231626,
+      "sha256": "b1d0b3834eaa0dfe2021f65d7339dfa00ae992f8c90ceaa9c1dbf8c54f3e7a13",
+      "matchesBuild": true
+    }
+  ],
+  "services": {
+    "pair-play": "active",
+    "pair-play-dev": "active",
+    "caddy": "active"
+  }
+}

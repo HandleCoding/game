@@ -17,4 +17,4 @@ typecheck、build通过。慢速脚本ranch-loading-slow-qa.mjs经隔离开发�
 素材编码工具scripts/encode-lossless-ranch.py，元数据见20261004-ranch-lossless-webp.json。
 
 ## 发布
-正式结果待核验后记录20261004-ranch-loading-fix-release.json。
+2026-10-04T19:04:46+0800 已上线。目录 /opt/pair-play/releases/v2.5.3-20261004-190443，源提交 30dbcbd9fd5b1a705e47facb06956eb0c1452144；备份 /var/backups/pair-play/postgres-prod-20261004-190445.dump。原账号/会话/结果/长期档案数量一致，有效旧会话验证成功。公网healthz为2.5.3，RanchGame JS/CSS和11张WebP正文SHA逐一对应构建，MIME与immutable缓存头正确；pair-play/pair-play-dev/caddy均active。详见20261004-ranch-loading-fix-release.json。

@@ -1,13 +1,13 @@
 # 新架构接手状态
 
-更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户明确授权上线一起牧场 2.5.2。当前发布、备份与验证见 [当前加载验收报告](test-reports/20261004-ranch-loading.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
+更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户明确授权上线一起牧场 2.5.3。当前发布、备份与验证见 [当前公网慢速修复报告](test-reports/20261004-ranch-loading-fix.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
 
 ## 环境
 
 | 项目 | 正式 | 开发 |
 | --- | --- | --- |
 | 主机 | 京东云 117.72.116.83 | 同一主机 |
-| 代码 | /opt/pair-play/releases/v2.5.2-20261004-183539 | /opt/pair-play-dev |
+| 代码 | /opt/pair-play/releases/v2.5.3-20261004-190443 | /opt/pair-play-dev |
 | 服务 | pair-play.service | pair-play-dev.service |
 | 用户 | pairplay | pairplaydev |
 | 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 65ab97be6334d9cd6a6ad8e129c692e87f51dfa6；后续验收文档提交看 git log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 30dbcbd9fd5b1a705e47facb06956eb0c1452144；后续验收文档提交看 git log。
 
 ## 已落地
 
@@ -110,3 +110,7 @@ AnimalPortrait 与 RanchIcon 增加独立 clipPath，修复 SVG 比例留白露�
 ## 首次加载进度 v2.5.2（已上线）
 
 RanchLoading.vue统一存档准备和资源加载画面；RanchScene按必要图片的加载/解码完成数显示实际进度，画出首帧后显示游戏工具。资源失败/25秒超时可重试，保留成功资源，退出取消当前加载。商店在加载新动物图集时暂时隐藏，完成后恢复原选择和面板。加载专项Chromium22/WebKit20项通过，现有牧场交互两种引擎共10组通过；手机竖屏/横屏与电脑截图实际查看。规则/schema/存档不变，已备份、核验有效会话和公网JS/CSS。见test-reports/20261004-ranch-loading.md、20261004-ranch-loading-release.json。
+
+## 公网慢速加载修复 v2.5.3（已上线）
+
+旧25秒整图限时在公网误中断正常下载，Windows单PNG实测74.85秒。现为分块进度/45秒连续无数据超时/两路并发；HUD就绪后才挂载，11张版本化无损WebP减少约26%体积且长期缓存。原PNG、可见像素、透明度和裁切保持。两种引擎32秒六图慢速测试、42项重试检查、702项新格式裁切检查和Chromium5组交互回归通过；已核验原有效会话、存档、公开13个资源正文与缓存头。见test-reports/20261004-ranch-loading-fix.md。不要把本机快速加载通过当作公网带宽通过，也不要恢复25秒总时长中断；改图必须使用新的版本文件名。
