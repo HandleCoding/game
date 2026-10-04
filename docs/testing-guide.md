@@ -53,3 +53,7 @@ Playwright 测试代码 scripts/ranch-ui-qa.mjs，npm run test:ui。来源 / 依
 ## 图集裁切回归
 
 npm run test:portraits（scripts/ranch-portrait-qa.mjs），同样要求 dev.env / playroom_dev / 3221 flock 锁及浏览器路径。每个引擎 351 项：72 种生命周期、36 个目录格子和 9 个工具，在三种容器比例下栅格化真实组件；帧外留白必须透明，并校验图片非空。报告 20261004-ranch-portrait-{chromium,webkit}.json，截图 artifacts/ranch-portrait。旧版本可设置 PORTRAIT_BASELINE=1 复现，原版 252 项泄漏；不要把旧构建失败视为新构建通过。
+
+## 牧场首次加载
+
+npm run test:loading，scripts/ranch-loading-qa.mjs。使用同样的playroom_dev、独立schema、3221锁和浏览器路径；通过真实页面请求延迟/失败/损坏图片检查进度与恢复，Chromium覆盖25秒实际超时。报告20261004-ranch-loading-{chromium,webkit}.json。需新文档冷图片请求验证网络错误，已解码浏览器缓存的图片可能不再访问网络。

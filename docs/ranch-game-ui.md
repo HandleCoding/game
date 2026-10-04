@@ -40,3 +40,7 @@ scripts/ranch-ui-qa.mjs 覆盖格子选中不扣费、锁定禁购、幼年/成�
 ## v2.5.1 图集防渗漏
 
 SVG viewBox 只定位/缩放，并不自动限定 image 的绘制到单帧；容器比例不同产生的留白可能显示相邻帧。AnimalPortrait.vue 和 RanchIcon.vue 必须保留对 image 的明确 clipPath，每个实例用 useId。裁切测试 npm run test:portraits 检查全部动物两生命周期、目录格子与九个工具，方/宽/高三种比例。详细报告 test-reports/20261004-ranch-portrait.md。
+
+## 进入牧场与图片资源
+
+v2.5.2 使用 RanchLoading.vue 显示存档准备与资源进度。RanchScene 内部按必要图片的加载/解码完成数计算，背景、工具和当前动物都准备完成并画出首帧后显示HUD。网络/解码失败与25秒无响应可原地重试，成功资源保留；卸载取消本组件任务。首屏不下载全部36种动物。不要恢复只显示文字、先露工具栏的旧加载态。

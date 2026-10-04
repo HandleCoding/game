@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import RanchLoading from "./RanchLoading.vue";
 import type { RanchAnimalView } from "../../../../../packages/contracts/src/ranch";
 import { spriteLocation, animalExtent } from "./sprites";
 import { softAtlasMetadata } from "./soft-atlas-metadata";
@@ -11,7 +12,13 @@ const props = defineProps<{
   hungry: boolean;
   effect: { type: string; id: number } | null;
 }>();
-const emit = defineEmits<{ select: [id: string]; feed: []; shop: [] }>();
+const emit = defineEmits<{
+  select: [id: string];
+  feed: [];
+  shop: [];
+  loading: [active: boolean];
+  leave: [];
+}>();
 const canvas = ref<HTMLCanvasElement | null>(null),
   ready = ref(false),
   failure = ref(false),
@@ -29,8 +36,8 @@ type Walker = {
   phase: number;
 };
 const walkers = new Map<string, Walker>(),
-  sheets: HTMLImageElement[] = [],
-  background = new Image();
+  sheets: HTMLImageElement[] = [];
+let background: HTMLImageElement;
 const feederBox = ref({ left: 0, top: 0, width: 64, height: 44 });
 const feederVisible = ref(false);
 let disposed = false;
@@ -93,13 +100,122 @@ function sync() {
     }
   });
 }
+const loaded = new Map<string, HTMLImageElement>();
+const pending = new Map<string, Promise<HTMLImageElement>>();
+const cancelLoads = new Set<() => void>();
+const resourceUrls = ref<string[]>([]);
+const completed = ref(0);
+const total = computed(() => resourceUrls.value.length);
+let preparing = false;
+function updateProgress() {
+  completed.value = resourceUrls.value.filter((url) => loaded.has(url)).length;
+}
 function getImage(url: string) {
-  return new Promise<HTMLImageElement>((resolve, reject) => {
+  const cached = loaded.get(url);
+  if (cached) return Promise.resolve(cached);
+  const existing = pending.get(url);
+  if (existing) return existing;
+  const promise = new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error(url));
+    let settled = false;
+    const cleanup = () => {
+      clearTimeout(timeout);
+      img.onload = null;
+      img.onerror = null;
+      cancelLoads.delete(cancel);
+    };
+    const fail = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error("牧场图片未能加载"));
+    };
+    const cancel = () => {
+      fail();
+      img.src = "";
+    };
+    const timeout = setTimeout(cancel, 25000);
+    cancelLoads.add(cancel);
+    img.onload = async () => {
+      try {
+        await img.decode();
+        if (settled || disposed) return;
+        if (!img.naturalWidth) throw new Error("Empty image");
+        settled = true;
+        cleanup();
+        loaded.set(url, img);
+        updateProgress();
+        resolve(img);
+      } catch {
+        fail();
+      }
+    };
+    img.onerror = fail;
     img.src = url;
-  });
+  }).finally(() => pending.delete(url));
+  pending.set(url, promise);
+  return promise;
+}
+function sheetUrl(i: number) {
+  return i === 8
+    ? "/ranch/scene/soft/rabbit-stages.png"
+    : "/ranch/scene/soft/" +
+        (i >= 4 ? "baby" : "adult") +
+        "-" +
+        (i % 4) +
+        ".png";
+}
+function neededUrls() {
+  return [
+    "/ranch/scene/pasture.png",
+    "/ranch/ui/ranch-tools-v1.png",
+    ...new Set(
+      props.animals.map((a) =>
+        sheetUrl(spriteLocation(a.species, a.baby).group),
+      ),
+    ),
+  ];
+}
+async function prepareScene() {
+  if (preparing || disposed) return;
+  preparing = true;
+  ready.value = false;
+  failure.value = false;
+  emit("loading", true);
+  cancelAnimationFrame(frame);
+  try {
+    // Props can change during slow downloads; include newly required stages before entering.
+    while (!disposed) {
+      resourceUrls.value = neededUrls();
+      updateProgress();
+      const results = await Promise.allSettled(
+        resourceUrls.value.map(getImage),
+      );
+      if (disposed) return;
+      if (results.some((r) => r.status === "rejected"))
+        throw new Error("Resources unavailable");
+      if (neededUrls().some((url) => !loaded.has(url))) continue;
+      background = loaded.get("/ranch/scene/pasture.png")!;
+      for (const a of props.animals) {
+        const i = spriteLocation(a.species, a.baby).group;
+        sheets[i] = loaded.get(sheetUrl(i))!;
+      }
+      sync();
+      ready.value = true;
+      measure();
+      // Paint the first scene before revealing the HUD and interactive tools.
+      draw(performance.now());
+      emit("loading", false);
+      break;
+    }
+  } catch {
+    if (!disposed) {
+      ready.value = false;
+      failure.value = true;
+    }
+  } finally {
+    preparing = false;
+  }
 }
 function measure() {
   const element = canvas.value;
@@ -489,42 +605,12 @@ function wheel(e: WheelEvent) {
 function reducedChange() {
   frozen.value = reduced.matches;
 }
-const sheetLoads = new Map<number, Promise<void>>();
-async function ensureSheets() {
-  await Promise.all(
-    [
-      ...new Set(
-        props.animals.map((a) => spriteLocation(a.species, a.baby).group),
-      ),
-    ].map(async (i) => {
-      if (sheets[i]) return;
-      if (!sheetLoads.has(i))
-        sheetLoads.set(
-          i,
-          getImage(
-            i === 8
-              ? "/ranch/scene/soft/rabbit-stages.png"
-              : "/ranch/scene/soft/" +
-                  (i >= 4 ? "baby" : "adult") +
-                  "-" +
-                  (i % 4) +
-                  ".png",
-          ).then((img) => {
-            sheets[i] = img;
-          }),
-        );
-      await sheetLoads.get(i);
-    }),
-  );
-}
 watch(
   () => props.animals,
   () => {
     sync();
-    if (ready.value)
-      void ensureSheets().catch(() => {
-        failure.value = true;
-      });
+    if (ready.value && neededUrls().some((url) => !loaded.has(url)))
+      void prepareScene();
   },
   { deep: true },
 );
@@ -547,27 +633,16 @@ watch(
       }
   },
 );
-onMounted(async () => {
+onMounted(() => {
   sync();
   resize = new ResizeObserver(measure);
   if (canvas.value) resize.observe(canvas.value);
   reduced.addEventListener("change", reducedChange);
-  try {
-    const [image] = await Promise.all([
-      getImage("/ranch/scene/pasture.png"),
-      ensureSheets(),
-    ]);
-    if (disposed) return;
-    background.src = image.src;
-    ready.value = true;
-    measure();
-    frame = requestAnimationFrame(draw);
-  } catch {
-    failure.value = true;
-  }
+  void prepareScene();
 });
 onUnmounted(() => {
   disposed = true;
+  for (const cancel of cancelLoads) cancel();
   cancelAnimationFrame(frame);
   resize?.disconnect();
   reduced.removeEventListener("change", reducedChange);
@@ -593,9 +668,15 @@ onUnmounted(() => {
       @wheel="wheel"
       @click="tap"
     ></canvas>
-    <div v-if="!ready" class="scene-loading" role="status">
-      {{ failure ? "场景素材未加载，请刷新重试" : "小动物们正在出来玩…" }}
-    </div>
+    <RanchLoading
+      v-if="!ready"
+      class="scene-loading"
+      :completed="completed"
+      :total="total"
+      :failed="failure"
+      @retry="prepareScene"
+      @leave="emit('leave')"
+    />
     <button
       v-if="ready && owner && feederVisible"
       class="feeder-hitbox"
@@ -626,7 +707,7 @@ onUnmounted(() => {
       }"
       >食槽</span
     >
-    <div class="scene-controls">
+    <div v-if="ready" class="scene-controls">
       <button aria-label="缩小牧场" @click="zoomBy(-0.3)">−</button
       ><button aria-label="查看牧场全景" @click="fit">全景</button
       ><button aria-label="放大牧场" @click="zoomBy(0.3)">＋</button
@@ -638,7 +719,7 @@ onUnmounted(() => {
       </button>
     </div>
 
-    <div class="animal-picker" aria-label="选择牧场动物">
+    <div v-if="ready" class="animal-picker" aria-label="选择牧场动物">
       <button
         v-for="a in animals"
         :key="a.id"
@@ -722,14 +803,6 @@ onUnmounted(() => {
 }
 .animal-picker [aria-pressed="true"] {
   background: #d7ed8e;
-}
-.scene-loading {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: #435333;
-  background: #e8efd6;
 }
 @media (max-width: 640px) {
   .living-pasture {

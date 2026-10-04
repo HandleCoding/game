@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RanchScene from "./RanchScene.vue";
+import RanchLoading from "./RanchLoading.vue";
 import AnimalPortrait from "./AnimalPortrait.vue";
 import RanchIcon from "./RanchIcon.vue";
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from "vue";
@@ -16,6 +17,7 @@ import type {
   RanchNeighbor,
   RanchSpecies,
 } from "../../../../../packages/contracts/src/ranch";
+const sceneReady = ref(false);
 const profile = ref<RanchProfile | null>(null),
   neighbors = ref<RanchNeighbor[]>([]),
   visiting = ref<string | null>(null);
@@ -114,6 +116,7 @@ async function visit(id: string | null) {
   panel.value = null;
   visiting.value = id;
   chosen.value = null;
+  sceneReady.value = false;
   profile.value = null;
   ++seq;
   await load();
@@ -260,10 +263,12 @@ function selectAnimal(id: string) {
   chosen.value = id;
   panel.value = "detail";
 }
-watch(panel, async (value) => {
+watch([panel, sceneReady], async ([value, ready]) => {
   if (value !== "detail") chosen.value = null;
+  if (!ready) panelDialog.value?.close();
   await nextTick();
-  if (value && !panelDialog.value?.open) panelDialog.value?.showModal();
+  if (panel.value && sceneReady.value && !panelDialog.value?.open)
+    panelDialog.value?.showModal();
 });
 
 const pickedSpecies = ref<RanchSpecies | null>(null);
@@ -322,12 +327,13 @@ function productAnimal(id: string) {
     class="ranch-page scene-page immersive-ranch"
     aria-label="一起牧场游戏"
   >
-    <div v-if="!farm" class="ranch-loading" role="status">
-      <RanchIcon :index="1" />{{
-        loading ? "正在走进你的牧场…" : "牧场暂时未加载"
-      }}
-      <button class="quiet small" @click="returnLobby">← 游戏大厅</button>
-    </div>
+    <RanchLoading
+      v-if="!farm"
+      pending
+      :failed="!!error"
+      @retry="load"
+      @leave="returnLobby"
+    />
     <template v-else>
       <RanchScene
         :animals="farm.animals"
@@ -336,122 +342,128 @@ function productAnimal(id: string) {
         :feed="owner ? farm.feed : undefined"
         :hungry="farm.hungry"
         :effect="sceneEffect"
+        @loading="sceneReady = !$event"
+        @leave="returnLobby"
         @select="selectAnimal"
         @feed="panel = 'feed'"
         @shop="panel = 'animals'"
       />
-      <header class="game-profile">
-        <div class="ranch-avatar" aria-hidden="true">
-          <RanchIcon :index="1" />
-        </div>
-        <div class="profile-text">
-          <h1>
-            {{
-              visiting
-                ? (profile?.ownerName || "玩家") + "的牧场"
-                : state?.me.name + "的牧场"
-            }}
-          </h1>
-          <span class="profile-level"
-            >Lv. {{ farm.level }}
-            <small
-              >{{ farm.animals.length }} / {{ farm.capacity }} 伙伴</small
-            ></span
+      <div v-show="sceneReady" style="display: contents">
+        <header class="game-profile">
+          <div class="ranch-avatar" aria-hidden="true">
+            <RanchIcon :index="1" />
+          </div>
+          <div class="profile-text">
+            <h1>
+              {{
+                visiting
+                  ? (profile?.ownerName || "玩家") + "的牧场"
+                  : state?.me.name + "的牧场"
+              }}
+            </h1>
+            <span class="profile-level"
+              >Lv. {{ farm.level }}
+              <small
+                >{{ farm.animals.length }} / {{ farm.capacity }} 伙伴</small
+              ></span
+            >
+            <progress
+              v-if="owner"
+              :value="farm.xp"
+              :max="farm.nextLevelXp"
+              aria-label="牧场经验"
+            ></progress>
+          </div>
+        </header>
+        <div class="game-wallet">
+          <span v-if="owner" class="wallet-coins" aria-label="我的金币"
+            ><RanchIcon :index="7" />{{ farm.coins }}</span
           >
-          <progress
+          <span v-else class="visitor-label">参观中</span>
+          <button
             v-if="owner"
-            :value="farm.xp"
-            :max="farm.nextLevelXp"
-            aria-label="牧场经验"
-          ></progress>
+            class="wallet-feed"
+            :class="{ hungry: farm.hungry }"
+            @click="panel = 'feed'"
+          >
+            <RanchIcon :index="8" />{{ farm.feed }} 份
+          </button>
+          <button v-else class="wallet-feed" @click="visit(null)">
+            回我的牧场
+          </button>
         </div>
-      </header>
-      <div class="game-wallet">
-        <span v-if="owner" class="wallet-coins" aria-label="我的金币"
-          ><RanchIcon :index="7" />{{ farm.coins }}</span
-        >
-        <span v-else class="visitor-label">参观中</span>
-        <button
-          v-if="owner"
-          class="wallet-feed"
-          :class="{ hungry: farm.hungry }"
-          @click="panel = 'feed'"
-        >
-          <RanchIcon :index="8" />{{ farm.feed }} 份
-        </button>
-        <button v-else class="wallet-feed" @click="visit(null)">
-          回我的牧场
-        </button>
+        <nav class="game-side-actions" aria-label="游戏菜单">
+          <button aria-label="返回游戏大厅" @click="returnLobby">
+            <span>↩</span><small>大厅</small>
+          </button>
+          <button
+            :aria-label="
+              theme === 'light' ? '切换到夜间模式' : '切换到日间模式'
+            "
+            @click="toggleTheme"
+          >
+            <span>{{ theme === "light" ? "☾" : "☀" }}</span
+            ><small>{{ theme === "light" ? "夜间" : "日间" }}</small>
+          </button>
+          <button
+            class="album-menu"
+            aria-label="动物图鉴"
+            @click="panel = 'album'"
+          >
+            <RanchIcon :index="6" /><small>图鉴</small>
+          </button>
+          <button aria-label="牧场玩法说明" @click="panel = 'help'">
+            <span>?</span><small>玩法</small>
+          </button>
+          <button
+            v-if="canFullscreen"
+            aria-label="切换游戏全屏"
+            @click="toggleFullscreen"
+          >
+            <span>⛶</span><small>全屏</small>
+          </button>
+        </nav>
+        <nav class="ranch-toolbelt" aria-label="牧场工具栏">
+          <button
+            v-if="owner"
+            :disabled="busy || loading || !harvestCount"
+            @click="action('harvest')"
+          >
+            <span class="tool-art"><RanchIcon :index="0" /></span
+            ><span class="tool-name">一键收获</span
+            ><small class="tool-count" v-if="harvestCount">{{
+              harvestCount
+            }}</small>
+          </button>
+          <button @click="panel = 'animals'">
+            <span class="tool-art"><RanchIcon :index="1" /></span
+            ><span class="tool-name">动物商店</span>
+          </button>
+          <button v-if="owner" @click="panel = 'feed'">
+            <span class="tool-art"><RanchIcon :index="2" /></span
+            ><span class="tool-name">添饲料</span
+            ><small class="tool-count alert-count" v-if="farm.hungry">!</small>
+          </button>
+          <button v-if="owner" @click="panel = 'store'">
+            <span class="tool-art"><RanchIcon :index="3" /></span
+            ><span class="tool-name">我的仓库</span
+            ><small class="tool-count" v-if="stockValue">●</small>
+          </button>
+          <button @click="panel = 'neighbors'">
+            <span class="tool-art"><RanchIcon :index="4" /></span
+            ><span class="tool-name">去串门</span>
+          </button>
+          <button v-if="owner" @click="panel = 'journal'">
+            <span class="tool-art"><RanchIcon :index="5" /></span
+            ><span class="tool-name">扩建 / 日记</span>
+          </button>
+        </nav>
+        <span class="game-offline-note">{{
+          owner ? "离线也会成长 · 缺粮暂停" : "只读参观 · 动物状态实时刷新"
+        }}</span>
       </div>
-      <nav class="game-side-actions" aria-label="游戏菜单">
-        <button aria-label="返回游戏大厅" @click="returnLobby">
-          <span>↩</span><small>大厅</small>
-        </button>
-        <button
-          :aria-label="theme === 'light' ? '切换到夜间模式' : '切换到日间模式'"
-          @click="toggleTheme"
-        >
-          <span>{{ theme === "light" ? "☾" : "☀" }}</span
-          ><small>{{ theme === "light" ? "夜间" : "日间" }}</small>
-        </button>
-        <button
-          class="album-menu"
-          aria-label="动物图鉴"
-          @click="panel = 'album'"
-        >
-          <RanchIcon :index="6" /><small>图鉴</small>
-        </button>
-        <button aria-label="牧场玩法说明" @click="panel = 'help'">
-          <span>?</span><small>玩法</small>
-        </button>
-        <button
-          v-if="canFullscreen"
-          aria-label="切换游戏全屏"
-          @click="toggleFullscreen"
-        >
-          <span>⛶</span><small>全屏</small>
-        </button>
-      </nav>
-      <nav class="ranch-toolbelt" aria-label="牧场工具栏">
-        <button
-          v-if="owner"
-          :disabled="busy || loading || !harvestCount"
-          @click="action('harvest')"
-        >
-          <span class="tool-art"><RanchIcon :index="0" /></span
-          ><span class="tool-name">一键收获</span
-          ><small class="tool-count" v-if="harvestCount">{{
-            harvestCount
-          }}</small>
-        </button>
-        <button @click="panel = 'animals'">
-          <span class="tool-art"><RanchIcon :index="1" /></span
-          ><span class="tool-name">动物商店</span>
-        </button>
-        <button v-if="owner" @click="panel = 'feed'">
-          <span class="tool-art"><RanchIcon :index="2" /></span
-          ><span class="tool-name">添饲料</span
-          ><small class="tool-count alert-count" v-if="farm.hungry">!</small>
-        </button>
-        <button v-if="owner" @click="panel = 'store'">
-          <span class="tool-art"><RanchIcon :index="3" /></span
-          ><span class="tool-name">我的仓库</span
-          ><small class="tool-count" v-if="stockValue">●</small>
-        </button>
-        <button @click="panel = 'neighbors'">
-          <span class="tool-art"><RanchIcon :index="4" /></span
-          ><span class="tool-name">去串门</span>
-        </button>
-        <button v-if="owner" @click="panel = 'journal'">
-          <span class="tool-art"><RanchIcon :index="5" /></span
-          ><span class="tool-name">扩建 / 日记</span>
-        </button>
-      </nav>
-      <span class="game-offline-note">{{
-        owner ? "离线也会成长 · 缺粮暂停" : "只读参观 · 动物状态实时刷新"
-      }}</span>
     </template>
-    <div v-if="error" class="game-error" role="alert">
+    <div v-if="error && farm" class="game-error" role="alert">
       {{ error }}<button :disabled="busy || loading" @click="load">重试</button>
     </div>
   </main>

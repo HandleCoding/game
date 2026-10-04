@@ -1,0 +1,505 @@
+{
+  "browser": "webkit",
+  "isolatedDevelopmentSchema": true,
+  "results": [
+    {
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "viewport-filling-scene",
+        "no-lobby-header",
+        "no-page-scroll",
+        "side-feeder-touch",
+        "feeding-toolbar-fallback",
+        "side-label-away-from-center",
+        "visitor-private-resource-hiding",
+        "visit-modal-close",
+        "soft-realistic-atlas",
+        "independent-baby-adult-artwork",
+        "all-36-species-both-stage-render-fixtures",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "select-before-purchase",
+        "locked-adoption-disabled",
+        "baby-adult-catalog-preview",
+        "all-36-species-album-no-spend",
+        "wood-inventory-selection",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-tap-pointer-pan"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "放大牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "暂停动物动画",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "一键收获",
+          "width": 58.171875,
+          "height": 78
+        },
+        {
+          "label": "动物商店",
+          "width": 58.171875,
+          "height": 78
+        },
+        {
+          "label": "添饲料",
+          "width": 58.171875,
+          "height": 78
+        },
+        {
+          "label": "我的仓库",
+          "width": 58.171875,
+          "height": 78
+        },
+        {
+          "label": "去串门",
+          "width": 58.171875,
+          "height": 78
+        },
+        {
+          "label": "扩建 / 日记",
+          "width": 58.171875,
+          "height": 78
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 320,
+        "height": 740
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "viewport-filling-scene",
+        "no-lobby-header",
+        "no-page-scroll",
+        "side-feeder-touch",
+        "feeding-toolbar-fallback",
+        "side-label-away-from-center",
+        "soft-realistic-atlas",
+        "independent-baby-adult-artwork",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "select-before-purchase",
+        "locked-adoption-disabled",
+        "baby-adult-catalog-preview",
+        "all-36-species-album-no-spend",
+        "wood-inventory-selection",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-tap-pointer-pan"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "放大牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "播放动物动画",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "一键收获",
+          "width": 48.171875,
+          "height": 78
+        },
+        {
+          "label": "动物商店",
+          "width": 48.171875,
+          "height": 78
+        },
+        {
+          "label": "添饲料",
+          "width": 48.171875,
+          "height": 78
+        },
+        {
+          "label": "我的仓库",
+          "width": 48.171875,
+          "height": 78
+        },
+        {
+          "label": "去串门",
+          "width": 48.171875,
+          "height": 78
+        },
+        {
+          "label": "扩建 / 日记",
+          "width": 48.171875,
+          "height": 78
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 430,
+        "height": 932
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "viewport-filling-scene",
+        "no-lobby-header",
+        "no-page-scroll",
+        "side-feeder-touch",
+        "feeding-toolbar-fallback",
+        "side-label-away-from-center",
+        "soft-realistic-atlas",
+        "independent-baby-adult-artwork",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "select-before-purchase",
+        "locked-adoption-disabled",
+        "baby-adult-catalog-preview",
+        "all-36-species-album-no-spend",
+        "wood-inventory-selection",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-tap-pointer-pan"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "放大牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "播放动物动画",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "一键收获",
+          "width": 64.828125,
+          "height": 78
+        },
+        {
+          "label": "动物商店",
+          "width": 64.828125,
+          "height": 78
+        },
+        {
+          "label": "添饲料",
+          "width": 64.828125,
+          "height": 78
+        },
+        {
+          "label": "我的仓库",
+          "width": 64.828125,
+          "height": 78
+        },
+        {
+          "label": "去串门",
+          "width": 64.828125,
+          "height": 78
+        },
+        {
+          "label": "扩建 / 日记",
+          "width": 64.828125,
+          "height": 78
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 844,
+        "height": 390
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "viewport-filling-scene",
+        "no-lobby-header",
+        "no-page-scroll",
+        "side-feeder-touch",
+        "feeding-toolbar-fallback",
+        "side-label-away-from-center",
+        "soft-realistic-atlas",
+        "independent-baby-adult-artwork",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "select-before-purchase",
+        "locked-adoption-disabled",
+        "baby-adult-catalog-preview",
+        "all-36-species-album-no-spend",
+        "wood-inventory-selection",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-tap-pointer-pan"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "放大牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "暂停动物动画",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "一键收获",
+          "width": 62,
+          "height": 68
+        },
+        {
+          "label": "动物商店",
+          "width": 62,
+          "height": 68
+        },
+        {
+          "label": "添饲料",
+          "width": 62,
+          "height": 68
+        },
+        {
+          "label": "我的仓库",
+          "width": 62,
+          "height": 68
+        },
+        {
+          "label": "去串门",
+          "width": 62,
+          "height": 68
+        },
+        {
+          "label": "扩建 / 日记",
+          "width": 64.625,
+          "height": 68
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 1440,
+        "height": 1000
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "viewport-filling-scene",
+        "no-lobby-header",
+        "no-page-scroll",
+        "side-feeder-touch",
+        "feeding-toolbar-fallback",
+        "side-label-away-from-center",
+        "soft-realistic-atlas",
+        "independent-baby-adult-artwork",
+        "all-36-species-both-stage-render-fixtures",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "select-before-purchase",
+        "locked-adoption-disabled",
+        "baby-adult-catalog-preview",
+        "all-36-species-album-no-spend",
+        "wood-inventory-selection",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "放大牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "播放动物动画",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "一键收获",
+          "width": 86,
+          "height": 105.796875
+        },
+        {
+          "label": "动物商店",
+          "width": 86,
+          "height": 105.796875
+        },
+        {
+          "label": "添饲料",
+          "width": 86,
+          "height": 105.796875
+        },
+        {
+          "label": "我的仓库",
+          "width": 86,
+          "height": 105.796875
+        },
+        {
+          "label": "去串门",
+          "width": 86,
+          "height": 105.796875
+        },
+        {
+          "label": "扩建 / 日记",
+          "width": 86,
+          "height": 105.796875
+        }
+      ]
+    }
+  ],
+  "failures": []
+}
