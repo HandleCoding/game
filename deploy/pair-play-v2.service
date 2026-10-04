@@ -6,8 +6,8 @@ After=network.target
 Type=simple
 User=pairplay
 Group=pairplay
-WorkingDirectory=/opt/pair-play/releases/v2-20261004-124512
-ExecStart=/usr/bin/node /opt/pair-play/releases/v2-20261004-124512/dist/apps/api/src/main.js
+WorkingDirectory=/opt/pair-play/releases/v2-20261004-124956
+ExecStart=/usr/bin/node /opt/pair-play/releases/v2-20261004-124956/dist/apps/api/src/main.js
 Environment=NODE_ENV=production
 EnvironmentFile=/etc/pair-play/prod.env
 Environment=HOST=127.0.0.1

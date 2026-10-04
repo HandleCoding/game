@@ -7,7 +7,7 @@
 | 项目 | 正式 | 开发 |
 | --- | --- | --- |
 | 主机 | 京东云 117.72.116.83 | 同一主机 |
-| 代码 | /opt/pair-play/releases/具体版本 | /opt/pair-play-dev |
+| 代码 | /opt/pair-play/releases/v2-20261004-124956 | /opt/pair-play-dev |
 | 服务 | pair-play.service | pair-play-dev.service |
 | 用户 | pairplay | pairplaydev |
 | 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 独立仓库，无远程；实际分支 / 提交看 git status/log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 独立仓库，无远程；分支 codex/architecture-migration。正式发布源提交 dd15692fb726032493e4b9be5c1212a6ae8cbc43；后续验收文档提交看 git log。
 
 ## 已落地
 
@@ -26,7 +26,7 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 - 新结果记录 game_id / game_version / match_id / settings_json / review_json，参与者 outcome / score；旧结果摘要保留。
 - 快照 v2 包含游戏、规则版本、对局编号、revision、成员和私有引擎状态；旧快照经导入器转换。
 - 长期档案基础：首次进入唯一、行锁、时间结算接口、动作事务、请求去重、主人 / 访客视图；world_jobs 表已建，具体 worker 未启用。
-- 原账号 ID、昵称、盐 / 密码哈希、会话、结果和活动房间迁移，不导入开发测试账号。真实数据演练与测试夹具原密码登录均验证。
+- 正式已完成原账号 ID、昵称、盐 / 密码哈希、会话、结果和活动房间迁移，不导入开发测试账号。真实数据演练与测试夹具原密码登录均验证。
 
 ## 源码地图
 

@@ -1,0 +1,35 @@
+{
+  "release": "/opt/pair-play/releases/v2-20261004-124956",
+  "sqliteBackup": "/var/backups/pair-play/final-sqlite-20261004-125030.sqlite",
+  "unitBackup": "/var/backups/pair-play/pair-play-unit-20261004-125030",
+  "caddyBackup": "/var/backups/pair-play/Caddyfile-20261004-125030",
+  "completedAt": "2026-10-04T12:50:31+0800",
+  "database": "postgresql",
+  "schemaVersion": 1,
+  "frontendAssetsChecked": [
+    "/assets/index-CNU8Sfy_.js",
+    "/assets/index-Dy6IKmC1.css"
+  ],
+  "sourceCommit": "dd15692fb726032493e4b9be5c1212a6ae8cbc43",
+  "importCounts": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "active_rooms": 1
+  },
+  "backupRestore": {
+    "backup": "/var/backups/pair-play/postgres-prod-20261004-125303.dump",
+    "restoredAt": "2026-10-04T12:53:04+0800",
+    "counts": {
+      "users": 2,
+      "sessions": 3,
+      "results": 3,
+      "result_players": 6,
+      "active_rooms": 0,
+      "import_runs": 1
+    },
+    "verified": true,
+    "targetWasIndependent": true
+  }
+}
