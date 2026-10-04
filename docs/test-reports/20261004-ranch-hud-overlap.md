@@ -24,4 +24,14 @@ scripts/ranch-ui-qa.mjs 在初始场景、操作后与只读参观检查提示�
 
 ## 发布
 
-待补充实际发布路径、源提交、备份与公网核验结果。普通PostgreSQL代码发布，不使用--reset-ranch，不清空玩家进度。
+普通PostgreSQL代码发布，命令python3 scripts/release-postgres.py --deploy，exit0。未使用--reset-ranch，没有清空或重置。schema仍为3。
+
+- 源提交：4225376a58cfff8b1e8e709d51839915d6d0a476
+- 正式路径：/opt/pair-play/releases/v2.6.1-20261004-195829
+- 完成时间：2026-10-04T19:58:32+0800
+- PG备份：/var/backups/pair-play/postgres-prod-20261004-195830.dump
+- 原账号2、会话3、猜数字结果3、结果关联6、牧场档案1均保持；发布工具原有效会话身份验证通过，无令牌进入输出/报告。
+- 发布前后4只动物、仓库与流水行数和钱包/动物/库存行摘要完全一致，确认玩家资源保持。
+- Windows公网healthz：ok=true、version=2.6.1、database=postgresql。
+- 公网RanchGame JS/CSS正文与web-dist逐字节一致，服务pair-play / pair-play-dev / caddy active。未追加读取正式令牌或登录牧场API验收。
+- 发布元数据：20261004-ranch-hud-overlap-release.json。schema未改变；源码/GitHub与正式发布独立维护。

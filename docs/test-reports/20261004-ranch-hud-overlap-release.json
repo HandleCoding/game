@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "4225376a58cfff8b1e8e709d51839915d6d0a476",
+  "release": "/opt/pair-play/releases/v2.6.1-20261004-195829",
+  "version": "2.6.1",
+  "databaseBackup": "/var/backups/pair-play/postgres-prod-20261004-195830.dump",
+  "before": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "after": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "unitBackup": "/var/backups/pair-play/pair-play-before-20261004-195831.service",
+  "caddyBackup": "/var/backups/pair-play/Caddyfile-before-20261004-195831",
+  "schemaVersion": 3,
+  "completedAt": "2026-10-04T19:58:32+0800",
+  "ranchResourcesUnchanged": true,
+  "publicRanchAssetsMatchBuild": [
+    "RanchGame-Bf3RKhS9.css",
+    "RanchGame-DoLfh21f.js"
+  ]
+}

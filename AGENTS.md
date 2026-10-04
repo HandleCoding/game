@@ -48,3 +48,10 @@ schema v3 的 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger 与
 先读ranch-balance.md最新表；成长/生产单位小时，每只30分钟耗1份，初始240份。XP逐级增加、仅收获获得XP、扩建等级金币双门槛；不要再写xp/80或每分钟一份的逻辑。食槽单位feedUnitMs保存在摘要；旧摘要缺失时按旧单位读，普通改配置不追溯已购动物。schema3扩大feed_ms预算CHECK。
 
 唯一正式旧牧场已按用户本次明确授权重置，账号/会话/猜数字保持。任何未来清空真实进度需新的明确授权与范围，禁止例行发布附带--reset-ranch。operator文件不暴露HTTP重置接口；备份留/var/backups/pair-play私有目录，不提交。重置/恢复验收脚本ranch-reset-qa.mjs强制开发库隔离schema。当前25项回归与两内核10组尺寸通过，报告20261004-ranch-balance.md。
+
+
+## HUD遮挡修复与玩法草案（2.6.1）
+
+离线/缺粮/访客提示在左上资料牌内，禁止再浮放底部覆盖animal-picker。横屏菜单起点104px，UI验收含提示/资料牌/菜单几何遮挡检查；双指夹具须先确认命中Canvas，不要把HUD上的浏览器缩放算作游戏缩放。当前2.6.1普通代码发布未重置，报告20261004-ranch-hud-overlap.md。
+
+animal-ranch.md末尾为3个子Agent综合玩法调研草案，尚未实施。后续互动/委托/装饰/加工奖励要守数值边界，跨玩家互助需多档案事务；不要未经授权一次性实现所有候选。

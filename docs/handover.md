@@ -1,13 +1,13 @@
 # 新架构接手状态
 
-更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户明确授权上线一起牧场 2.6.0。当前发布、备份与验证见 [当前数值与重置报告](test-reports/20261004-ranch-balance.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
+更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户授权上线一起牧场 2.6.1。当前发布、备份与验证见 [HUD遮挡修复报告](test-reports/20261004-ranch-hud-overlap.md)；数值与已完成重置见 [数值报告](test-reports/20261004-ranch-balance.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
 
 ## 环境
 
 | 项目 | 正式 | 开发 |
 | --- | --- | --- |
 | 主机 | 京东云 117.72.116.83 | 同一主机 |
-| 代码 | /opt/pair-play/releases/v2.6.0-20261004-193242 | /opt/pair-play-dev |
+| 代码 | /opt/pair-play/releases/v2.6.1-20261004-195829 | /opt/pair-play-dev |
 | 服务 | pair-play.service | pair-play-dev.service |
 | 用户 | pairplay | pairplaydev |
 | 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 3729432553b0b27ad17cf4ae46428eff0d7d9cd7；后续验收文档提交看 git log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 4225376a58cfff8b1e8e709d51839915d6d0a476；后续验收文档提交看 git log。
 
 ## 已落地
 
@@ -124,3 +124,10 @@ RanchLoading.vue统一存档准备和资源加载画面；RanchScene按必要图
 schema3仅扩大ranch_wallets.feed_ms约束至1800000000；摘要增加feedUnitMs，缺失按旧一分钟单位读取；实例周期仍在购入时保存。operator reset.ts、scripts/reset-ranch.mjs没有HTTP接口。scripts/release-postgres.py --deploy --reset-ranch限定1个牧场，停写后备份/重置；若开放前失败只恢复牧场行，不能回滚用户/猜数字。
 
 验证：25项回归、operator CLI重置/恢复/600文件/人数变化守卫、Chromium/WebKit各5组尺寸通过且截图实际查看；公网healthz2.6.0、正式钱包/周期/单位数值和新RanchGame JS/CSS逐字节验证正常。追加使用生产登录令牌的牧场API验收被自动审批拒绝，未绕过；改为直接数值与公网文件核对。正式登录后的互动未作这项追加验收，开发库HTTP与双内核完整交互已验证。报告test-reports/20261004-ranch-balance.md和release.json。保留2.5.3分块加载/45秒闲置超时/2并发/WebP不可变缓存、真实帧裁切、柔和写实幼年成年与侧边食槽。
+
+
+## 2026-10-04 HUD遮挡修复 2.6.1（已上线）
+
+离线/缺粮提示改为左上资料牌内的正常布局，移除底部浮条；横屏菜单留足资料牌间距。原动物选择、后端数值与schema3保持。两引擎各5组尺寸验收及实际截图审阅通过，报告test-reports/20261004-ranch-hud-overlap.md；公网healthz、RanchGame JS/CSS与发布前后牧场资源摘要通过。普通代码发布且未重置，4只已有动物及钱包/仓库保留。
+
+三个子Agent的玩法调研综合于animal-ranch.md“可玩性调研草案”，尚未实现：首选命名亲密互动+永久日记+可选委托+小装饰，其次异步互助，再加工/饲草。不要将建议当作已上线；跨玩家动作不能套单档案锁，奖励金币/加工需重跑数值模拟。
