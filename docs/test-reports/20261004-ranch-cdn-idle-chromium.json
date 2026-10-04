@@ -1,0 +1,17 @@
+{
+  "browser": "chromium",
+  "isolatedDevelopmentSchema": true,
+  "publicHostnameIntercepted": true,
+  "liveCdnForSuccessCases": true,
+  "results": [
+    {
+      "name": "cdn-idle",
+      "width": 390,
+      "height": 844,
+      "mode": "idle",
+      "passed": true,
+      "cdnRequests": 7,
+      "originRequests": 4
+    }
+  ]
+}

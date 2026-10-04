@@ -23,7 +23,7 @@ const security = {
   "Referrer-Policy": "same-origin",
   "X-Frame-Options": "DENY",
   "Content-Security-Policy":
-    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://static.aicoding.ltd; connect-src 'self' https://static.aicoding.ltd; font-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",
 };
 const rates = new Map<string, { n: number; until: number }>();
 function limit(key: string, max: number, period: number) {
@@ -63,7 +63,7 @@ app.setErrorHandler((cause, req, reply) => {
 });
 app.get("/healthz", async () => {
   await pool.query("SELECT 1");
-  return { ok: true, version: "2.6.1", database: "postgresql" };
+  return { ok: true, version: "2.6.2", database: "postgresql" };
 });
 app.get("/api/catalog", async () => ({
   games: registry.catalog(),

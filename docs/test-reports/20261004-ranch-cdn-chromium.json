@@ -1,0 +1,62 @@
+{
+  "browser": "chromium",
+  "isolatedDevelopmentSchema": true,
+  "publicHostnameIntercepted": true,
+  "liveCdnForSuccessCases": true,
+  "results": [
+    {
+      "name": "live-phone",
+      "width": 390,
+      "height": 844,
+      "mode": "live",
+      "passed": true,
+      "cdnRequests": 7,
+      "originRequests": 3
+    },
+    {
+      "name": "live-landscape",
+      "width": 844,
+      "height": 390,
+      "mode": "live",
+      "passed": true,
+      "cdnRequests": 7,
+      "originRequests": 3
+    },
+    {
+      "name": "live-desktop",
+      "width": 1440,
+      "height": 1000,
+      "mode": "live",
+      "passed": true,
+      "cdnRequests": 7,
+      "originRequests": 3
+    },
+    {
+      "name": "cdn-unavailable",
+      "width": 390,
+      "height": 844,
+      "mode": "abort",
+      "passed": true,
+      "cdnRequests": 7,
+      "originRequests": 10
+    },
+    {
+      "name": "cdn-corrupt",
+      "width": 1440,
+      "height": 1000,
+      "mode": "corrupt",
+      "passed": true,
+      "cdnRequests": 7,
+      "originRequests": 10
+    },
+    {
+      "name": "svg-error",
+      "width": 390,
+      "height": 844,
+      "mode": "svg",
+      "passed": true,
+      "cdnRequests": 7,
+      "originRequests": 4
+    }
+  ]
+}

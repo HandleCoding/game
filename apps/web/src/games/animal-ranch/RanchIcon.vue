@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { useId } from "vue";
+import { useRanchAssetSource, useOriginAsset } from "./assets";
+const atlasPath = "/ranch/ui/ranch-tools-v1.webp";
+const source = useRanchAssetSource(() => atlasPath);
 defineProps<{ index: number }>();
 const clipId = "ranch-tool-" + useId();
 </script>
@@ -16,7 +19,9 @@ const clipId = "ranch-tool-" + useId();
       </clipPath>
     </defs>
     <image
-      href="/ranch/ui/ranch-tools-v1.webp"
+      crossorigin="anonymous"
+      :href="source"
+      @error="useOriginAsset(atlasPath)"
       :x="-(index % 3) * 100"
       :y="-Math.floor(index / 3) * 100"
       width="300"

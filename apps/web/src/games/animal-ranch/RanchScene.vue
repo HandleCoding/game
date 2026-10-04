@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import RanchLoading from "./RanchLoading.vue";
+import { ranchAssetUrl, useOriginAsset, rememberRanchAsset } from "./assets";
 import type { RanchAnimalView } from "../../../../../packages/contracts/src/ranch";
 import { spriteLocation, animalExtent } from "./sprites";
 import { softAtlasMetadata } from "./soft-atlas-metadata";
@@ -126,7 +127,7 @@ function getImage(url: string) {
   if (cached) return Promise.resolve(cached);
   const existing = pending.get(url);
   if (existing) return existing;
-  const promise = (async () => {
+  const attempt = async (sourceUrl: string) => {
     const controller = new AbortController();
     let timeout: ReturnType<typeof setTimeout>;
     let rejectAbort: (error: Error) => void;
@@ -146,7 +147,10 @@ function getImage(url: string) {
     arm();
     try {
       const work = (async () => {
-        const response = await fetch(url, { signal: controller.signal });
+        const response = await fetch(sourceUrl, {
+          signal: controller.signal,
+          credentials: "omit",
+        });
         if (!response.ok) throw new Error("资源暂时无法下载");
         arm();
         const length = Number(response.headers.get("Content-Length")) || 0;
@@ -189,6 +193,7 @@ function getImage(url: string) {
         if (controller.signal.aborted || disposed)
           throw new Error("加载已取消");
         if (!img.naturalWidth) throw new Error("Empty image");
+        rememberRanchAsset(url, source);
         loaded.set(url, img);
         updateProgress();
         return img;
@@ -197,6 +202,17 @@ function getImage(url: string) {
     } finally {
       clearTimeout(timeout!);
       cancelLoads.delete(cancel);
+    }
+  };
+  const promise = (async () => {
+    const source = ranchAssetUrl(url);
+    try {
+      return await attempt(source);
+    } catch (error) {
+      if (disposed || source === url) throw error;
+      // Retain byte progress, decoding, idle timeout and the two-worker limit on fallback.
+      useOriginAsset(url);
+      return await attempt(url);
     }
   })().finally(() => pending.delete(url));
   pending.set(url, promise);

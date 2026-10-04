@@ -55,3 +55,9 @@ schema v3 的 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger 与
 离线/缺粮/访客提示在左上资料牌内，禁止再浮放底部覆盖animal-picker。横屏菜单起点104px，UI验收含提示/资料牌/菜单几何遮挡检查；双指夹具须先确认命中Canvas，不要把HUD上的浏览器缩放算作游戏缩放。当前2.6.1普通代码发布未重置，报告20261004-ranch-hud-overlap.md。
 
 animal-ranch.md末尾为3个子Agent综合玩法调研草案，尚未实施。后续互动/委托/装饰/加工奖励要守数值边界，跨玩家互助需多档案事务；不要未经授权一次性实现所有候选。
+
+
+## 牧场 CDN 接入（2.6.2）
+先读docs/ranch-cdn.md。正式hostname game.aicoding.ltd的公开牧场图片走static.aicoding.ltd，开发同源；API/登录/SSE仍走主站。assets.ts集中路径和回退，CSP只明确允许该CDN的图片/连接。
+SVG外部图片请求200不代表已绘制；必须使用已解码data URL并复用场景缓存，商店其余图集两路排队。不要恢复直接远程SVG href；保留单帧clipPath。CDN网络/CORS/解码/45秒闲置异常回源；退出场景不额外发起回退。
+scripts/ranch-cdn-qa.mjs只在开发隔离schema运行，虚拟正式hostname拦截到3221，成功图集走真实CDN，主站API绝不落到正式库。两种浏览器、实际像素检查和截图审阅必需，CDN_IDLE=1验证45秒无响应回退。控制台证书/免费额度以当前账户和官方说明为准，不承诺永久免费。

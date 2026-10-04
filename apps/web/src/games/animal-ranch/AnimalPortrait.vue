@@ -2,6 +2,7 @@
 import { computed, useId } from "vue";
 import type { RanchSpecies } from "../../../../../packages/contracts/src/ranch";
 import { spriteLocation } from "./sprites";
+import { useRanchAssetSource, useOriginAsset } from "./assets";
 import { softAtlasMetadata } from "./soft-atlas-metadata";
 const props = defineProps<{
   species: RanchSpecies;
@@ -21,6 +22,7 @@ const frame = computed(() => {
     viewBox: row.x + " " + row.y + " " + row.width + " " + row.height,
   };
 });
+const source = useRanchAssetSource(() => frame.value.url);
 </script>
 <template>
   <svg
@@ -42,7 +44,9 @@ const frame = computed(() => {
     </defs>
     <!-- The viewport can include letterboxing; clip the atlas itself to one frame. -->
     <image
-      :href="frame.url"
+      crossorigin="anonymous"
+      :href="source"
+      @error="useOriginAsset(frame.url)"
       :width="frame.width"
       :height="frame.height"
       :clip-path="'url(#' + clipId + ')'"
