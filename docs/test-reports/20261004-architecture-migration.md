@@ -6,6 +6,7 @@
 
 - Vue 3 / TypeScript / Vite 与 Node.js / Fastify / TypeScript / PostgreSQL 实际建立并运行于开发环境。
 - npm run typecheck、npm run build 通过。
+- @fastify/static 已升级至 10.1.5，生产依赖 npm audit --omit=dev 为 0 漏洞；升级后重新完成类型检查、编译和全部 14 项测试。
 - 全部 14 项测试通过，0 失败 / 跳过，最近运行约 25.5 秒；详见同名 TAP 日志。
 - 原 10 项规则和真实 HTTP 测试迁至新后端，新增原密码 / 会话 / 快照迁移、多人数 / 版本 / 去重 / 写入失败回滚、长期档案并发事务测试。
 - 私有真实数据快照演练：2 个账号、3 个会话、3 个结果、6 条结果参与关联、1 个活动房间，原字段校验通过；正式切换时仍需取最终最新数据。

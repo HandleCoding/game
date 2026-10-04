@@ -7,3 +7,6 @@ artifacts/
 node_modules/
 dist/
 web-dist/
+
+__pycache__/
+*.pyc

@@ -20,7 +20,7 @@
     "node": ">=22.13"
   },
   "dependencies": {
-    "@fastify/static": "^8",
+    "@fastify/static": "^10.1.5",
     "fastify": "^5",
     "pg": "^8",
     "vue": "^3"

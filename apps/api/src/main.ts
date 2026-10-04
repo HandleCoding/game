@@ -271,7 +271,7 @@ const webRoot = process.env.WEB_ROOT || process.cwd() + "/web-dist";
 await app.register(staticFiles, {
   root: webRoot,
   setHeaders(res, path) {
-    res.setHeader(
+    res.header(
       "Cache-Control",
       path.includes("/assets/")
         ? "public, max-age=31536000, immutable"
