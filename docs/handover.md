@@ -94,3 +94,7 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 ## 2026-10-04 侧边食槽 2.3.1（已上线）
 
 移除中央大食槽，复用背景左侧原设施，增加小木牌“食槽”；实体 / 木牌点击可添粮，手机保留底部入口。原中央 PNG 为历史归档，不再加载。源码 RanchScene.vue，文档 ranch-immersive.md / test-reports/20261004-ranch-side-feeder.md。两种浏览器共10组验收通过，后端规则和 schema 未变。正式目录 /opt/pair-play/releases/v2.3.1-20261004-152536，源提交 5e6691afeeb56b27ba6e83fe0986df56953aa008；已备份并核验原账号 / 存档 / 有效会话，见 20261004-ranch-side-feeder-release.json。
+
+## 2026-10-04 柔和写实动物 2.4.0（开发验收完成）
+
+用户选择 A 柔和写实。36 种独立幼年 / 成年、四帧步态；真实脚底、原比例、物种 / 纵深 / 密度体量、软阴影与错行站位。背景和侧边食槽沿用。素材 / 提示词 ranch-soft-realistic-assets.md，裁切脚本 analyze-soft-ranch-atlas.py，新元数据 soft-atlas-metadata.ts。类型 / 构建 / 两种浏览器 10 组 UI 通过；实际查看截图，见 test-reports/20261004-ranch-soft-realistic.md。后端规则和 schema 不变，未重跑 18 项后端测试。正式发布信息见后续本次发布报告。

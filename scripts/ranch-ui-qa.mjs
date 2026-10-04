@@ -11,7 +11,7 @@ const pool = new pg.Pool({ connectionString: connection }),
   schema = "ui_" + randomBytes(8).toString("hex");
 const engine = process.env.UI_BROWSER || "chromium";
 const base = "http://127.0.0.1:3221",
-  folder = "artifacts/ranch-ui/" + engine;
+  folder = "artifacts/ranch-soft-ui/" + engine;
 await mkdir(folder, { recursive: true });
 await pool.query("CREATE SCHEMA " + schema);
 const server = spawn(process.execPath, ["dist/apps/api/src/main.js"], {
@@ -68,8 +68,10 @@ try {
       });
     const page = await context.newPage(),
       errors = [],
-      resourceActions = [];
+      resourceActions = [],
+      spriteRequests = [];
     page.on("request", (r) => {
+      if (r.url().includes("/ranch/scene/")) spriteRequests.push(r.url());
       if (r.url().endsWith("/games/animal-ranch/actions"))
         resourceActions.push(r.postDataJSON());
     });
@@ -99,6 +101,18 @@ try {
       );
       await page.waitForFunction(
         () => !document.querySelector(".scene-loading"),
+      );
+      assert.equal(
+        await page.getByTestId("ranch-canvas").getAttribute("data-art-style"),
+        "soft-realistic",
+      );
+      assert(
+        spriteRequests.some((u) => u.endsWith("/soft/adult-0.png")),
+        "Adult artwork not loaded",
+      );
+      assert(
+        !spriteRequests.some((u) => u.includes("/scene/animals-")),
+        "Old cartoon atlas still loaded",
       );
       await page.screenshot({
         path: folder + "/" + size.width + "-scene.png",
@@ -193,6 +207,20 @@ try {
       const cards = page.locator(".ranch-shop-animal");
       assert.equal(await cards.count(), 1);
       await cards.getByRole("button", { name: /金币 · 认养/ }).click();
+      await page.waitForFunction(() =>
+        document
+          .querySelector('[data-testid="ranch-canvas"]')
+          .dataset.lifeStages.includes("chicken:baby"),
+      );
+      await page.waitForFunction(() =>
+        performance
+          .getEntriesByType("resource")
+          .some((r) => r.name.endsWith("/soft/baby-0.png")),
+      );
+      assert(
+        spriteRequests.some((u) => u.endsWith("/soft/baby-0.png")),
+        "Baby uses adult artwork instead of independent atlas",
+      );
       await page.getByRole("button", { name: "关闭牧场面板" }).click();
       const scene = await page.getByTestId("ranch-canvas").boundingBox();
       const fitScale = Math.min(scene.width / 1200, scene.height / 800);
@@ -413,6 +441,117 @@ try {
         controls.every((b) => b.width >= 43 && b.height >= 43),
         "Touch controls too small",
       );
+      // Visual-only public-view fixtures in the isolated QA browser, never production data.
+      if (size.width === 390 || size.width === 1440) {
+        const template = await (
+          await context.request.get(base + "/api/games/animal-ranch/me")
+        ).json();
+        let fixture = null;
+        await page.route("**/api/games/animal-ranch/me", async (route) => {
+          if (!fixture) return route.continue();
+          return route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify(fixture),
+          });
+        });
+        const groups = [
+          [
+            "chicken",
+            "rabbit",
+            "dog",
+            "duck",
+            "sheep",
+            "goose",
+            "goat",
+            "cow",
+            "cat",
+          ],
+          [
+            "pig",
+            "parrot",
+            "turtle",
+            "horse",
+            "frog",
+            "peacock",
+            "fox",
+            "alpaca",
+            "hedgehog",
+          ],
+          [
+            "deer",
+            "owl",
+            "penguin",
+            "snake",
+            "buffalo",
+            "moose",
+            "zebra",
+            "bear",
+            "monkey",
+          ],
+          [
+            "gorilla",
+            "giraffe",
+            "rhino",
+            "hippo",
+            "crocodile",
+            "lion",
+            "elephant",
+            "panda",
+            "sloth",
+          ],
+        ];
+        async function showArt(entries, name) {
+          fixture = structuredClone(template);
+          fixture.state.capacity = 16;
+          fixture.state.animals = entries.map(([species, baby], index) => ({
+            ...template.state.animals[0],
+            id: "art_" + index,
+            species,
+            name: template.state.species.find((s) => s.id === species).name,
+            baby,
+            stored: 0,
+            hungry: false,
+          }));
+          await page.reload();
+          await page.getByTestId("ranch-canvas").waitFor();
+          await page.waitForFunction(
+            () => !document.querySelector(".scene-loading"),
+          );
+          assert.equal(
+            await page
+              .getByTestId("ranch-canvas")
+              .getAttribute("data-life-stages"),
+            entries.map(([s, b]) => s + ":" + (b ? "baby" : "adult")).join(","),
+          );
+          await page.getByRole("button", { name: "暂停动物动画" }).click();
+          await page.screenshot({
+            path: folder + "/" + size.width + "-art-" + name + ".png",
+          });
+          await page.getByRole("button", { name: /查看/ }).count(); // The animal picker remains available.
+        }
+        for (let group = 0; group < 4; group++)
+          for (const baby of [false, true]) {
+            await showArt(
+              groups[group].map((s) => [s, baby]),
+              (baby ? "baby" : "adult") + "-" + group,
+            );
+          }
+        await showArt(
+          [
+            ["chicken", false],
+            ["chicken", true],
+            ["rabbit", false],
+            ["rabbit", true],
+            ["goat", false],
+            ["goat", true],
+            ["cow", false],
+            ["cow", true],
+          ],
+          "mixed",
+        );
+        await page.unroute("**/api/games/animal-ranch/me");
+      }
       await page
         .getByRole("button", { name: "返回游戏大厅", exact: true })
         .click();
@@ -437,6 +576,11 @@ try {
           "side-label-away-from-center",
           ...(size.width === 390
             ? ["visitor-private-resource-hiding", "visit-modal-close"]
+            : []),
+          "soft-realistic-atlas",
+          "independent-baby-adult-artwork",
+          ...([390, 1440].includes(size.width)
+            ? ["all-36-species-both-stage-render-fixtures"]
             : []),
           "animation",
           "pause",
@@ -474,7 +618,7 @@ try {
     await context.close();
   }
   await writeFile(
-    "docs/test-reports/20261004-ranch-side-feeder-ui-" + engine + ".json",
+    "docs/test-reports/20261004-ranch-soft-realistic-ui-" + engine + ".json",
     JSON.stringify(
       {
         browser: engine,

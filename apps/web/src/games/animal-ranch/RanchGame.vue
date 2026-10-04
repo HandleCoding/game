@@ -489,7 +489,7 @@ watch(panel, async (value) => {
             <span class="tag">{{ selected.baby ? "幼崽" : "成年" }}</span>
           </div>
           <div class="ranch-detail-portrait">
-            <AnimalPortrait :species="selected.species" :name="selected.name" />
+            <AnimalPortrait :species="selected.species" :name="selected.name" :baby="selected.baby" />
           </div>
           <strong>{{ animalStatus(selected) }}</strong>
           <p v-if="!selected.hungry && selected.stored < selected.capacity">

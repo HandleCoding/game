@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import type { RanchAnimalView } from "../../../../../packages/contracts/src/ranch";
-import { spriteLocation } from "./sprites";
-import { atlasMetadata } from "./atlas-metadata";
+import { spriteLocation, animalExtent } from "./sprites";
+import { softAtlasMetadata } from "./soft-atlas-metadata";
 const props = defineProps<{
   animals: RanchAnimalView[];
   chosen: string | null;
@@ -71,8 +71,14 @@ function sync() {
   props.animals.forEach((a, i) => {
     if (!walkers.has(a.id)) {
       const seed = randomSeed(a.id);
-      const x = 510 + (i % 4) * 66 + (seed % 18),
-        y = 360 + Math.floor(i / 4) * 75;
+      const columns = Math.min(4, Math.ceil(Math.sqrt(props.animals.length)));
+      const row = Math.floor(i / columns);
+      const x =
+          600 +
+          ((i % columns) - (columns - 1) / 2) * 150 +
+          (row % 2 ? 30 : -12) +
+          (seed % 10),
+        y = 365 + row * 90;
       walkers.set(a.id, {
         id: a.id,
         x,
@@ -181,6 +187,52 @@ function tag(
   ctx.textAlign = "center";
   ctx.fillText(text, x, y + font * 0.36);
 }
+/** Native aspect and measured foot baseline, with species/depth scale. */
+function bodyGeometry(a: RanchAnimalView, w: Walker, col = 0) {
+  const location = spriteLocation(a.species, a.baby),
+    meta = softAtlasMetadata[location.group],
+    row = meta.rows[location.row];
+  const density = Math.min(1, Math.sqrt(7 / Math.max(1, props.animals.length)));
+  const extent =
+    animalExtent[a.species] *
+    (a.baby ? 0.62 : 1) *
+    (0.83 + (w.y - 330) / 1450) *
+    density;
+  const ratio = extent / Math.max(row.width, row.height);
+  return {
+    location,
+    meta,
+    row,
+    width: row.width * ratio,
+    height: row.height * ratio,
+    ground: (row.ground[col] - row.y) * ratio,
+  };
+}
+function groundShadow(ctx: CanvasRenderingContext2D, bodyWidth: number) {
+  const radius = Math.max(14, bodyWidth * 0.42);
+  ctx.save();
+  ctx.translate(radius * 0.23, 1);
+  ctx.scale(1, 0.28);
+  const shade = ctx.createRadialGradient(0, 0, 1, 0, 0, radius);
+  shade.addColorStop(0, "rgba(57,72,29,.25)");
+  shade.addColorStop(0.5, "rgba(57,72,29,.13)");
+  shade.addColorStop(1, "rgba(57,72,29,0)");
+  ctx.fillStyle = shade;
+  ctx.fillRect(-radius, -radius, radius * 2, radius * 2);
+  ctx.restore();
+  ctx.fillStyle = "rgba(54,65,27,.14)";
+  ctx.beginPath();
+  ctx.ellipse(
+    0,
+    0,
+    radius * 0.55,
+    Math.max(2, radius * 0.07),
+    0,
+    0,
+    Math.PI * 2,
+  );
+  ctx.fill();
+}
 function draw(now: number) {
   if (disposed) return;
   frame = requestAnimationFrame(draw);
@@ -238,48 +290,50 @@ function draw(now: number) {
   for (const a of sorted) {
     const w = walkers.get(a.id);
     if (!w) continue;
-    const location = spriteLocation(a.species),
-      sheet = sheets[location.group];
+    const col =
+      !frozen.value && w.state === "walk"
+        ? Math.floor(elapsed * 6 + w.phase) % 4
+        : 0;
+    const body = bodyGeometry(a, w, col),
+      sheet = sheets[body.location.group];
     if (!sheet) continue;
-    const size = (a.baby ? 90 : 115) * (w.y / 1200 + 0.67),
-      row = atlasMetadata[location.group].rows[location.row],
-      col =
-        !frozen.value && w.state === "walk"
-          ? Math.floor(elapsed * 7 + w.phase) % 4
-          : 0;
+    const { row } = body;
     ctx.save();
     ctx.translate(w.x, w.y);
-    ctx.fillStyle = "rgba(58,74,28,.25)";
-    ctx.beginPath();
-    ctx.ellipse(0, -4, size * 0.33, size * 0.08, 0, 0, Math.PI * 2);
-    ctx.fill();
+    groundShadow(ctx, body.width);
     if (a.id === props.chosen) {
       ctx.strokeStyle = "#fff9b4";
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.ellipse(0, -4, size * 0.42, size * 0.12, 0, 0, Math.PI * 2);
+      ctx.ellipse(
+        0,
+        0,
+        Math.max(18, body.width * 0.48),
+        Math.max(6, body.width * 0.11),
+        0,
+        0,
+        Math.PI * 2,
+      );
       ctx.stroke();
     }
     ctx.save();
     ctx.scale(w.dir, 1);
     const bob = frozen.value
       ? 0
-      : Math.sin(elapsed * (w.state === "walk" ? 14 : 2.4) + w.phase) *
-        (w.state === "walk" ? 2 : 1);
-    if (w.state === "eat" && !frozen.value) {
-      ctx.translate(0, 4);
-      ctx.rotate(Math.sin(elapsed * 4) * 0.08);
-    }
+      : Math.sin(elapsed * (w.state === "walk" ? 12 : 2.1) + w.phase) *
+        (w.state === "walk" ? 0.6 : 0.25);
+    if (w.state === "eat" && !frozen.value)
+      ctx.rotate(Math.sin(elapsed * 3 + w.phase) * 0.018);
     ctx.drawImage(
       sheet,
-      (col * sheet.width) / 4,
-      row[0],
-      sheet.width / 4,
-      row[1] - row[0],
-      -size / 2,
-      -size + 8 + bob,
-      size,
-      size,
+      (col * body.meta.width) / 4 + row.x,
+      row.y,
+      row.width,
+      row.height,
+      -body.width / 2,
+      -body.ground + bob,
+      body.width,
+      body.height,
     );
     ctx.restore();
     if (a.stored > 0)
@@ -287,10 +341,10 @@ function draw(now: number) {
         ctx,
         "可收获 " + a.stored + (a.hungry ? " · 缺粮" : ""),
         0,
-        -size - 10,
+        -body.ground - 13,
         "#458443",
       );
-    else if (a.hungry) tag(ctx, "需要喂食", 0, -size - 10, "#c97735");
+    else if (a.hungry) tag(ctx, "需要喂食", 0, -body.ground - 13, "#c97735");
     if (a.id === props.chosen) {
       ctx.font = "bold 16px system-ui";
       ctx.textAlign = "center";
@@ -400,14 +454,17 @@ function up(e: PointerEvent) {
   if (e.type !== "pointercancel" && !moved && pointers.size === 0) {
     const x = (p.x - offsetX) / scale,
       y = (p.y - offsetY) / scale;
-    const a = [...props.animals].reverse().find((a) => {
-      const w = walkers.get(a.id)!;
-      return (
-        Math.abs(x - w.x) < Math.max(48, 24 / scale) &&
-        y > w.y - 120 &&
-        y < w.y + 25
-      );
-    });
+    const a = [...props.animals]
+      .sort((a, b) => (walkers.get(b.id)?.y || 0) - (walkers.get(a.id)?.y || 0))
+      .find((a) => {
+        const w = walkers.get(a.id)!;
+        const body = bodyGeometry(a, w);
+        return (
+          Math.abs(x - w.x) < Math.max(body.width / 2, 22 / scale) &&
+          y > w.y - Math.max(body.ground, 44 / scale) &&
+          y < w.y + Math.max(10, 8 / scale)
+        );
+      });
     if (props.owner && x > 45 && x < 145 && y > 310 && y < 430)
       pendingTap = { type: "feed" };
     else if (a) pendingTap = { type: "select", id: a.id };
@@ -435,19 +492,29 @@ function reducedChange() {
 const sheetLoads = new Map<number, Promise<void>>();
 async function ensureSheets() {
   await Promise.all(
-    [...new Set(props.animals.map((a) => spriteLocation(a.species).group))].map(
-      async (i) => {
-        if (sheets[i]) return;
-        if (!sheetLoads.has(i))
-          sheetLoads.set(
-            i,
-            getImage("/ranch/scene/animals-" + i + ".png").then((img) => {
-              sheets[i] = img;
-            }),
-          );
-        await sheetLoads.get(i);
-      },
-    ),
+    [
+      ...new Set(
+        props.animals.map((a) => spriteLocation(a.species, a.baby).group),
+      ),
+    ].map(async (i) => {
+      if (sheets[i]) return;
+      if (!sheetLoads.has(i))
+        sheetLoads.set(
+          i,
+          getImage(
+            i === 8
+              ? "/ranch/scene/soft/rabbit-stages.png"
+              : "/ranch/scene/soft/" +
+                  (i >= 4 ? "baby" : "adult") +
+                  "-" +
+                  (i % 4) +
+                  ".png",
+          ).then((img) => {
+            sheets[i] = img;
+          }),
+        );
+      await sheetLoads.get(i);
+    }),
   );
 }
 watch(
@@ -512,6 +579,12 @@ onUnmounted(() => {
       ref="canvas"
       class="pasture-canvas"
       data-testid="ranch-canvas"
+      data-art-style="soft-realistic"
+      :data-life-stages="
+        animals
+          .map((a) => a.species + ':' + (a.baby ? 'baby' : 'adult'))
+          .join(',')
+      "
       aria-label="牧场场景，可点击动物查看，拖动平移，双指缩放"
       @pointerdown="down"
       @pointermove="move"

@@ -2,17 +2,21 @@
 import { computed } from "vue";
 import type { RanchSpecies } from "../../../../../packages/contracts/src/ranch";
 import { spriteLocation } from "./sprites";
-import { atlasMetadata } from "./atlas-metadata";
-const props = defineProps<{ species: RanchSpecies; name?: string }>();
+import { softAtlasMetadata } from "./soft-atlas-metadata";
+const props = defineProps<{
+  species: RanchSpecies;
+  name?: string;
+  baby?: boolean;
+}>();
 const frame = computed(() => {
-  const s = spriteLocation(props.species),
-    m = atlasMetadata[s.group],
+  const s = spriteLocation(props.species, props.baby),
+    m = softAtlasMetadata[s.group],
     row = m.rows[s.row];
   return {
     url: s.url,
     width: m.width,
     height: m.height,
-    viewBox: "0 " + row[0] + " " + m.width / 4 + " " + (row[1] - row[0]),
+    viewBox: row.x + " " + row.y + " " + row.width + " " + row.height,
   };
 });
 </script>
