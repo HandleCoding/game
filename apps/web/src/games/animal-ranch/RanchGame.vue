@@ -19,12 +19,18 @@ const profile = ref<RanchProfile | null>(null),
   neighbors = ref<RanchNeighbor[]>([]),
   visiting = ref<string | null>(null);
 const panel = ref<
-    "animals" | "store" | "neighbors" | "feed" | "detail" | "journal" | null
+    | "animals"
+    | "store"
+    | "neighbors"
+    | "feed"
+    | "detail"
+    | "journal"
+    | "help"
+    | null
   >(null),
   busy = ref(false),
   loading = ref(false),
   error = ref(""),
-  help = ref(false),
   chosen = ref<string | null>(null),
   pop = ref("");
 const shopCategory = ref("all"),
@@ -103,6 +109,7 @@ async function list() {
 }
 async function visit(id: string | null) {
   if (busy.value) return;
+  panel.value = null;
   visiting.value = id;
   chosen.value = null;
   profile.value = null;
@@ -224,9 +231,36 @@ onUnmounted(() => {
 const panelDialog = ref<HTMLDialogElement | null>(null);
 const sceneEffect = ref<{ type: string; id: number } | null>(null);
 let effectSequence = 0;
+const gameRoot = ref<HTMLElement | null>(null);
+const theme = ref(document.documentElement.dataset.theme || "light");
+const canFullscreen = document.fullscreenEnabled;
+function syncTheme() {
+  theme.value = document.documentElement.dataset.theme || "light";
+}
+function toggleTheme() {
+  window.playroomTheme.toggle();
+}
+async function toggleFullscreen() {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  } catch {
+    notify("当前浏览器暂不支持全屏，已使用铺满页面的游戏模式");
+  }
+}
+function returnLobby() {
+  if (document.fullscreenElement)
+    void document.exitFullscreen().catch(() => {});
+  closePersistent();
+}
+onMounted(() => window.addEventListener("playroom-theme-change", syncTheme));
+onUnmounted(() =>
+  window.removeEventListener("playroom-theme-change", syncTheme),
+);
 const panelTitle = computed(
   () =>
     ({
+      help: "牧场玩法说明",
       animals: "动物商店",
       store: "我的仓库",
       neighbors: "串门看看",
@@ -246,96 +280,128 @@ watch(panel, async (value) => {
 });
 </script>
 <template>
-  <main class="shell ranch-page scene-page">
-    <div class="ranch-heading scene-heading">
-      <div>
-        <button class="quiet small" @click="closePersistent">← 游戏大厅</button>
-        <h1>
-          {{
-            visiting ? (profile?.ownerName || "玩家") + "的牧场" : "一起牧场"
-          }}
-        </h1>
-        <p>一群小伙伴，一块属于你的快乐草地。</p>
-      </div>
-      <div class="ranch-heading-actions">
-        <button class="quiet small" @click="help = true">怎么玩</button
-        ><button v-if="visiting" class="ranch-primary" @click="visit(null)">
-          回我的牧场
-        </button>
-      </div>
-    </div>
-    <p v-if="error" class="error" role="alert">
-      {{ error }}
-      <button class="quiet small" :disabled="busy || loading" @click="load">
-        重试
-      </button>
-    </p>
-    <div v-if="!farm" class="card ranch-loading" role="status">
-      {{ loading ? "正在打开牧场…" : "牧场暂时未加载" }}
+  <main
+    ref="gameRoot"
+    class="ranch-page scene-page immersive-ranch"
+    aria-label="一起牧场游戏"
+  >
+    <div v-if="!farm" class="ranch-loading" role="status">
+      <span>🌿</span>{{ loading ? "正在走进你的牧场…" : "牧场暂时未加载" }}
+      <button class="quiet small" @click="returnLobby">← 游戏大厅</button>
     </div>
     <template v-else>
-      <div class="ranch-hud">
-        <div class="hud-level">
-          <span>Lv. {{ farm.level }} 牧场主</span
-          ><progress
+      <RanchScene
+        :animals="farm.animals"
+        :chosen="chosen"
+        :owner="owner"
+        :feed="owner ? farm.feed : undefined"
+        :hungry="farm.hungry"
+        :effect="sceneEffect"
+        @select="selectAnimal"
+        @feed="panel = 'feed'"
+        @shop="panel = 'animals'"
+      />
+      <header class="game-profile">
+        <div class="ranch-avatar" aria-hidden="true">🐾</div>
+        <div class="profile-text">
+          <h1>
+            {{
+              visiting
+                ? (profile?.ownerName || "玩家") + "的牧场"
+                : state?.me.name + "的牧场"
+            }}
+          </h1>
+          <span
+            >Lv. {{ farm.level }}
+            <small
+              >{{ farm.animals.length }} / {{ farm.capacity }} 伙伴</small
+            ></span
+          >
+          <progress
             v-if="owner"
             :value="farm.xp"
             :max="farm.nextLevelXp"
             aria-label="牧场经验"
           ></progress>
         </div>
-        <span v-if="owner" class="hud-coin">● {{ farm.coins }} 金币</span
-        ><button
+      </header>
+      <div class="game-wallet">
+        <span v-if="owner" class="wallet-coins" aria-label="我的金币"
+          >🪙 {{ farm.coins }}</span
+        >
+        <span v-else class="visitor-label">参观中</span>
+        <button
           v-if="owner"
+          class="wallet-feed"
           :class="{ hungry: farm.hungry }"
           @click="panel = 'feed'"
         >
-          食槽 {{ farm.feed }} 份</button
-        ><span>{{ farm.animals.length }} / {{ farm.capacity }} 伙伴</span>
+          🌾 {{ farm.feed }} 份
+        </button>
+        <button v-else class="wallet-feed" @click="visit(null)">
+          回我的牧场
+        </button>
       </div>
-      <RanchScene
-        :animals="farm.animals"
-        :chosen="chosen"
-        :owner="owner"
-        :effect="sceneEffect"
-        @select="selectAnimal"
-        @feed="panel = 'feed'"
-        @shop="panel = 'animals'"
-      />
+      <nav class="game-side-actions" aria-label="游戏菜单">
+        <button aria-label="返回游戏大厅" @click="returnLobby">
+          <span>↩</span><small>大厅</small>
+        </button>
+        <button
+          :aria-label="theme === 'light' ? '切换到夜间模式' : '切换到日间模式'"
+          @click="toggleTheme"
+        >
+          <span>{{ theme === "light" ? "☾" : "☀" }}</span
+          ><small>{{ theme === "light" ? "夜间" : "日间" }}</small>
+        </button>
+        <button aria-label="牧场玩法说明" @click="panel = 'help'">
+          <span>?</span><small>玩法</small>
+        </button>
+        <button
+          v-if="canFullscreen"
+          aria-label="切换游戏全屏"
+          @click="toggleFullscreen"
+        >
+          <span>⛶</span><small>全屏</small>
+        </button>
+      </nav>
       <nav class="ranch-toolbelt" aria-label="牧场工具栏">
         <button
           v-if="owner"
           :disabled="busy || loading || !harvestCount"
           @click="action('harvest')"
         >
-          <span>🧺</span>一键收获 <small>{{ harvestCount }} 份</small>
+          <span>🧺</span>一键收获<small
+            class="tool-count"
+            v-if="harvestCount"
+            >{{ harvestCount }}</small
+          >
         </button>
-        <button @click="panel = 'animals'">
-          <span>🐣</span>动物商店<small>36 种伙伴</small>
-        </button>
+        <button @click="panel = 'animals'"><span>🐣</span>动物商店</button>
         <button v-if="owner" @click="panel = 'feed'">
-          <span>🌾</span>添饲料<small>{{
-            farm.hungry ? "伙伴饿了" : "自动喂养"
-          }}</small>
+          <span>🌾</span>添饲料<small
+            class="tool-count alert-count"
+            v-if="farm.hungry"
+            >!</small
+          >
         </button>
         <button v-if="owner" @click="panel = 'store'">
-          <span>📦</span>我的仓库<small>{{ stockValue }} 金币估值</small>
+          <span>📦</span>我的仓库<small class="tool-count" v-if="stockValue"
+            >●</small
+          >
         </button>
-        <button @click="panel = 'neighbors'">
-          <span>🏡</span>去串门<small>看看其他牧场</small>
-        </button>
+        <button @click="panel = 'neighbors'"><span>🏡</span>去串门</button>
         <button v-if="owner" @click="panel = 'journal'">
-          <span>🔨</span>扩建 / 日记<small>{{ farm.capacity }} 个位置</small>
+          <span>🔨</span>扩建 / 日记
         </button>
       </nav>
-      <p class="ranch-footnote">
-        {{
-          owner
-            ? "饲料充足，关掉网页也会继续成长。"
-            : "参观模式 · 可以看动物，不能操作他人的资源。"
-        }}
-      </p>
+      <span class="game-offline-note">{{
+        owner ? "离线也会成长 · 缺粮暂停" : "只读参观 · 动物状态实时刷新"
+      }}</span>
     </template>
+    <div v-if="error" class="game-error" role="alert">
+      {{ error }}
+      <button :disabled="busy || loading" @click="load">重试</button>
+    </div>
   </main>
   <Teleport to="body">
     <dialog
@@ -361,6 +427,21 @@ watch(panel, async (value) => {
         </button>
       </div>
       <p v-if="error" role="alert" class="error">{{ error }}</p>
+      <section v-if="panel === 'help'" class="ranch-help">
+        <h3>一群小伙伴，一块快乐草地</h3>
+        <p>
+          点动物或头顶状态查看详情；“可收获”表示产物已准备好。中央木食槽可以点击添粮，动物会过去吃。
+        </p>
+        <p>
+          收获 → 仓库出售 → 认养幼崽 → 喂养成长。每只动物每分钟吃 1
+          份，缺粮暂停、不死亡，最多存 3 轮产物。
+        </p>
+        <p>
+          36
+          种伙伴按等级解锁，多设备共用一份存档。拖动场景、双指缩放，也可以用右侧按钮查看全景。
+        </p>
+        <p>“一起牧场”在离线时也继续成长，其他玩家的牧场可以只读参观。</p>
+      </section>
       <section v-if="panel === 'feed' && owner" class="card ranch-feed">
         <div class="section-label">
           <h2>食槽</h2>
@@ -614,26 +695,6 @@ watch(panel, async (value) => {
         </section>
       </div>
     </dialog>
-    <div v-if="help" class="modal-backdrop" @click.self="help = false">
-      <section
-        class="card modal-card"
-        role="dialog"
-        aria-modal="true"
-        aria-label="牧场玩法说明"
-      >
-        <h2>欢迎来到一起牧场</h2>
-        <p>点小动物查看成长和收获；点食槽添饲料，点畜舍打开商店。</p>
-        <p>
-          收获 → 在仓库出售 → 认养幼崽 → 喂养成长。每只每分钟吃 1
-          份，缺粮暂停、不死亡，最多存 3 轮产物。
-        </p>
-        <p>
-          36
-          种伙伴分等级解锁，所有设备共用同一份存档。手机可以拖动场景、双指缩放；“全景”回到整个牧场。
-        </p>
-        <button class="ranch-primary" @click="help = false">知道啦</button>
-      </section>
-    </div>
   </Teleport>
 </template>
 <style scoped>
@@ -1703,18 +1764,422 @@ progress::-moz-progress-bar {
   }
 }
 
-.ranch-window button{min-height:44px}
-.ranch-window .ranch-shop-filters label{display:flex;align-items:center;min-height:44px;gap:8px}
-:global([data-theme="dark"] .ranch-window .ranch-window-heading){background:#352f26}
-:global([data-theme="dark"] .ranch-window .ranch-window-heading h2){color:#d9e2a8}
+.ranch-window button {
+  min-height: 44px;
+}
+.ranch-window .ranch-shop-filters label {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 8px;
+}
+:global([data-theme="dark"] .ranch-window .ranch-window-heading) {
+  background: #352f26;
+}
+:global([data-theme="dark"] .ranch-window .ranch-window-heading h2) {
+  color: #d9e2a8;
+}
 :global([data-theme="dark"] .ranch-window .ranch-shop-animal),
-:global([data-theme="dark"] .ranch-window .ranch-product){background:#473e30;border-color:#8c7653;color:#f6e8c7}
-:global([data-theme="dark"] .ranch-window input){background:#473e30;color:#f6e8c7;border-color:#8c7653}
+:global([data-theme="dark"] .ranch-window .ranch-product) {
+  background: #473e30;
+  border-color: #8c7653;
+  color: #f6e8c7;
+}
+:global([data-theme="dark"] .ranch-window input) {
+  background: #473e30;
+  color: #f6e8c7;
+  border-color: #8c7653;
+}
 :global([data-theme="dark"] .ranch-window p),
 :global([data-theme="dark"] .ranch-window small),
-:global([data-theme="dark"] .ranch-window .muted){color:#dccba9}
-:global([data-theme="dark"] .ranch-window button.quiet){color:#f6e8c7}
-:global([data-theme="dark"] .ranch-window .ranch-shop-animal h3){color:#d9e2a8}
-:global([data-theme="dark"] .ranch-window .ranch-shop-lock){background:#5d5038;color:#f0ddae}
-:global([data-theme="dark"] .ranch-window .ranch-shop-filters button){background:#574931;color:#f0ddae;border-color:#8c7653}
+:global([data-theme="dark"] .ranch-window .muted) {
+  color: #dccba9;
+}
+:global([data-theme="dark"] .ranch-window button.quiet) {
+  color: #f6e8c7;
+}
+:global([data-theme="dark"] .ranch-window .ranch-shop-animal h3) {
+  color: #d9e2a8;
+}
+:global([data-theme="dark"] .ranch-window .ranch-shop-lock) {
+  background: #5d5038;
+  color: #f0ddae;
+}
+:global([data-theme="dark"] .ranch-window .ranch-shop-filters button) {
+  background: #574931;
+  color: #f0ddae;
+  border-color: #8c7653;
+}
+
+/* The game owns the viewport; the scene is the screen, every control floats over it. */
+.immersive-ranch {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #b9daa2;
+  --ranch-ink: #544328;
+  --ranch-button: #d6e58f;
+  --top-safe: max(12px, env(safe-area-inset-top));
+  --bottom-safe: max(10px, env(safe-area-inset-bottom));
+}
+.game-profile {
+  position: absolute;
+  top: var(--top-safe);
+  left: max(12px, env(safe-area-inset-left));
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 2px solid #b28555;
+  border-radius: 40px 18px 18px 40px;
+  background: linear-gradient(#eac79be8, #cb9d6ee8);
+  padding: 7px 12px 7px 7px;
+  color: #fff7da;
+  box-shadow:
+    0 4px 0 #85613855,
+    inset 0 1px 0 #fff9;
+  max-width: calc(100% - 148px);
+  pointer-events: none;
+}
+.ranch-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 28px;
+  background: linear-gradient(#faffd9, #d1e596);
+  border: 3px solid #f7efc0;
+}
+.profile-text {
+  min-width: 0;
+}
+.game-profile h1 {
+  margin: 0 0 5px;
+  font-size: 16px;
+  color: #fff9e4;
+  text-shadow: 0 1px 2px #795732;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0;
+}
+.game-profile span {
+  display: block;
+  font-weight: 800;
+  font-size: 13px;
+}
+.game-profile small {
+  margin-left: 8px;
+  font-size: 11px;
+  color: #fff8df;
+  font-weight: 500;
+}
+.game-profile progress {
+  display: block;
+  margin-top: 5px;
+  height: 5px;
+  background: #81683f70;
+  min-width: 84px;
+}
+.game-wallet {
+  position: absolute;
+  right: max(12px, env(safe-area-inset-right));
+  top: var(--top-safe);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  color: #72522b;
+  font-size: 14px;
+  font-weight: 800;
+}
+.wallet-coins,
+.visitor-label {
+  padding: 7px 14px;
+  border: 2px solid #ddbd7e;
+  border-radius: 30px;
+  background: #fff7dae8;
+  text-align: center;
+}
+.game-wallet .wallet-feed {
+  background: #edf5cbe8;
+  color: #4e6b31;
+  border: 2px solid #a6bd71;
+  min-height: 44px;
+  border-radius: 26px;
+  padding: 4px 12px;
+  font-size: 12px;
+}
+.game-wallet .hungry {
+  color: #94522c;
+  background: #ffe1afe8;
+  border-color: #d69955;
+}
+.game-side-actions {
+  position: absolute;
+  top: calc(var(--top-safe) + 96px);
+  left: max(12px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.game-side-actions button {
+  width: 50px;
+  min-height: 50px;
+  padding: 4px 0;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(#e5bd8dea, #bd8b5ce8);
+  border: 2px solid #ad7a46;
+  color: #fff6d4;
+  box-shadow: 0 3px 0 #73553550;
+  text-shadow: 0 1px #765530;
+}
+.game-side-actions span {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.05;
+}
+.game-side-actions small {
+  color: #fff9e4;
+  font-size: 10px;
+  margin-top: 2px;
+}
+.immersive-ranch .ranch-toolbelt {
+  position: absolute;
+  bottom: var(--bottom-safe);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(
+    640px,
+    calc(100% - 20px - env(safe-area-inset-left) - env(safe-area-inset-right))
+  );
+  margin: 0;
+  padding: 0;
+  gap: 8px;
+  display: flex;
+  justify-content: center;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+.immersive-ranch .ranch-toolbelt button {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 85px;
+  padding: 4px 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: #fffbea;
+  font-size: 13px;
+  gap: 4px;
+  text-shadow:
+    0 2px 2px #6c5429,
+    1px 0 1px #6c5429,
+    -1px 0 1px #6c5429;
+  border-radius: 18px;
+}
+.immersive-ranch .ranch-toolbelt button > span {
+  width: 64px;
+  height: 64px;
+  max-width: 100%;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f6d29be8, #ba8254eb);
+  border: 3px solid #d7a064;
+  box-shadow:
+    0 4px 0 #8f643bd9,
+    inset 0 2px 3px #fff9;
+  display: grid;
+  place-items: center;
+  font-size: 31px;
+  box-sizing: border-box;
+  text-shadow: none;
+}
+.immersive-ranch .ranch-toolbelt button:hover:not(:disabled) {
+  background: #fff2;
+  transform: none;
+}
+.immersive-ranch .ranch-toolbelt button:active:not(:disabled) > span {
+  transform: translateY(2px);
+}
+.immersive-ranch .ranch-toolbelt button:disabled {
+  opacity: 0.65;
+}
+.immersive-ranch .ranch-toolbelt .tool-count {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  background: #fff6d6;
+  color: #6c512f;
+  padding: 2px 6px;
+  font-size: 11px;
+  min-width: 17px;
+  border: 1px solid #a77b41;
+  border-radius: 20px;
+  text-shadow: none;
+}
+.immersive-ranch .ranch-toolbelt .alert-count {
+  background: #ed8651;
+  color: #fff;
+}
+.game-offline-note {
+  position: absolute;
+  bottom: calc(var(--bottom-safe) + 96px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #edf4d3b3;
+  color: #526431;
+  border-radius: 15px;
+  padding: 3px 12px;
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.game-error {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--top-safe) + 86px);
+  transform: translateX(-50%);
+  z-index: 10;
+  background: #fff0ddea;
+  color: #95492d;
+  padding: 8px 12px;
+  border-radius: 15px;
+  max-width: 75%;
+  font-size: 12px;
+}
+.game-error button {
+  min-height: 44px;
+  color: inherit;
+  padding: 3px 10px;
+}
+.immersive-ranch .ranch-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: linear-gradient(#b8ddea, #d3e9ad);
+  color: #567036;
+}
+.immersive-ranch .ranch-loading > span {
+  font-size: 44px;
+}
+@media (max-width: 640px) {
+  .game-profile {
+    max-width: calc(100% - 132px);
+    gap: 6px;
+    padding: 6px 9px 6px 6px;
+  }
+  .ranch-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+    border-width: 2px;
+  }
+  .game-profile h1 {
+    font-size: 13px;
+  }
+  .game-profile span {
+    font-size: 11px;
+  }
+  .game-profile small {
+    display: none;
+  }
+  .game-profile progress {
+    min-width: 60px;
+  }
+  .game-wallet {
+    font-size: 12px;
+    gap: 4px;
+  }
+  .wallet-coins {
+    padding: 5px 10px;
+  }
+  .game-wallet .wallet-feed {
+    padding: 3px 8px;
+  }
+  .game-side-actions {
+    top: calc(var(--top-safe) + 90px);
+    gap: 8px;
+  }
+  .game-side-actions button {
+    width: 44px;
+    min-height: 44px;
+  }
+  .game-side-actions span {
+    font-size: 19px;
+  }
+  .immersive-ranch .ranch-toolbelt {
+    width: calc(
+      100% - 12px - env(safe-area-inset-left) - env(safe-area-inset-right)
+    );
+    gap: 3px;
+  }
+  .immersive-ranch .ranch-toolbelt button {
+    min-height: 72px;
+    font-size: 10px;
+    gap: 4px;
+  }
+  .immersive-ranch .ranch-toolbelt button > span {
+    width: 49px;
+    height: 49px;
+    border-width: 2px;
+    font-size: 26px;
+  }
+  .game-offline-note {
+    bottom: calc(var(--bottom-safe) + 82px);
+    font-size: 10px;
+  }
+}
+@media (max-height: 500px) and (min-width: 641px) {
+  .game-profile {
+    transform: scale(0.85);
+    transform-origin: top left;
+  }
+  .game-side-actions {
+    flex-direction: row;
+    top: calc(var(--top-safe) + 75px);
+    gap: 5px;
+  }
+  .game-side-actions button {
+    width: 44px;
+    min-height: 44px;
+  }
+  .immersive-ranch .ranch-toolbelt {
+    width: min(540px, calc(100% - 140px));
+  }
+  .immersive-ranch .ranch-toolbelt button {
+    min-height: 66px;
+    font-size: 11px;
+  }
+  .immersive-ranch .ranch-toolbelt button > span {
+    width: 44px;
+    height: 44px;
+    font-size: 23px;
+    border-width: 2px;
+  }
+  .game-offline-note {
+    top: calc(var(--top-safe) + 98px);
+    right: max(12px, env(safe-area-inset-right));
+    left: auto;
+    bottom: auto;
+    transform: none;
+  }
+}
 </style>

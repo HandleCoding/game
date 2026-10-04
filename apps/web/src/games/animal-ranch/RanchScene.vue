@@ -7,6 +7,8 @@ const props = defineProps<{
   animals: RanchAnimalView[];
   chosen: string | null;
   owner: boolean;
+  feed?: number;
+  hungry: boolean;
   effect: { type: string; id: number } | null;
 }>();
 const emit = defineEmits<{ select: [id: string]; feed: []; shop: [] }>();
@@ -28,8 +30,10 @@ type Walker = {
 };
 const walkers = new Map<string, Walker>(),
   sheets: HTMLImageElement[] = [],
-  background = new Image();
-let disposed=false;
+  background = new Image(),
+  feeder = new Image();
+const feederBox = ref({ left: 0, top: 0, width: 180, height: 155 });
+let disposed = false;
 let frame = 0,
   last = 0,
   elapsed = 0,
@@ -40,7 +44,7 @@ let frame = 0,
   offsetX = 0,
   offsetY = 0,
   cameraX = 600,
-  cameraY = 405,
+  cameraY = 400,
   resize: ResizeObserver | undefined;
 let dragging = false,
   moved = false,
@@ -50,6 +54,7 @@ let dragging = false,
   dragY = 0,
   effectAt = -9999,
   liveEffect = "";
+let pendingTap: { type: "select" | "feed" | "shop"; id?: string } | null = null;
 const pointers = new Map<number, { x: number; y: number }>();
 let pinchDistance = 0,
   pinchZoom = 1;
@@ -66,8 +71,8 @@ function sync() {
   props.animals.forEach((a, i) => {
     if (!walkers.has(a.id)) {
       const seed = randomSeed(a.id);
-      const x = 410 + (i % 4) * 135 + (seed % 25),
-        y = 360 + Math.floor(i / 4) * 85;
+      const x = 510 + (i % 4) * 66 + (seed % 18),
+        y = 360 + Math.floor(i / 4) * 75;
       walkers.set(a.id, {
         id: a.id,
         x,
@@ -94,20 +99,16 @@ function measure() {
   const element = canvas.value;
   if (!element) return;
   const box = element.getBoundingClientRect();
-  const first = width === 0;
   width = box.width;
   height = box.height;
-  if (first)
-    zoom.value =
-      Math.max(width / 1200, height / 800) /
-      Math.min(width / 1200, height / 800);
+
   dpr = Math.min(devicePixelRatio || 1, 2);
   element.width = Math.round(width * dpr);
   element.height = Math.round(height * dpr);
 }
 function clampCamera() {
-  const fit = Math.min(width / 1200, height / 800);
-  scale = fit * zoom.value;
+  const cover = Math.max(width / 1200, height / 800);
+  scale = cover * zoom.value;
   const visibleW = width / scale,
     visibleH = height / scale;
   cameraX =
@@ -120,6 +121,22 @@ function clampCamera() {
       : Math.max(visibleH / 2, Math.min(800 - visibleH / 2, cameraY));
   offsetX = width / 2 - cameraX * scale;
   offsetY = height / 2 - cameraY * scale;
+  const next = {
+    left: offsetX + 500 * scale,
+    top: offsetY + 550 * scale - 44,
+    width: 200 * scale,
+    height: 44,
+  };
+  if (
+    Object.keys(next).some(
+      (k) =>
+        Math.abs(
+          next[k as keyof typeof next] -
+            feederBox.value[k as keyof typeof next],
+        ) > 0.25,
+    )
+  )
+    feederBox.value = next;
 }
 function roundBox(
   ctx: CanvasRenderingContext2D,
@@ -130,7 +147,16 @@ function roundBox(
   r = 8,
 ) {
   ctx.beginPath();
-  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
 }
 function tag(
   ctx: CanvasRenderingContext2D,
@@ -139,17 +165,33 @@ function tag(
   y: number,
   color: string,
 ) {
-  ctx.font = "bold 15px system-ui";
-  const w = ctx.measureText(text).width + 22;
+  const font = Math.max(15, 12 / scale);
+  ctx.font = "bold " + font + "px system-ui";
+  const pad = Math.max(11, 8 / scale);
+  const w = ctx.measureText(text).width + pad * 2;
   ctx.fillStyle = color;
-  roundBox(ctx, x - w / 2, y - 12, w, 27);
+  roundBox(ctx, x - w / 2, y - font, w, font * 1.9, font * 0.5);
   ctx.fill();
   ctx.fillStyle = "#fff";
   ctx.textAlign = "center";
-  ctx.fillText(text, x, y + 6);
+  ctx.fillText(text, x, y + font * 0.36);
+}
+function drawFeeder(ctx: CanvasRenderingContext2D) {
+  const cell = feeder.width / 2;
+  ctx.drawImage(
+    feeder,
+    props.hungry ? cell : 0,
+    0,
+    cell,
+    feeder.height,
+    500,
+    345,
+    200,
+    200,
+  );
 }
 function draw(now: number) {
-  if(disposed)return;
+  if (disposed) return;
   frame = requestAnimationFrame(draw);
   if (document.hidden) {
     last = now;
@@ -172,7 +214,7 @@ function draw(now: number) {
   for (const a of props.animals) {
     const w = walkers.get(a.id);
     if (!w) continue;
-    if (a.hungry) w.state="idle";
+    if (a.hungry) w.state = "idle";
     if (!frozen.value && !a.hungry && a.id !== props.chosen) {
       if (w.state === "walk") {
         const dx = w.tx - w.x,
@@ -180,19 +222,23 @@ function draw(now: number) {
           d = Math.hypot(dx, dy);
         if (d < 4) {
           w.state =
-            liveEffect === "buyFeed" && elapsed - effectAt < 10
+            liveEffect === "buyFeed" && elapsed - effectAt < 18
               ? "eat"
               : "idle";
           w.until = elapsed + 2 + (w.phase % 4);
         } else {
-          w.x += (dx / d) * dt * 27;
-          w.y += (dy / d) * dt * 27;
+          const speed =
+            liveEffect === "buyFeed" && elapsed - effectAt < 18 ? 65 : 27;
+          w.x += (dx / d) * dt * speed;
+          w.y += (dy / d) * dt * speed;
           w.dir = dx >= 0 ? 1 : -1;
         }
       } else if (elapsed > w.until) {
         const p = w.phase++ * 1.71;
         w.tx = 340 + (Math.sin(p) * 0.5 + 0.5) * 600;
         w.ty = 330 + (Math.cos(p * 0.7) * 0.5 + 0.5) * 270;
+        // Walk around the central trough, rather than through its wooden body.
+        if (w.tx > 500 && w.tx < 700 && w.ty > 420 && w.ty < 540) w.ty = 565;
         w.state = "walk";
       }
     }
@@ -200,9 +246,14 @@ function draw(now: number) {
   const sorted = [...props.animals].sort(
     (a, b) => (walkers.get(a.id)?.y || 0) - (walkers.get(b.id)?.y || 0),
   );
+  let feederDrawn = false;
   for (const a of sorted) {
     const w = walkers.get(a.id);
     if (!w) continue;
+    if (!feederDrawn && w.y >= 535) {
+      drawFeeder(ctx);
+      feederDrawn = true;
+    }
     const location = spriteLocation(a.species),
       sheet = sheets[location.group];
     if (!sheet) continue;
@@ -247,9 +298,15 @@ function draw(now: number) {
       size,
     );
     ctx.restore();
-    if (a.hungry) tag(ctx, "饿了", -2, -size - 6, "#c97735");
-    else if (a.stored > 0)
-      tag(ctx, "收获 " + a.stored, 0, -size - 6, "#458443");
+    if (a.stored > 0)
+      tag(
+        ctx,
+        "可收获 " + a.stored + (a.hungry ? " · 缺粮" : ""),
+        0,
+        -size - 10,
+        "#458443",
+      );
+    else if (a.hungry) tag(ctx, "需要喂食", 0, -size - 10, "#c97735");
     if (a.id === props.chosen) {
       ctx.font = "bold 16px system-ui";
       ctx.textAlign = "center";
@@ -261,6 +318,7 @@ function draw(now: number) {
     }
     ctx.restore();
   }
+  if (!feederDrawn) drawFeeder(ctx);
   const age = elapsed - effectAt;
   if (age >= 0 && age < 2.4) {
     for (let i = 0; i < 12; i++) {
@@ -295,10 +353,13 @@ function draw(now: number) {
   }
 }
 function zoomBy(delta: number) {
-  zoom.value = Math.max(1, Math.min(2.4, zoom.value + delta));
+  const min =
+    Math.min(width / 1200, height / 800) / Math.max(width / 1200, height / 800);
+  zoom.value = Math.max(min, Math.min(2.4, zoom.value + delta));
 }
 function fit() {
-  zoom.value = 1;
+  zoom.value =
+    Math.min(width / 1200, height / 800) / Math.max(width / 1200, height / 800);
   cameraX = 600;
   cameraY = 400;
 }
@@ -307,6 +368,7 @@ function position(e: PointerEvent) {
   return { x: e.clientX - b.left, y: e.clientY - b.top };
 }
 function down(e: PointerEvent) {
+  pendingTap = null;
   const p = position(e);
   pointers.set(e.pointerId, p);
   canvas.value?.setPointerCapture(e.pointerId);
@@ -329,7 +391,8 @@ function move(e: PointerEvent) {
   if (pointers.size === 2) {
     const [a, b] = [...pointers.values()];
     zoom.value = Math.max(
-      1,
+      Math.min(width / 1200, height / 800) /
+        Math.max(width / 1200, height / 800),
       Math.min(
         2.4,
         (pinchZoom * Math.hypot(a.x - b.x, a.y - b.y)) /
@@ -348,6 +411,7 @@ function move(e: PointerEvent) {
   dragY = p.y;
 }
 function up(e: PointerEvent) {
+  pendingTap = null;
   const p = position(e);
   pointers.delete(e.pointerId);
   if (e.type !== "pointercancel" && !moved && pointers.size === 0) {
@@ -361,11 +425,24 @@ function up(e: PointerEvent) {
         y < w.y + 25
       );
     });
-    if (a) emit("select", a.id);
-    else if (x < 220 && y > 290 && y < 540 && props.owner) emit("feed");
-    else if (x < 260 && y < 300) emit("shop");
+    if (props.owner && x > 515 && x < 685 && y > 400 && y < 525)
+      pendingTap = { type: "feed" };
+    else if (a) pendingTap = { type: "select", id: a.id };
+    else if (x > 500 && x < 700 && y > 405 && y < 560 && props.owner)
+      pendingTap = { type: "feed" };
+    else if (x < 260 && y < 300) pendingTap = { type: "shop" };
   }
   if (!pointers.size) dragging = false;
+}
+function tap(e: MouseEvent) {
+  // Open dialogs from the completed click, not pointerup: touch browsers may
+  // otherwise retarget the following synthesized click to a purchase button.
+  e.preventDefault();
+  const action = pendingTap;
+  pendingTap = null;
+  if (action?.type === "select" && action.id) emit("select", action.id);
+  else if (action?.type === "feed") emit("feed");
+  else if (action?.type === "shop") emit("shop");
 }
 function wheel(e: WheelEvent) {
   e.preventDefault();
@@ -411,8 +488,9 @@ watch(
     liveEffect = e.type;
     if (e.type === "buyFeed")
       for (const w of walkers.values()) {
-        w.tx = 190 + (w.phase % 3) * 45;
-        w.ty = 365 + (w.phase % 4) * 28;
+        const p = ((w.phase % 12) / 12) * Math.PI * 2;
+        w.tx = 600 + Math.cos(p) * 110;
+        w.ty = 545 + Math.sin(p) * 42;
         w.state = "walk";
       }
   },
@@ -423,12 +501,14 @@ onMounted(async () => {
   if (canvas.value) resize.observe(canvas.value);
   reduced.addEventListener("change", reducedChange);
   try {
-    const [image] = await Promise.all([
+    const [image, trough] = await Promise.all([
       getImage("/ranch/scene/pasture.png"),
+      getImage("/ranch/scene/feeder-states.png"),
       ensureSheets(),
     ]);
-    if(disposed)return;
+    if (disposed) return;
     background.src = image.src;
+    feeder.src = trough.src;
     ready.value = true;
     measure();
     frame = requestAnimationFrame(draw);
@@ -437,7 +517,7 @@ onMounted(async () => {
   }
 });
 onUnmounted(() => {
-  disposed=true;
+  disposed = true;
   cancelAnimationFrame(frame);
   resize?.disconnect();
   reduced.removeEventListener("change", reducedChange);
@@ -455,10 +535,38 @@ onUnmounted(() => {
       @pointerup="up"
       @pointercancel="up"
       @wheel="wheel"
+      @click="tap"
     ></canvas>
     <div v-if="!ready" class="scene-loading" role="status">
       {{ failure ? "场景素材未加载，请刷新重试" : "小动物们正在出来玩…" }}
     </div>
+    <button
+      v-if="ready && owner"
+      class="feeder-hitbox"
+      data-testid="central-feeder"
+      :style="{
+        left: feederBox.left + 'px',
+        top: feederBox.top + 'px',
+        width: feederBox.width + 'px',
+        height: feederBox.height + 'px',
+      }"
+      :aria-label="'中央食槽，剩余' + (feed ?? 0) + '份饲料，点击添加食物'"
+      @click="emit('feed')"
+    >
+      <span class="feeder-caption" :class="{ empty: hungry }"
+        >🌾 {{ hungry ? "缺粮 · 点击添食" : "食槽 · " + (feed ?? 0) + " 份" }}
+        <b>＋</b></span
+      >
+    </button>
+    <span
+      v-else-if="ready"
+      class="feeder-visitor-caption"
+      :style="{
+        left: feederBox.left + feederBox.width / 2 + 'px',
+        top: feederBox.top + feederBox.height + 'px',
+      }"
+      >{{ hungry ? "食槽 · 需要喂食" : "食槽 · 饲料充足" }}</span
+    >
     <div class="scene-controls">
       <button aria-label="缩小牧场" @click="zoomBy(-0.3)">−</button
       ><button aria-label="查看牧场全景" @click="fit">全景</button
@@ -470,7 +578,7 @@ onUnmounted(() => {
         {{ frozen ? "▶" : "Ⅱ" }}
       </button>
     </div>
-    <span class="scene-hint">点动物看详情 · 拖动 / 双指缩放</span>
+
     <div class="animal-picker" aria-label="选择牧场动物">
       <button
         v-for="a in animals"
@@ -479,7 +587,8 @@ onUnmounted(() => {
         :aria-pressed="chosen === a.id"
         @click="emit('select', a.id)"
       >
-        {{ a.name }}<span v-if="a.stored"> · {{ a.stored }}</span>
+        {{ a.name }}<span v-if="a.stored"> · 可收获 {{ a.stored }}</span
+        ><span v-else-if="a.hungry"> · 缺粮</span>
       </button>
     </div>
   </section>
@@ -585,5 +694,138 @@ onUnmounted(() => {
   * {
     scroll-behavior: auto !important;
   }
+}
+
+.living-pasture {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.pasture-canvas {
+  width: 100%;
+  height: 100%;
+}
+.scene-controls {
+  right: max(12px, env(safe-area-inset-right));
+  top: 50%;
+  transform: translateY(-50%);
+  flex-direction: column;
+  gap: 7px;
+}
+.scene-controls button {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 13px;
+  background: linear-gradient(#f8edcddd, #d8bb89e6);
+  border: 2px solid #ac8656;
+  box-shadow: 0 3px 0 #72553350;
+}
+.animal-picker {
+  left: max(10px, env(safe-area-inset-left));
+  right: max(10px, env(safe-area-inset-right));
+  bottom: calc(128px + env(safe-area-inset-bottom));
+  justify-content: center;
+  gap: 6px;
+  padding: 3px;
+}
+.animal-picker button {
+  flex-shrink: 0;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 44px;
+  background: #fff5d3ce;
+  backdrop-filter: blur(4px);
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 24px;
+}
+.feeder-hitbox {
+  position: absolute;
+  border: 0;
+  padding: 0;
+  min-height: 44px;
+  min-width: 44px;
+  background: transparent !important;
+  cursor: pointer;
+  border-radius: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: #486d2f;
+  touch-action: manipulation;
+}
+.feeder-hitbox:focus-visible {
+  outline: 3px solid #fffbe0;
+  outline-offset: 4px;
+}
+.feeder-caption,
+.feeder-visitor-caption {
+  background: #fff7d8ed;
+  color: #537331;
+  border: 2px solid #a2b862;
+  border-radius: 24px;
+  padding: 7px 10px;
+  box-shadow: 0 3px 0 #5e71442b;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.feeder-caption b {
+  display: inline-grid;
+  place-items: center;
+  margin-left: 5px;
+  background: #99b656;
+  color: #fff;
+  border-radius: 50%;
+  width: 19px;
+  height: 19px;
+}
+.feeder-caption.empty {
+  background: #ffedc5;
+  color: #a36c2d;
+  border-color: #d09a52;
+}
+.feeder-visitor-caption {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  .living-pasture {
+    border: 0;
+    border-radius: 0;
+  }
+  .pasture-canvas {
+    height: 100%;
+  }
+  .scene-controls {
+    top: 48%;
+    right: max(9px, env(safe-area-inset-right));
+  }
+  .animal-picker {
+    bottom: calc(112px + env(safe-area-inset-bottom));
+  }
+}
+@media (max-height: 500px) and (min-width: 641px) {
+  .scene-controls {
+    flex-direction: row;
+    top: auto;
+    bottom: calc(90px + env(safe-area-inset-bottom));
+    transform: none;
+  }
+  .animal-picker {
+    justify-content: flex-start;
+    max-width: 240px;
+    bottom: calc(90px + env(safe-area-inset-bottom));
+    right: auto;
+  }
+}
+:global([data-theme="dark"]) .pasture-canvas {
+  filter: brightness(0.78) saturate(0.85);
 }
 </style>

@@ -67,7 +67,12 @@ try {
         timezoneId: "Asia/Shanghai",
       });
     const page = await context.newPage(),
-      errors = [];
+      errors = [],
+      resourceActions = [];
+    page.on("request", (r) => {
+      if (r.url().endsWith("/games/animal-ranch/actions"))
+        resourceActions.push(r.postDataJSON());
+    });
     page.setDefaultTimeout(10000);
     page.on("pageerror", (e) => errors.push(e.message));
     try {
@@ -84,6 +89,14 @@ try {
         .getByRole("button", { name: "进入我的牧场", exact: true })
         .click();
       await page.getByTestId("ranch-canvas").waitFor();
+      assert.equal(
+        await page.locator(".topbar").count(),
+        0,
+        "Lobby header remained inside immersive game",
+      );
+      await page.waitForFunction(() =>
+        document.body.classList.contains("ranch-active"),
+      );
       await page.waitForFunction(
         () => !document.querySelector(".scene-loading"),
       );
@@ -98,14 +111,69 @@ try {
         false,
         "Page overflows horizontally",
       );
+      const viewportLayout = await page.evaluate(() => {
+        const scene = document
+          .querySelector(".pasture-canvas")
+          .getBoundingClientRect();
+        return {
+          x: scene.x,
+          y: scene.y,
+          w: scene.width,
+          h: scene.height,
+          viewportH: innerHeight,
+          scrollH: document.documentElement.scrollHeight,
+        };
+      });
+      assert.equal(viewportLayout.x, 0);
+      assert.equal(viewportLayout.y, 0);
+      assert.equal(viewportLayout.w, size.width);
+      assert.equal(viewportLayout.h, size.height);
+      assert(
+        viewportLayout.scrollH <= size.height,
+        "Immersive game requires page scrolling",
+      );
+      const feedBox = await page.getByTestId("central-feeder").boundingBox();
+      assert(
+        feedBox.x >= 0 && feedBox.x + feedBox.width <= size.width,
+        "Central feeder cropped on entry",
+      );
+      assert(
+        feedBox.y >= 80 && feedBox.y + feedBox.height < size.height - 80,
+        "Central feeder hidden by HUD/toolbelt",
+      );
+      const overlap = await page.evaluate(() => {
+        const a = document
+          .querySelector('[data-testid="central-feeder"]')
+          .getBoundingClientRect();
+        const b = document
+          .querySelector(".game-offline-note")
+          .getBoundingClientRect();
+        const c = document
+          .querySelector(".animal-picker")
+          .getBoundingClientRect();
+        const d = document
+          .querySelector(".ranch-toolbelt")
+          .getBoundingClientRect();
+        const intersects = (x, y) =>
+          x.left < y.right &&
+          x.right > y.left &&
+          x.top < y.bottom &&
+          x.bottom > y.top;
+        return { foodNote: intersects(a, b), pickerTools: intersects(c, d) };
+      });
+      assert.equal(overlap.foodNote, false, "Offline hint obscures feeder");
+      assert.equal(
+        overlap.pickerTools,
+        false,
+        "Animal picker overlaps toolbar",
+      );
       const before = await page
         .locator("canvas")
         .evaluate((c) => c.toDataURL());
-      await page.waitForTimeout(900);
-      assert.notEqual(
-        await page.locator("canvas").evaluate((c) => c.toDataURL()),
+      await page.waitForFunction(
+        (previous) => document.querySelector("canvas").toDataURL() !== previous,
         before,
-        "Animal animation did not change canvas",
+        { timeout: 5000, polling: 200 },
       );
       await page.getByRole("button", { name: "暂停动物动画" }).click();
       await page.waitForTimeout(120);
@@ -125,6 +193,13 @@ try {
         .getByRole("button", { name: "出售全部产物", exact: true })
         .click();
       await page.getByRole("button", { name: "关闭牧场面板" }).click();
+      if (!mobile && engine === "chromium") {
+        await page.getByRole("button", { name: "切换游戏全屏" }).click();
+        assert(
+          await page.evaluate(() => !!document.fullscreenElement),
+          "Desktop fullscreen did not open",
+        );
+      }
       await page.getByRole("button", { name: /动物商店/ }).click();
       await page.getByLabel("搜索动物").fill("鸡");
       await page.screenshot({
@@ -135,8 +210,38 @@ try {
       assert.equal(await cards.count(), 1);
       await cards.getByRole("button", { name: /金币 · 认养/ }).click();
       await page.getByRole("button", { name: "关闭牧场面板" }).click();
-      await page.getByRole("button", { name: /添饲料/ }).click();
+      const foodObject = await page.getByTestId("central-feeder").boundingBox();
+      if (mobile)
+        await page.touchscreen.tap(
+          foodObject.x + foodObject.width / 2,
+          foodObject.y - 20,
+        );
+      else
+        await page.mouse.click(
+          foodObject.x + foodObject.width / 2,
+          foodObject.y - 20,
+        );
+      await page.getByRole("dialog").waitFor();
+      await page.getByRole("button", { name: "关闭牧场面板" }).click();
+      if (mobile) await page.getByTestId("central-feeder").tap();
+      else await page.getByTestId("central-feeder").click();
+      await page.getByRole("dialog").waitFor();
+      const foodResponse = page.waitForResponse(
+        (r) =>
+          r.url().endsWith("/games/animal-ranch/actions") &&
+          r.request().postDataJSON()?.type === "buyFeed",
+      );
       await page.getByRole("button", { name: /\+20/ }).click();
+      const foodState = await (await foodResponse).json();
+      assert.equal(foodState.state.hungry, false);
+      await page.waitForFunction(
+        (feed) =>
+          document
+            .querySelector('[data-testid="central-feeder"]')
+            .getAttribute("aria-label")
+            .includes("剩余" + feed + "份"),
+        foodState.state.feed,
+      );
       await page.getByRole("button", { name: "关闭牧场面板" }).click();
       await page.getByRole("button", { name: "查看小鸡" }).last().click();
       await page.locator("#ranch-window-title").waitFor();
@@ -182,18 +287,16 @@ try {
           .evaluate((c) => c.toDataURL());
         const touch =
           engine === "chromium" ? await context.newCDPSession(page) : null;
-        const gestureY = Math.max(
-          50,
-          Math.min(size.height - 70, c.y + c.height / 2),
-        );
+        const gestureY = c.y + c.height * 0.36;
+        const gestureX = c.x + c.width * 0.82;
         if (touch) {
           await touch.send("Input.dispatchTouchEvent", {
             type: "touchStart",
-            touchPoints: [{ x: c.x + c.width / 2, y: gestureY }],
+            touchPoints: [{ x: gestureX, y: gestureY }],
           });
           await touch.send("Input.dispatchTouchEvent", {
             type: "touchMove",
-            touchPoints: [{ x: c.x + c.width / 2 + 55, y: gestureY }],
+            touchPoints: [{ x: gestureX + 40, y: gestureY }],
           });
           await touch.send("Input.dispatchTouchEvent", {
             type: "touchEnd",
@@ -224,9 +327,9 @@ try {
             touchPoints: [],
           });
         } else {
-          await page.mouse.move(c.x + c.width / 2, gestureY);
+          await page.mouse.move(gestureX, gestureY);
           await page.mouse.down();
-          await page.mouse.move(c.x + c.width / 2 + 55, gestureY, { steps: 4 });
+          await page.mouse.move(gestureX + 40, gestureY, { steps: 4 });
           await page.mouse.up();
         }
         await page.getByRole("button", { name: "查看牧场全景" }).tap();
@@ -242,6 +345,69 @@ try {
         "Reduced motion preference ignored",
       );
       await page.emulateMedia({ reducedMotion: "no-preference" });
+      if (size.width === 390) {
+        const neighbor = await browser.newContext({ viewport: size });
+        try {
+          const registered = await neighbor.request.post(
+            base + "/api/register",
+            {
+              headers: { Origin: base },
+              data: {
+                account: "qa_neighbor",
+                password: "OnlyQA_12345",
+                name: "隐私验收邻居",
+              },
+            },
+          );
+          assert(registered.ok(), "Neighbor test registration failed");
+          assert(
+            (
+              await neighbor.request.get(base + "/api/games/animal-ranch/me")
+            ).ok(),
+          );
+          await page.getByRole("button", { name: /去串门/ }).click();
+          await page
+            .locator(".player-line")
+            .filter({ hasText: "隐私验收邻居" })
+            .getByRole("button", { name: "参观牧场" })
+            .click();
+          await page.locator(".feeder-visitor-caption").waitFor();
+          assert.equal(
+            await page.getByTestId("central-feeder").count(),
+            0,
+            "Visitor can add food",
+          );
+          assert.equal(
+            await page.locator(".wallet-coins").count(),
+            0,
+            "Visitor saw owner wallet",
+          );
+          assert.equal(
+            await page.getByRole("button", { name: /添饲料/ }).count(),
+            0,
+            "Visitor saw private feeding tool",
+          );
+          assert.equal(
+            await page.getByRole("dialog").count(),
+            0,
+            "Visit left modal open over scene",
+          );
+          await page.screenshot({ path: folder + "/visitor.png" });
+          await page
+            .getByRole("button", { name: "回我的牧场", exact: true })
+            .click();
+          await page.getByTestId("central-feeder").waitFor();
+        } finally {
+          await neighbor.close();
+        }
+      }
+      const foodPurchases = resourceActions.filter((a) => a.type === "buyFeed");
+      assert.equal(
+        foodPurchases.length,
+        1,
+        "A scene tap purchased food without explicit confirmation / duplicated purchase",
+      );
+      assert.equal(foodPurchases[0].payload.units, 20);
       assert.deepEqual(errors, [], "Frontend console errors");
       const controls = await page
         .locator(
@@ -258,11 +424,29 @@ try {
         controls.every((b) => b.width >= 43 && b.height >= 43),
         "Touch controls too small",
       );
+      await page
+        .getByRole("button", { name: "返回游戏大厅", exact: true })
+        .click();
+      await page.locator(".topbar").waitFor();
+      assert.equal(
+        await page.evaluate(() =>
+          document.body.classList.contains("ranch-active"),
+        ),
+        false,
+        "Game did not restore lobby scrolling",
+      );
       results.push({
         size,
         passed: true,
         checked: [
           "registration",
+          "viewport-filling-scene",
+          "no-lobby-header",
+          "no-page-scroll",
+          "central-feeder-touch",
+          ...(size.width === 390
+            ? ["visitor-private-resource-hiding", "visit-modal-close"]
+            : []),
           "animation",
           "pause",
           "harvest",
@@ -299,7 +483,7 @@ try {
     await context.close();
   }
   await writeFile(
-    "docs/test-reports/20261004-ranch-scene-ui-" + engine + ".json",
+    "docs/test-reports/20261004-ranch-immersive-ui-" + engine + ".json",
     JSON.stringify(
       {
         browser: engine,

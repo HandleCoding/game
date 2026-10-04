@@ -1,0 +1,458 @@
+{
+  "browser": "chromium",
+  "isolatedDevelopmentSchema": true,
+  "results": [
+    {
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "viewport-filling-scene",
+        "no-lobby-header",
+        "no-page-scroll",
+        "central-feeder-touch",
+        "visitor-private-resource-hiding",
+        "visit-modal-close",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-pan-pinch"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "放大牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "暂停动物动画",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "🧺一键收获",
+          "width": 60.5,
+          "height": 77
+        },
+        {
+          "label": "🐣动物商店",
+          "width": 60.5,
+          "height": 77
+        },
+        {
+          "label": "🌾添饲料",
+          "width": 60.5,
+          "height": 77
+        },
+        {
+          "label": "📦我的仓库",
+          "width": 60.5,
+          "height": 77
+        },
+        {
+          "label": "🏡去串门",
+          "width": 60.5,
+          "height": 77
+        },
+        {
+          "label": "🔨扩建 / 日记",
+          "width": 60.5,
+          "height": 77
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 320,
+        "height": 740
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "viewport-filling-scene",
+        "no-lobby-header",
+        "no-page-scroll",
+        "central-feeder-touch",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-pan-pinch"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "放大牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "播放动物动画",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "🧺一键收获",
+          "width": 48.828125,
+          "height": 77
+        },
+        {
+          "label": "🐣动物商店",
+          "width": 48.84375,
+          "height": 77
+        },
+        {
+          "label": "🌾添饲料",
+          "width": 48.828125,
+          "height": 77
+        },
+        {
+          "label": "📦我的仓库",
+          "width": 48.84375,
+          "height": 77
+        },
+        {
+          "label": "🏡去串门",
+          "width": 48.828125,
+          "height": 77
+        },
+        {
+          "label": "🔨扩建 / 日记",
+          "width": 48.828125,
+          "height": 77
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 430,
+        "height": 932
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "viewport-filling-scene",
+        "no-lobby-header",
+        "no-page-scroll",
+        "central-feeder-touch",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-pan-pinch"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "放大牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "暂停动物动画",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "🧺一键收获",
+          "width": 67.15625,
+          "height": 77
+        },
+        {
+          "label": "🐣动物商店",
+          "width": 67.171875,
+          "height": 77
+        },
+        {
+          "label": "🌾添饲料",
+          "width": 67.15625,
+          "height": 77
+        },
+        {
+          "label": "📦我的仓库",
+          "width": 67.171875,
+          "height": 77
+        },
+        {
+          "label": "🏡去串门",
+          "width": 67.171875,
+          "height": 77
+        },
+        {
+          "label": "🔨扩建 / 日记",
+          "width": 67.171875,
+          "height": 77
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 844,
+        "height": 390
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "viewport-filling-scene",
+        "no-lobby-header",
+        "no-page-scroll",
+        "central-feeder-touch",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-pan-pinch"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "放大牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "播放动物动画",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "🧺一键收获",
+          "width": 83.328125,
+          "height": 73.59375
+        },
+        {
+          "label": "🐣动物商店",
+          "width": 83.34375,
+          "height": 73.59375
+        },
+        {
+          "label": "🌾添饲料",
+          "width": 83.328125,
+          "height": 73.59375
+        },
+        {
+          "label": "📦我的仓库",
+          "width": 83.34375,
+          "height": 73.59375
+        },
+        {
+          "label": "🏡去串门",
+          "width": 83.328125,
+          "height": 73.59375
+        },
+        {
+          "label": "🔨扩建 / 日记",
+          "width": 83.328125,
+          "height": 73.59375
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 1440,
+        "height": 1000
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "viewport-filling-scene",
+        "no-lobby-header",
+        "no-page-scroll",
+        "central-feeder-touch",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "放大牧场",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "暂停动物动画",
+          "width": 44,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "🧺一键收获",
+          "width": 100,
+          "height": 96.796875
+        },
+        {
+          "label": "🐣动物商店",
+          "width": 100,
+          "height": 96.796875
+        },
+        {
+          "label": "🌾添饲料",
+          "width": 100,
+          "height": 96.796875
+        },
+        {
+          "label": "📦我的仓库",
+          "width": 100,
+          "height": 96.796875
+        },
+        {
+          "label": "🏡去串门",
+          "width": 100,
+          "height": 96.796875
+        },
+        {
+          "label": "🔨扩建 / 日记",
+          "width": 100,
+          "height": 96.796875
+        }
+      ]
+    }
+  ],
+  "failures": []
+}

@@ -31,6 +31,16 @@ const mode = ref("login"),
   authDialog = ref<HTMLDialogElement | null>(null),
   inviteDialog = ref<HTMLDialogElement | null>(null),
   theme = ref(document.documentElement.dataset.theme || "light");
+const immersive = computed(
+  () =>
+    !!state.value && !state.value.room && activeGame.value === "animal-ranch",
+);
+watch(
+  immersive,
+  (value) => document.body.classList.toggle("ranch-active", value),
+  { immediate: true },
+);
+onUnmounted(() => document.body.classList.remove("ranch-active"));
 const invitation = computed(() =>
   !state.value?.room
     ? state.value?.invites.find((i) => i.expires > now.value)
@@ -106,7 +116,7 @@ const messages = [
 ];
 </script>
 <template>
-  <header class="topbar">
+  <header v-if="!immersive" class="topbar">
     <div class="brand">
       <span class="brandmark"
         ><svg
@@ -379,3 +389,25 @@ const messages = [
     </div></Teleport
   >
 </template>
+
+<style>
+body.ranch-active {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+body.ranch-active #network-banner {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(92px + env(safe-area-inset-top));
+  z-index: 80;
+  width: max-content;
+  max-width: 85vw;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+body.ranch-active .toast {
+  z-index: 90;
+  bottom: calc(170px + env(safe-area-inset-bottom));
+}
+</style>

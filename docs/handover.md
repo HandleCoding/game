@@ -86,3 +86,7 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 ## 当前动态牧场 2.2.0
 
 全身动物、Canvas 场景、四帧走路、待机、喂食 / 收获提示、触摸平移 / 缩放、木质工具栏和弹窗。渲染入口 RanchScene.vue，图鉴 AnimalPortrait.vue，裁切 atlas-metadata.ts，素材 / 提示词 ranch-scene-assets.md。18 项回归 + 10 组浏览器 UI 验收通过，正式账号与牧场档案保留。Windows localhost:3211 为云端开发的 SSH 转发（仅本机监听），程序并不在 Windows 运行。
+
+## 2026-10-04 沉浸式牧场 2.3.0（已验收，待发布）
+
+独立铺满视口的 Canvas 游戏、浮动 HUD / 工具、中央食槽两状态 / 点击添食 / 动物聚集、清晰头顶状态、原生面板和访客隐私。读取 ranch-immersive.md 与 test-reports/20261004-ranch-immersive.md。18 项回归与 Chromium / WebKit 共 10 组 UI 验收通过，手机触屏弹窗点击穿透已修复并检查购买请求唯一。当前正式目录仍以上方 2.2.0 为准，部署后更新。候选互动 / 装饰 / 互助尚未实现。
