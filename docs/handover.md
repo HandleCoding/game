@@ -1,13 +1,13 @@
 # 新架构接手状态
 
-更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户授权上线一起牧场 2.6.1。当前发布、备份与验证见 [HUD遮挡修复报告](test-reports/20261004-ranch-hud-overlap.md)；数值与已完成重置见 [数值报告](test-reports/20261004-ranch-balance.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
+更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户授权上线一起牧场 2.6.2。当前发布、备份与验证见 [CDN接入报告](test-reports/20261004-ranch-cdn.md)；HUD修复见 [HUD遮挡修复报告](test-reports/20261004-ranch-hud-overlap.md)；数值与已完成重置见 [数值报告](test-reports/20261004-ranch-balance.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
 
 ## 环境
 
 | 项目 | 正式 | 开发 |
 | --- | --- | --- |
 | 主机 | 京东云 117.72.116.83 | 同一主机 |
-| 代码 | /opt/pair-play/releases/v2.6.1-20261004-195829 | /opt/pair-play-dev |
+| 代码 | /opt/pair-play/releases/v2.6.2-20261004-213138 | /opt/pair-play-dev |
 | 服务 | pair-play.service | pair-play-dev.service |
 | 用户 | pairplay | pairplaydev |
 | 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 4225376a58cfff8b1e8e709d51839915d6d0a476；后续验收文档提交看 git log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 1f9a7c71ccbf10bf5f2cf3c399df7c4e05edba95；后续验收文档提交看 git log。
 
 ## 已落地
 
@@ -133,5 +133,5 @@ schema3仅扩大ranch_wallets.feed_ms约束至1800000000；摘要增加feedUnitM
 三个子Agent的玩法调研综合于animal-ranch.md“可玩性调研草案”，尚未实现：首选命名亲密互动+永久日记+可选委托+小装饰，其次异步互助，再加工/饲草。不要将建议当作已上线；跨玩家动作不能套单档案锁，奖励金币/加工需重跑数值模拟。
 
 
-## 2026-10-04 牧场 CDN 2.6.2（开发验收完成）
-配置/源码与异常回退见ranch-cdn.md，验收见test-reports/20261004-ranch-cdn.md。static.aicoding.ltd通过多吉云CNAME/HTTPS，game主站保持直连。只加速公开牧场图片，API/SSE/存档仍主站；开发同源。跨域SVG必须共享已解码data URL，不能只把href改为远程地址。2种浏览器12个CDN/失败案例+1闲置超时、10组尺寸交互、25项后端通过；截图实际查看。schema3、数值和玩家资源不改。是否正式发布以报告发布段和上方环境为准。
+## 2026-10-04 牧场 CDN 2.6.2（已上线）
+配置/源码与异常回退见ranch-cdn.md，验收见test-reports/20261004-ranch-cdn.md。static.aicoding.ltd通过多吉云CNAME/HTTPS，game主站保持直连。只加速公开牧场图片，API/SSE/存档仍主站；开发同源。跨域SVG必须共享已解码data URL，不能只把href改为远程地址。2种浏览器12个CDN/失败案例+1闲置超时、10组尺寸交互、25项后端通过；截图实际查看。schema3、数值和玩家资源不改。正式发布目录与备份见报告发布段及上方环境。

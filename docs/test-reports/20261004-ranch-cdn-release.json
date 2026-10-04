@@ -1,0 +1,94 @@
+{
+  "sourceCommit": "1f9a7c71ccbf10bf5f2cf3c399df7c4e05edba95",
+  "release": "/opt/pair-play/releases/v2.6.2-20261004-213138",
+  "version": "2.6.2",
+  "databaseBackup": "/var/backups/pair-play/postgres-prod-20261004-213140.dump",
+  "before": {
+    "users": 2,
+    "sessions": 5,
+    "results": 5,
+    "result_players": 10,
+    "persistent_profiles": 2
+  },
+  "after": {
+    "users": 2,
+    "sessions": 5,
+    "results": 5,
+    "result_players": 10,
+    "persistent_profiles": 2
+  },
+  "unitBackup": "/var/backups/pair-play/pair-play-before-20261004-213140.service",
+  "caddyBackup": "/var/backups/pair-play/Caddyfile-before-20261004-213140",
+  "schemaVersion": 3,
+  "completedAt": "2026-10-04T21:31:42+0800",
+  "ranchStableResourcesPreserved": true,
+  "ranchTimeSettlementAdvanced": [
+    "ranch_wallets",
+    "ranch_animals"
+  ],
+  "ranchRowCounts": {
+    "ranch_wallets": 2,
+    "ranch_animals": 8,
+    "ranch_inventory": 2,
+    "ranch_ledger": 13
+  },
+  "publicHealth": {
+    "ok": true,
+    "version": "2.6.2",
+    "database": "postgresql"
+  },
+  "publicCsp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://static.aicoding.ltd; connect-src 'self' https://static.aicoding.ltd; font-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",
+  "publicBuildAssets": [
+    {
+      "name": "index-CCPbu-uG.js",
+      "sha256": "206671c90eb323f1dee9450321465b697ce4ad881580f7209da11e241b4e25e0"
+    },
+    {
+      "name": "RanchGame-V2kjY6sX.css",
+      "sha256": "ed0435034acc3414aeefaedb283382f2cbf350dcf8fa4cf7d7e4925433b97e59"
+    },
+    {
+      "name": "index-BK_KhUrq.css",
+      "sha256": "52a7e2a6d4bdba237463a85b0066e2d9c55b332d0e8ab872ba170f40d971137c"
+    },
+    {
+      "name": "RanchGame--Z1dQ21s.js",
+      "sha256": "670d71438e372b7c941290c292dc4ca67b3bccdb981d2c7ee12b7729c123593a"
+    }
+  ],
+  "cdnFiles": [
+    {
+      "path": "/ranch/scene/pasture-v1.webp",
+      "bytes": 2163724,
+      "cors": "https://game.aicoding.ltd",
+      "cacheControl": "public, immutable, max-age=31536000",
+      "sha256": "14c76ecfafede4b6cf21ee16d76bd8c1c00f32ba2b0132e7a5878bf26979e9b8"
+    },
+    {
+      "path": "/ranch/ui/ranch-tools-v1.webp",
+      "bytes": 1620078,
+      "cors": "https://game.aicoding.ltd",
+      "cacheControl": "public, immutable, max-age=31536000",
+      "sha256": "1415e9c0149c5e6b646ed7235322636ef6bd3062c97cf1abd2a96b0c8d0c6c5a"
+    },
+    {
+      "path": "/ranch/scene/soft/adult-0-v1.webp",
+      "bytes": 1264004,
+      "cors": "https://game.aicoding.ltd",
+      "cacheControl": "public, immutable, max-age=31536000",
+      "sha256": "b4619dee4c2283f28cd92ff3a56c656aa594a62f08ab0b68cdd0d69162509ce2"
+    },
+    {
+      "path": "/ranch/scene/soft/baby-0-v1.webp",
+      "bytes": 1243234,
+      "cors": "https://game.aicoding.ltd",
+      "cacheControl": "public, immutable, max-age=31536000",
+      "sha256": "7f05bbb6918a0ebb25a8ef5903a7f422e4a5a7915399c95ec2b79c5299ea9ef8"
+    }
+  ],
+  "services": [
+    "active",
+    "active",
+    "active"
+  ]
+}
