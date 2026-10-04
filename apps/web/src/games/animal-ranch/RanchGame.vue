@@ -391,6 +391,9 @@ function productAnimal(id: string) {
               "
               aria-label="牧场经验"
             ></progress>
+            <span class="game-offline-note">{{
+              owner ? "离线成长 · 缺粮暂停" : "只读参观 · 状态实时刷新"
+            }}</span>
           </div>
         </header>
         <div class="game-wallet">
@@ -476,9 +479,6 @@ function productAnimal(id: string) {
             ><span class="tool-name">扩建 / 日记</span>
           </button>
         </nav>
-        <span class="game-offline-note">{{
-          owner ? "离线也会成长 · 缺粮暂停" : "只读参观 · 动物状态实时刷新"
-        }}</span>
       </div>
     </template>
     <div v-if="error && farm" class="game-error" role="alert">
@@ -1257,17 +1257,12 @@ progress::-moz-progress-bar {
   background: #d57240;
 }
 .game-offline-note {
-  position: absolute;
-  left: 50%;
-  bottom: 130px;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  border-radius: 20px;
-  padding: 5px 13px;
-  background: #fff2c8ba;
-  color: #587239;
-  font-size: 12px;
-  pointer-events: none;
+  display: block;
+  margin-top: 3px;
+  color: #fff2cc;
+  font-size: 11px;
+  line-height: 1.4;
+  text-shadow: 0 1px #815237;
 }
 .game-error {
   position: absolute;
@@ -2148,9 +2143,7 @@ progress::-moz-progress-bar {
     min-height: 18px;
   }
   .game-offline-note {
-    bottom: 106px;
-    font-size: 10px;
-    padding: 4px 10px;
+    font-size: 9px;
   }
   .ranch-window {
     width: calc(100% - 16px);
@@ -2448,7 +2441,7 @@ progress::-moz-progress-bar {
   }
   .game-side-actions {
     left: 12px;
-    top: 89px;
+    top: 104px;
     gap: 8px;
   }
   .game-side-actions button {
@@ -2484,7 +2477,6 @@ progress::-moz-progress-bar {
     padding: 4px 6px;
   }
   .game-offline-note {
-    bottom: 88px;
     font-size: 10px;
   }
   .ranch-window {
@@ -2643,7 +2635,7 @@ progress::-moz-progress-bar {
   .game-side-actions {
     display: flex;
     flex-direction: row;
-    top: 84px;
+    top: 104px;
   }
   .game-side-actions .album-menu {
     position: static;

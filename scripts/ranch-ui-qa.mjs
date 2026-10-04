@@ -30,6 +30,39 @@ server.stderr.on("data", (x) => (serverLog += x));
 const failures = [],
   results = [];
 let browser;
+// Check the visible hint against the whole picker row, including off-screen pills.
+async function checkHudClear(page) {
+  const boxes = await page.evaluate(() => {
+    const rect = (selector) => {
+      const r = document.querySelector(selector).getBoundingClientRect();
+      return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+    };
+    return {
+      note: rect(".game-offline-note"),
+      profile: rect(".game-profile"),
+      menus: [...document.querySelectorAll(".game-side-actions button")].map(b => {
+        const r = b.getBoundingClientRect();
+        return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+      }),
+      picker: rect(".animal-picker"),
+      tools: rect(".ranch-toolbelt"),
+      width: innerWidth,
+      height: innerHeight,
+    };
+  });
+  const overlaps = (a, b) =>
+    a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  assert(!overlaps(boxes.note, boxes.picker), "Offline hint covers animal selection");
+  assert(!overlaps(boxes.note, boxes.tools), "Offline hint covers game tools");
+  assert(boxes.menus.every(b => !overlaps(boxes.profile, b)),
+    "Profile card covers side menu buttons");
+  assert(boxes.note.left >= boxes.profile.left && boxes.note.right <= boxes.profile.right &&
+    boxes.note.top >= boxes.profile.top && boxes.note.bottom <= boxes.profile.bottom,
+    "Offline hint escapes profile card");
+  assert(boxes.profile.right <= boxes.width && boxes.profile.bottom <= boxes.height,
+    "Profile card escapes viewport");
+  return boxes;
+}
 try {
   let started = false;
   for (let i = 0; i < 80; i++) {
@@ -146,6 +179,7 @@ try {
         viewportLayout.scrollH <= size.height,
         "Immersive game requires page scrolling",
       );
+      await checkHudClear(page);
       assert(
         await page.getByRole("button", { name: /添饲料/ }).isVisible(),
         "Phone feeding fallback missing",
@@ -419,7 +453,8 @@ try {
           .evaluate((c) => c.toDataURL());
         const touch =
           engine === "chromium" ? await context.newCDPSession(page) : null;
-        const gestureY = c.y + c.height * 0.36;
+        // Landscape HUD sits above the open lawn; start pinch on the canvas, not a menu.
+        const gestureY = c.y + c.height * (size.width > size.height ? 0.5 : 0.36);
         const gestureX = c.x + c.width * 0.82;
         if (touch) {
           await touch.send("Input.dispatchTouchEvent", {
@@ -440,6 +475,10 @@ try {
             beforePan,
             "Touch drag did not pan",
           );
+          assert(await page.evaluate(({ x, y }) =>
+            [x + 60, x + 90, x + 180, x + 210].every(px =>
+              document.elementFromPoint(px, y)?.matches(".pasture-canvas")),
+            { x: c.x, y: gestureY }), "Pinch fixture starts over HUD, not canvas");
           await touch.send("Input.dispatchTouchEvent", {
             type: "touchStart",
             touchPoints: [
@@ -540,6 +579,7 @@ try {
             0,
             "Visit left modal open over scene",
           );
+          await checkHudClear(page);
           await page.screenshot({ path: folder + "/visitor.png" });
           await page
             .getByRole("button", { name: "回我的牧场", exact: true })
@@ -552,6 +592,7 @@ try {
           await neighbor.close();
         }
       }
+      await checkHudClear(page);
       const foodPurchases = resourceActions.filter((a) => a.type === "buyFeed");
       assert.equal(
         foodPurchases.length,
@@ -703,6 +744,8 @@ try {
         checked: [
           "registration",
           "viewport-filling-scene",
+          "hint-clear-of-animal-picker-and-tools",
+          "hint-within-profile-card",
           "no-lobby-header",
           "no-page-scroll",
           "side-feeder-touch",
