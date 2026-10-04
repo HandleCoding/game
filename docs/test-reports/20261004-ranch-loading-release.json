@@ -1,0 +1,46 @@
+{
+  "sourceCommit": "65ab97be6334d9cd6a6ad8e129c692e87f51dfa6",
+  "release": "/opt/pair-play/releases/v2.5.2-20261004-183539",
+  "version": "2.5.2",
+  "databaseBackup": "/var/backups/pair-play/postgres-prod-20261004-183541.dump",
+  "before": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "after": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "unitBackup": "/var/backups/pair-play/pair-play-before-20261004-183541.service",
+  "caddyBackup": "/var/backups/pair-play/Caddyfile-before-20261004-183541",
+  "schemaVersion": 2,
+  "completedAt": "2026-10-04T18:35:42+0800",
+  "publicHealth": {
+    "ok": true,
+    "version": "2.5.2",
+    "database": "postgresql"
+  },
+  "publicAssets": [
+    {
+      "name": "RanchGame-BLDZGdj8.js",
+      "sha256": "b9c822b3b0186caa2b4616630125a76ac20edb686f22ece819052c776cb8abc1",
+      "matchesBuild": true
+    },
+    {
+      "name": "RanchGame-BOJjy-KJ.css",
+      "sha256": "da3a90b6f44f529d32b5ac3c6104e945618e89ef34e9beed32fbd5298cb7a48f",
+      "matchesBuild": true
+    }
+  ],
+  "services": {
+    "pair-play": "active",
+    "pair-play-dev": "active",
+    "caddy": "active"
+  }
+}

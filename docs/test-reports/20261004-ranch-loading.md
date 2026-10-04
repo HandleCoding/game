@@ -15,4 +15,4 @@ RanchLoading.vue 为统一自适应界面，图形内联SVG，无新增外部素
 - 现有牧场交互回归 Chromium / WebKit 各五组、共十组（320/390/430竖屏、844横屏、1440桌面）全部通过。认养时面板选择在新资源完成后恢复；开发中发现并修复了提前关闭商店的问题。报告 ranch-loading-ui-{chromium,webkit}.json。不把模拟视口说成实体手机。
 
 ## 正式发布
-待验收通过后按release-postgres发布，结果记录于20261004-ranch-loading-release.json。
+2026-10-04T18:35:42+0800 已完成正式发布。目录 /opt/pair-play/releases/v2.5.2-20261004-183539；源提交 65ab97be6334d9cd6a6ad8e129c692e87f51dfa6。数据库备份 /var/backups/pair-play/postgres-prod-20261004-183541.dump，原账号/会话/结果/参与者/长期档案数量一致，既有有效会话验证成功。公网healthz返回2.5.2/postgresql，正式RanchGame JS/CSS与构建逐字节一致。pair-play、pair-play-dev、caddy均active。详见20261004-ranch-loading-release.json。
