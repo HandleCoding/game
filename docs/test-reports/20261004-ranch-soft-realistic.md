@@ -28,4 +28,4 @@
 
 ## 正式发布
 
-使用 scripts/release-postgres.py --deploy；备份、源提交、发布目录、会话与数据数量校验将在同日期 ranch-soft-realistic-release.json 记录。服务端使用旧存档、物种 ID 和参数，无数据导入或重置。
+使用 scripts/release-postgres.py --deploy；备份、源提交、发布目录、会话与数据数量校验已记录在 20261004-ranch-soft-realistic-release.json。公网健康版本 2.4.0 / PostgreSQL，九张素材经公网读取的 SHA-256 与已验收原文件逐一相同。服务端使用旧存档、物种 ID 和参数，无数据导入或重置。

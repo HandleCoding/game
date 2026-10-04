@@ -1,13 +1,13 @@
 # 新架构接手状态
 
-更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户明确授权上线一起牧场 2.3.1。当前发布、备份与验证见 [当前食槽修正报告](test-reports/20261004-ranch-side-feeder.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
+更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户明确授权上线一起牧场 2.4.0。当前发布、备份与验证见 [当前柔和写实报告](test-reports/20261004-ranch-soft-realistic.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
 
 ## 环境
 
 | 项目 | 正式 | 开发 |
 | --- | --- | --- |
 | 主机 | 京东云 117.72.116.83 | 同一主机 |
-| 代码 | /opt/pair-play/releases/v2.3.1-20261004-152536 | /opt/pair-play-dev |
+| 代码 | /opt/pair-play/releases/v2.4.0-20261004-165553 | /opt/pair-play-dev |
 | 服务 | pair-play.service | pair-play-dev.service |
 | 用户 | pairplay | pairplaydev |
 | 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 5e6691afeeb56b27ba6e83fe0986df56953aa008；后续验收文档提交看 git log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 10262458a8c150dd812cfc1e5741e90bc3828a0e；后续验收文档提交看 git log。
 
 ## 已落地
 
@@ -95,6 +95,6 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 
 移除中央大食槽，复用背景左侧原设施，增加小木牌“食槽”；实体 / 木牌点击可添粮，手机保留底部入口。原中央 PNG 为历史归档，不再加载。源码 RanchScene.vue，文档 ranch-immersive.md / test-reports/20261004-ranch-side-feeder.md。两种浏览器共10组验收通过，后端规则和 schema 未变。正式目录 /opt/pair-play/releases/v2.3.1-20261004-152536，源提交 5e6691afeeb56b27ba6e83fe0986df56953aa008；已备份并核验原账号 / 存档 / 有效会话，见 20261004-ranch-side-feeder-release.json。
 
-## 2026-10-04 柔和写实动物 2.4.0（开发验收完成）
+## 2026-10-04 柔和写实动物 2.4.0（已上线）
 
-用户选择 A 柔和写实。36 种独立幼年 / 成年、四帧步态；真实脚底、原比例、物种 / 纵深 / 密度体量、软阴影与错行站位。背景和侧边食槽沿用。素材 / 提示词 ranch-soft-realistic-assets.md，裁切脚本 analyze-soft-ranch-atlas.py，新元数据 soft-atlas-metadata.ts。类型 / 构建 / 两种浏览器 10 组 UI 通过；实际查看截图，见 test-reports/20261004-ranch-soft-realistic.md。后端规则和 schema 不变，未重跑 18 项后端测试。正式发布信息见后续本次发布报告。
+用户选择 A 柔和写实。36 种独立幼年 / 成年、四帧步态；真实脚底、原比例、物种 / 纵深 / 密度体量、软阴影与错行站位。背景和侧边食槽沿用。素材 / 提示词 ranch-soft-realistic-assets.md，裁切脚本 analyze-soft-ranch-atlas.py，新元数据 soft-atlas-metadata.ts。类型 / 构建 / 两种浏览器 10 组 UI 通过；实际查看截图，见 test-reports/20261004-ranch-soft-realistic.md。后端规则和 schema 不变，未重跑 18 项后端测试。正式目录 /opt/pair-play/releases/v2.4.0-20261004-165553，发布源提交 10262458a8c150dd812cfc1e5741e90bc3828a0e；正式已备份并核验原账号 / 存档数量和有效会话。公网健康与九张素材的 SHA-256 均通过；发布明细见 test-reports/20261004-ranch-soft-realistic-release.json。

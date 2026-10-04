@@ -1,0 +1,24 @@
+{
+  "sourceCommit": "10262458a8c150dd812cfc1e5741e90bc3828a0e",
+  "release": "/opt/pair-play/releases/v2.4.0-20261004-165553",
+  "version": "2.4.0",
+  "databaseBackup": "/var/backups/pair-play/postgres-prod-20261004-165555.dump",
+  "before": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "after": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "unitBackup": "/var/backups/pair-play/pair-play-before-20261004-165555.service",
+  "caddyBackup": "/var/backups/pair-play/Caddyfile-before-20261004-165555",
+  "schemaVersion": 2,
+  "completedAt": "2026-10-04T16:55:56+0800"
+}
