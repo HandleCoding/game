@@ -1,0 +1,30 @@
+[Unit]
+Description=Playroom cloud development environment
+After=network.target
+
+[Service]
+Type=simple
+User=pairplaydev
+Group=pairplaydev
+WorkingDirectory=/opt/pair-play-dev
+ExecStart=/usr/bin/node /opt/pair-play-dev/server.mjs
+Environment=NODE_ENV=development
+Environment=HOST=127.0.0.1
+Environment=PORT=3211
+Environment=DATA_DIR=/var/lib/pair-play-dev
+Environment=PUBLIC_ORIGIN=http://localhost:3211
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/pair-play-dev
+CPUQuota=100%
+MemoryHigh=512M
+MemoryMax=768M
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

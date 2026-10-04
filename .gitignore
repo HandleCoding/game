@@ -1,0 +1,6 @@
+data/
+artifacts/
+*.tar.gz
+.env
+.env.*
+node_modules/
