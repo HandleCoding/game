@@ -1,86 +1,57 @@
-# 发布、备份与恢复
+# 发布、迁移与恢复
 
-当前正式服务 `/opt/pair-play` + `pair-play.service` + SQLite；开发服务 `/opt/pair-play-dev` + `pair-play-dev.service`。目标 PostgreSQL 的迁移需独立演练和计划，不在普通静态文件发布中顺便切库。
+当前正式采用版本目录 + PostgreSQL。查看实际版本：
 
-## 发布前
+```sh
+systemctl show pair-play -p WorkingDirectory -p ExecStart
+curl --fail http://127.0.0.1:3210/healthz
+curl --fail https://game.aicoding.ltd/healthz
+```
 
-确认当前用户授权的变更范围。先在开发环境完成代码、测试与可审查结果，检查工作区差异，并记录开发提交、测试报告和发布文件列表。
+开发环境完成实现、类型 / 构建 / 测试和浏览器验收后，再发布用户授权的版本。不要在正式发布目录编辑运行文件。开发 3211、测试 3221 与正式 3210 分开。
+
+## 代码发布
+
+1. 开发 git status / diff，提交已验收内容并记录提交。
+2. 准备全新 /opt/pair-play/releases/版本，包含 dist、web-dist、package.json / lock、工作区 package 文件；npm ci --omit=dev --ignore-scripts 装运行依赖。发布材料不能包含开发库、.env、凭据或测试账号。
+3. 备份现有 service 和正式数据库；如果新增 schema，先在开发演练并明确兼容 / 回滚边界。
+4. 更改 pair-play.service 的 WorkingDirectory / ExecStart 指向新版本，保留 pairplay、3210、正式 PUBLIC_ORIGIN、/etc/pair-play/prod.env 及现有安全配置。
+5. 校验 unit，daemon-reload，按活动对局选择维护时机重启 pair-play；检查本机健康、公开 HTTPS、原账号 / 会话、SSE、对局与复盘。
+6. 更新 handover 和报告中的版本 / 提交 / 备份 / 已验收内容。
+
+`scripts/prepare-release.py`、`scripts/cutover.py` 为本次从 SQLite 首次切换准备，不能当成日常部署脚本反复执行。prepare-release 读取旧 service 模板；正式已经迁移时，应从当前实际 unit 保留配置进行后续发布。
+
+## 数据备份
 
 ```sh
 cd /opt/pair-play-dev
-git status --short --branch
-git diff --stat
-systemctl is-active pair-play pair-play-dev caddy
-curl --fail --silent http://127.0.0.1:3211/healthz
-curl --fail --silent http://127.0.0.1:3210/healthz
+python3 scripts/backup-postgres.py
 ```
 
-当前 `npm test` 见 testing-guide，不在正式工作目录启动临时服务。发布材料只包含源码、前端资源、必要配置和文档；不能包含开发数据库、artifacts、缓存、密钥或开发服务的环境文件。
+备份到 /var/backups/pair-play，custom 格式数据库 dump + 角色 / 权限 SQL，目录 700、文件 600。角色文件含认证相关信息，不能展示、提交或置于网页可访问目录。此处提供手动备份工具，未声称已经设置自动备份定时器。
 
-## 代码与数据库备份
+pg_dump 一致性备份不需要暂停普通写入。恢复演练先建独立恢复库并验证，不覆盖正式库。重要更新前保存数据库、代码和服务 / Caddy 配置，记录对应版本。
 
-发布前保存正式源代码快照到权限受控的备份目录，记录时间与对应版本。正式项目当前没有 data 子目录，数据库在 `/var/lib/pair-play`；以后仍需显式排除任何私有数据文件。
+旧 SQLite 及一致性备份保留，路径在迁移报告；不再接受正式写入。旧 results 不含完整过程，恢复 / 迁移都不能补造未保存的历史。
 
-SQLite 备份使用在线备份 API，或在明确维护窗口暂停服务后保存一致的数据库及 WAL / SHM 状态；运行中直接复制单个 `.sqlite` 文件可能遗漏已提交数据。备份放 `/var/backups/pair-play` 等非网页可访问位置，目录权限 700、文件 600，开发和正式备份分开。
+## 本次首次数据切换
 
-Python 标准 sqlite3 的在线备份操作示例如下，先确定唯一目标文件和已有备份目录权限，再执行；不要把示例目标反复覆盖成唯一备份：
+开发演练和 14 项测试通过后，准备不可变发布目录。Caddy 仅游戏域名短暂 503 维护，停止旧应用以收敛所有写入；此时再生成最新 SQLite 一致性备份，并全事务导入空正式 PostgreSQL。
 
-```python
-import sqlite3
-from pathlib import Path
+保留 IDs、盐 / 哈希、会话、结果关联、活动房间；逐字段核对，转换旧快照到 v2，按游戏版本校验。启动新应用后在公网仍维护期间检查数据库健康及所有有效旧会话的身份，成功才恢复域名入口。
 
-source = Path('/var/lib/pair-play/pair-play.sqlite')
-target = Path('/var/backups/pair-play/prod-具体时间.sqlite')
-if target.exists():
-    raise RuntimeError('备份目标已存在，请使用新的时间标识')
-with sqlite3.connect(source.as_uri() + '?mode=ro', uri=True) as src:
-    with sqlite3.connect(target) as dst:
-        src.backup(dst)
-        if dst.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
-            raise RuntimeError('备份完整性检查失败')
-target.chmod(0o600)
-```
+若入口尚未恢复且切换失败，可保留导入库供调查、恢复旧 unit 与原 SQLite 服务。入口已经开放且可能产生新写入后，不能自动退回旧 SQLite，否则会丢失新注册和游戏数据。
 
-这只备份数据库，不代替代码、systemd 和 Caddy 配置备份。恢复演练在受控测试数据库路径进行，不能通过恢复测试覆盖正式文件。
+## 回滚与恢复
 
-## 当前代码发布
+普通代码问题优先回滚到兼容当前 PostgreSQL schema 的上一代码版本，保持新玩家写入。带不可逆结构变更时使用已演练的数据处理方案，不直接覆盖备份。
 
-1. 将已验收文件准备到独立发布暂存目录，包含明确文件清单和测试记录。
-2. 备份正式代码和需要的配置；涉及数据结构时，先备份数据库并定义回滚边界。
-3. 只将正式需要的源码 / 静态资源更新到 `/opt/pair-play`，不要发布 `.git`、开发数据和开发 service。正式运行配置仍为 pairplay / 3210 / `/var/lib/pair-play` / 正式 PUBLIC_ORIGIN。
-4. 后端有变更时协调活动对局的维护时机，再重启 `pair-play`。纯静态文件更新通常不需要重启后端。不要因代码发布重启 Milvus 或其他无关服务。
-5. 检查正式本机健康、公开 HTTPS 入口、登录、SSE、邀请、对局与复盘；记录最终结果与版本。
+新正式数据库已有写入后，旧 SQLite 仅是迁移时快照，绝不能作为直接回滚的数据源。需要暂停写入、保存新写入并制定同步 / 恢复方案；先保护新用户数据，再处理版本问题。
 
-```sh
-systemctl restart pair-play
-systemctl is-active pair-play caddy
-curl --fail --silent http://127.0.0.1:3210/healthz
-curl --fail --silent https://game.aicoding.ltd/healthz
-journalctl -u pair-play -n 80 --no-pager
-```
-
-上面的重启只在发布确有需要时执行，不能作为 Agent 初次检查时的默认操作。活跃对局重启后只保留 60 秒重连窗口，不等于对局完全无感。
-
-如果需要更新 systemd 或 Caddy，先备份并检查实际配置，Caddy 校验通过再 reload；保留原有其他域名配置。`deploy/install.sh` 是正式首次安装脚本，不能在开发目录直接拿来启动开发服务。
-
-## 回滚
-
-普通代码发布失败：恢复本次发布前对应版本源码与配置，必要时重启正式服务，复查健康与用户流程。不要顺手回滚数据库覆盖发布后的真实玩家写入。
-
-带数据库迁移的发布：在切换前明确暂停写入 / 同步方式、可逆迁移与旧版本兼容边界。新版本已有正式写入时，需要保存和处理这些写入，不能直接用旧备份覆盖。否则可能丢失玩家进度。
-
-恢复 SQLite 文件前停止对应环境服务，只针对该环境的已验证路径操作，将备份恢复给对应运行账号；避免残留旧 WAL / SHM 与恢复文件不一致。确认完整性后启动并验证。具体恢复脚本应先在开发环境演练，不凭文档示例直接对正式路径做删除操作。
-
-## PostgreSQL 上线前
-
-建 `playroom_dev` / `playroom_prod` 独立数据库和角色；连接凭据在受保护配置中保存。PostgreSQL 保持本机连接，外部管理走 SSH 隧道，数据目录持久化到服务器磁盘。
-
-开发库演练 schema、旧数据迁移、恢复、应用切换，验证数量、关系、原密码登录、会话及活动房间。正式切换避免两套存储同时各自接受写入；备份策略包括数据库与恢复所需的角色 / 权限配置。正式数据产生后再次演练恢复到独立库。
+Caddy 配置修改先备份、validate，再 reload，保留其他域名。Milvus 和无关服务不随发布重启。新 API 单进程；扩容之前需要共享在线状态和房间归属机制。
 
 ## 故障定位
 
-先确认故障在开发还是正式环境，再检查该服务日志、健康接口、端口、磁盘和权限。HTTP 正常但玩家不在线，检查 SSE 是否连接；邀请依赖在线连接，单纯登录不等于在线。
+检查对应环境的 systemctl / journalctl、healthz、数据库连接和磁盘。健康接口会实际 SELECT 1。SSE 决定在线状态；登录会话不等于在线连接。
 
-页面显示请求来源不匹配，检查 PUBLIC_ORIGIN 与浏览器实际 scheme / host / port。HTTPS 登录 Cookie 设置依赖 PUBLIC_ORIGIN。不要通过关闭 Origin / 权限校验掩盖配置问题。
-
-每次部署后更新 handover 与测试报告；若目标框架、数据库、目录、端口或入口实际变更，同步更新 AGENTS 和本手册。
+Origin / Cookie 错误检查 PUBLIC_ORIGIN、开发 ALLOWED_ORIGINS、浏览器真实 host / port。数据库凭据通过 EnvironmentFile 注入，不为排查而输出密钥。不要关闭认证或校验掩盖配置错误。

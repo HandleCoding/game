@@ -7,12 +7,14 @@ Type=simple
 User=pairplaydev
 Group=pairplaydev
 WorkingDirectory=/opt/pair-play-dev
-ExecStart=/usr/bin/node /opt/pair-play-dev/server.mjs
+ExecStart=/usr/bin/node /opt/pair-play-dev/dist/apps/api/src/main.js
 Environment=NODE_ENV=development
+EnvironmentFile=/etc/pair-play/dev.env
 Environment=HOST=127.0.0.1
 Environment=PORT=3211
 Environment=DATA_DIR=/var/lib/pair-play-dev
 Environment=PUBLIC_ORIGIN=http://localhost:3211
+Environment=ALLOWED_ORIGINS=http://localhost:3211,http://127.0.0.1:3211
 Restart=on-failure
 RestartSec=3
 UMask=0077

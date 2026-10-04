@@ -1,5 +1,8 @@
 # 游戏大厅技术选型与演进
 
+> 2026-10-04 实施状态：Vue / TypeScript / Vite、Fastify / TypeScript、PostgreSQL、游戏注册、v2 快照、事务和动作去重已落地；开发及正式环境见 [handover](handover.md)，最终数据切换见 [迁移报告](test-reports/20261004-architecture-migration.md)。本文保留原设计和扩展说明，旧的“尚未迁移”表述属于迁移前状态。尚未完成具体农场 / 牧场、经济表、worker 和多实例协调，不能视为全部未来玩法已实现。
+
+
 更新：2026-10-04。背景：平台将包含短局牌类、棋类游戏，以及按账号持续保存的农场、牧场等养成游戏。PostgreSQL 已获用户认可；开发与测试也安排在京东云主机。本文是目标选型和部署设计，当前线上代码仍为原生 JavaScript + Node.js HTTP + SQLite，尚未进行框架或数据库迁移。
 
 ## 当前已经有后端

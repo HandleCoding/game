@@ -1,40 +1,34 @@
 # 京东云游戏大厅：Agent 接手说明
 
-本目录在云端的开发工作区是 `/opt/pair-play-dev`。先读本文和 `docs/handover.md`，再读任务涉及的设计。用户的后续指令优先于这里的工作约定。
+用户后续指令优先。开发和测试都在京东云 `117.72.116.83` 的 `/opt/pair-play-dev`，浏览器可在电脑、手机访问云端服务。
 
-## 必读顺序
+先读 `docs/handover.md` → `docs/development-guide.md` → `docs/testing-guide.md`。涉及架构再读 technology-decisions、multi-game-architecture、persistent-game-architecture；正式发布读 deployment-runbook。
 
-1. `docs/handover.md`：实际部署、已完成内容、限制和下一阶段。
-2. `docs/development-guide.md`：开发目录、运行方法与工作流程。
-3. `docs/testing-guide.md`：云端自动测试、双端人工验收。
-4. `docs/technology-decisions.md`：认可的技术栈与迁移边界。
-5. `docs/multi-game-architecture.md` 与 `docs/persistent-game-architecture.md`：短局游戏与持续养成的模块契约。
-6. `docs/deployment-runbook.md`：正式发布、备份和恢复。
+## 实际技术栈
 
-## 环境与工作边界
+Vue 3 + TypeScript + Vite；Node.js + Fastify + TypeScript；PostgreSQL 18；HTTP + SSE；Caddy HTTPS。猜数字通过游戏注册表接入。短局与长期型有独立引擎 / 存档契约。长期游戏的具体玩法、经济表和 worker 尚未上线。
 
-- 用户要求开发和测试都在京东云 `117.72.116.83` 上进行；浏览器可以在用户电脑、手机上访问云端应用。无需在 Windows 运行另一个开发数据库。
-- 编辑、构建、测试用 `/opt/pair-play-dev`；正式源码 `/opt/pair-play`、正式数据 `/var/lib/pair-play`。
-- 开发服务 `pair-play-dev.service`，回环端口 3211，独立数据 `/var/lib/pair-play-dev`；正式服务 `pair-play.service`，端口 3210。
-- 当前两个环境仍是 Node.js + 原生 JS + SQLite。Vue / TypeScript / Fastify / PostgreSQL 是后续目标，尚未实施。
-- 不在正式目录边编辑边测试，不将开发数据库、会话、测试账号或秘密数字覆盖到正式环境。测试不能清理正式库。
-- `deploy/install.sh` 和 `deploy/pair-play.service` 是正式安装文件；不要为启动开发环境直接执行它们。
-- 用户指定保留 Milvus；不修改、停止或重新部署无关服务。原已停止的 OpenClaw、Hermes、openHusky、RustDesk 不因本项目开发而重启。
+- 开发源码 `/opt/pair-play-dev`，服务 `pair-play-dev.service`，回环端口 3211，数据库 `playroom_dev`。
+- 正式发布目录在 `/opt/pair-play/releases/`，真实版本以 `systemctl show pair-play -p WorkingDirectory` 为准，端口 3210，数据库 `playroom_prod`。
+- 两库角色隔离；环境文件 `/etc/pair-play/dev.env`、`prod.env` 不进仓库。5432 仅本机监听，远程管理走 SSH。
+- 编辑 / 构建 / 测试在开发目录。正式版本使用构建产物和运行依赖；不要将开发数据、密钥或测试账号导入正式库。
+- 旧根目录 server.mjs、game.mjs、public、test 是迁移前兼容参考，不是新服务入口。禁止为了运行旧脚本重新启用正式 SQLite 写入。
+- Milvus 保留；不修改或重启无关服务。原已停止的 OpenClaw、Hermes、openHusky、RustDesk 不因本项目开发恢复。
 
-## 实现约定
+## 开发约定
 
-- 当前四位数字是字符串 `0000`–`9999`，允许重复和前导零；只返回位置命中数量，不标出命中的位置。
-- 大厅支持多个注册玩家，无需加好友；猜数字是其中的双人游戏。后续短局允许多人，长期存档独立于房间。
-- HTTP、SSE 和恢复路径必须使用按玩家裁剪的视图。禁止把服务端快照或对方秘密送到客户端。
-- 禁用历史默认关闭；开启时进行中隐藏完整历史，结束后双方可查看本局全部猜测及命中数。
-- 日间 / 夜间、电脑 / 手机及混合设备都需要可用；保留输入草稿、焦点、历史滚动和软键盘体验。
-- 随机、时间、权限、胜负和资源结算以服务器为准。请求去重、版本校验和事务是目标重构中必须实际实现的能力，不能只靠 TypeScript 类型声称完成。
-- 新游戏按注册表和独立模块接入；不持续往大厅通用代码里堆专属规则。农场 / 牧场不能依赖对局房间保存长期进度。
+新游戏按注册表、独立规则和独立 Vue 组件接入；平台不处理秘密数字、牌面或作物规则。共享 contracts 只能包含公开协议。HTTP、SSE、历史复盘和恢复路径都要按玩家权限生成视图。
 
-## 每次交付
+猜数字为字符串 `0000`–`9999`，位置命中只反馈数量。大厅无需加好友；所有在线空闲玩家可邀请，15 秒接受 / 拒绝窗口。记忆模式默认关闭；开启时进行中隐藏历史，结束后双方完整复盘。
 
-先核对工作区、运行服务和文档状态，再做修改；已有其他 Agent 的改动不能直接覆盖。测试入口见 testing-guide，同一时间仅跑一组占用 3221 的集成测试。
+保留日夜主题、手机 / 电脑混合对战、输入草稿 / 焦点 / 滚动、软键盘和减少动态效果。时间、随机、权限、胜负、资源都由后端决定。
 
-修改后记录做了什么、实际验证了什么、尚未完成什么；更新 `docs/handover.md`，重要选择补到相关架构文档。正式发布遵循当前用户授权和 deployment-runbook；不要把写了方案、测试通过或重启成功等同于迁移完成。
+使用事务、requestId、matchId / revision 实际实现一致性；不可用类型检查代替运行时校验。长期进度独立于房间，具体资源互动必须另做规则和并发测试。
 
-不要将密码、会话 Cookie、数据库连接密钥、私钥或真实玩家秘密写入文档、提交、日志示例或前端产物。
+## 交付
+
+先检查 git status 和运行环境，不覆盖其他 Agent 的工作；新分支使用 `codex/` 前缀。测试只连接开发库，独立 schema，固定 3221 集成端口要加锁。
+
+修改后记录实际验证、未完成项、源提交和正式版本，更新 handover。用户授权的发布按 runbook 完成，数据库迁移必须备份和验证。正式新版本已经接受写入后，不能自动退回旧 SQLite 丢失新用户。
+
+不要在文档、提交、日志、工具输出或前端产物暴露密码、会话、连接密钥、私钥或真实玩家秘密。

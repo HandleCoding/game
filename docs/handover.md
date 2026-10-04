@@ -1,79 +1,76 @@
-# 接手状态
+# 新架构接手状态
 
-更新：2026-10-04。当前线上只有猜数字；以下环境表是本次开发工作区建成后的配置，验收日志保存在 `docs/test-reports/`。开发副本以当前正式源码为基线，没有复制正式玩家数据库。
+更新：2026-10-04。本次按用户授权实施架构和现有注册数据迁移。正式切换结果、最终版本、备份路径与数据数量以 [迁移报告](test-reports/20261004-architecture-migration.md) 为准。
 
-## 实际环境
+## 环境
 
-| 项目 | 正式 | 开发 / 测试 |
+| 项目 | 正式 | 开发 |
 | --- | --- | --- |
-| 主机 | `117.72.116.83`，京东云 Linux | 同一主机 |
-| 代码 | `/opt/pair-play` | `/opt/pair-play-dev` |
-| 服务 | `pair-play.service` | `pair-play-dev.service` |
-| 运行账号 | `pairplay` | `pairplaydev` |
-| 监听 | `127.0.0.1:3210` | `127.0.0.1:3211` |
-| 数据 | `/var/lib/pair-play/pair-play.sqlite` | `/var/lib/pair-play-dev/pair-play.sqlite` |
-| 网页入口 | `https://game.aicoding.ltd/`，Caddy | SSH 转发后 `http://localhost:3211/` |
-| Node.js | `v22.22.1`，`/usr/bin/node` | 同一运行时 |
-| 数据库 | SQLite WAL | 独立 SQLite WAL |
+| 主机 | 京东云 117.72.116.83 | 同一主机 |
+| 代码 | /opt/pair-play/releases/具体版本 | /opt/pair-play-dev |
+| 服务 | pair-play.service | pair-play-dev.service |
+| 用户 | pairplay | pairplaydev |
+| 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
+| 数据库 | playroom_prod | playroom_dev |
+| 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
+| 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-开发目录有独立 Git 仓库，用于保存基线及后续改动；尚未配置远程仓库。其分支、最新提交和工作区以 `git status` 实际输出为准。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 独立仓库，无远程；实际分支 / 提交看 git status/log。
 
-服务器检查：4 核、约 16GB 内存，2026-10-04 检查时可用内存约 12GB、磁盘剩余约 59GB。容量不是承诺，后续观察负载。开发服务有资源限制，共享主机仍有共同故障边界。
+## 已落地
 
-开发库初始为空。首次测试注册新账号，不能用“线上账号无法登录开发环境”判断认证出错；两个环境的账号和会话独立。开发入口尚未公开为 IP 端口或测试域名，云安全组和 Caddy 未为其改变。
+- Vue 组件化大厅、认证弹窗、邀请、在线玩家和猜数字界面；TypeScript 前后端与共享 contracts，Vite 构建，游戏界面按注册表懒加载。
+- Fastify 请求 schema 与 Origin 校验，兼容原 /api/room/*；新 `POST /api/rooms/:code/actions` 使用 requestId / matchId / expectedRevision。
+- 游戏注册表区分 match / persistent。创建 / 恢复按 gameId 和版本分发；平台容量使用元数据，三人测试引擎验证多人流程。
+- PostgreSQL users / sessions / results / result_players / active_rooms；事务保存变化房间、一次性结算、持久化动作回执。写入失败回滚内存状态，已覆盖测试。
+- 新结果记录 game_id / game_version / match_id / settings_json / review_json，参与者 outcome / score；旧结果摘要保留。
+- 快照 v2 包含游戏、规则版本、对局编号、revision、成员和私有引擎状态；旧快照经导入器转换。
+- 长期档案基础：首次进入唯一、行锁、时间结算接口、动作事务、请求去重、主人 / 访客视图；world_jobs 表已建，具体 worker 未启用。
+- 原账号 ID、昵称、盐 / 密码哈希、会话、结果和活动房间迁移，不导入开发测试账号。真实数据演练与测试夹具原密码登录均验证。
 
-## 已完成的产品行为
+## 源码地图
 
-- 游戏大厅、注册 / 登录、在线玩家列表；无需加好友即可邀请空闲玩家，显示所在游戏和开局时长。
-- 双人猜数字：双方准备，分别锁定四位数字，再掷骰子，高点先猜，平局重掷。数字为 `0000`–`9999` 的字符串。
-- 每次只返回相同位置命中数量。默认 30 秒，可选 15 / 30 / 45 / 60 / 90 秒，超时跳过。
-- 邀请通知接受 / 拒绝，15 秒未响应自动拒绝；服务器控制权限、骰子、计时和结果。
-- 默认可看猜测记录；记忆模式进行中不发送完整历史。输入区显示对方最近一次猜测和命中数，己方反馈短暂展示。
-- 结束后两种模式都可查看本局双方完整记录，默认全部、按时间排列，可筛选；重新开局清空。
-- 底部固定输入区，对方回合可预写，自己的回合才能提交；轮到自己有淡绿色边框提示。
-- 掷骰动画、不同命中提示、胜利效果；日间 / 夜间主题和减少动态效果。
-- 手机 / 电脑同一规则，可混合对战，草稿、焦点、历史滚动与软键盘有专门处理。
-- 账号、会话、结果摘要和活动房间持久化；重启后进行中房间暂停，参与者有 60 秒重连窗口。
-
-## 当前源码地图与接口
-
-| 文件 | 职责 |
+| 目录 / 文件 | 职责 |
 | --- | --- |
-| `server.mjs` | HTTP、认证、SQLite、在线状态、邀请、广播和房间保存 / 恢复 |
-| `game.mjs` | `Duel` 猜数字规则、阶段、计时、隐私视图 |
-| `public/app.js` | 大厅、房间、登录、输入、动画、SSE 与复盘界面 |
-| `public/styles.css` | 主题、响应式布局与效果 |
-| `public/theme.js` | 首屏主题初始化，避免主题闪烁 |
-| `test/*.test.mjs` | 10 项规则测试、1 项真实 HTTP 集成测试 |
-| `deploy/` | 正式和开发 systemd 配置、正式安装脚本 |
+| apps/api/src/main.ts | Fastify 路由、校验、静态文件、启动 / 停止 |
+| apps/api/src/platform/accounts.ts | 账号、scrypt、会话 |
+| apps/api/src/platform/rooms.ts | 房间、在线 / 邀请、串行调度、事务、按用户广播 |
+| apps/api/src/platform/db/ | PostgreSQL 连接、事务、schema migration |
+| apps/api/src/platform/persistent.ts | 持续档案、时间结算、事务动作 |
+| apps/api/src/games/ | 注册、契约、guess-number 定义 / 引擎 |
+| apps/web/src/platform/ | 大厅、连接和通用玩家界面 |
+| apps/web/src/games/ | 界面注册与猜数字组件 / 骰子 |
+| packages/contracts/src/ | 公开协议；平台视图与猜数字专属视图区分 |
+| scripts/import-sqlite.ts | 一次性导入与逐字段校验，拒绝非空目标 |
+| scripts/backup-sqlite.py | 旧库一致性私有备份 |
+| scripts/prepare-release.py、cutover.py | 本次首次迁移发布；不可当成日常部署脚本反复执行 |
+| test-v2/ | 新架构的 14 项云端测试 |
 
-当前公共接口：`GET /healthz`、`GET /api/catalog`；注册 / 登录 `POST /api/register`、`POST /api/login`。
+旧 server.mjs / game.mjs / public / test 留作兼容参考，服务不再以其为新入口。
 
-认证后：`GET /api/state`、`GET /api/events`（SSE），`POST /api/logout`，`POST /api/invite`、`POST /api/invite/respond`，以及 `POST /api/room/{create,join,leave,settings,ready,secret,dice,guess,rematch}`。参数和状态结构以 server.mjs、game.mjs 及集成测试为准；目标通用 API 尚未替代这些接口。
+## 接口
 
-SSE 事件有 `state`、`notice`、`logout`，每秒心跳。在线状态取决于 SSE 连接，不是登录会话是否存在。会话最长 30 天；HTTPS PUBLIC_ORIGIN 会启用 Secure Cookie。开发 PUBLIC_ORIGIN 为 `http://localhost:3211`，不能直接换成 `127.0.0.1` 地址后期待 Origin 校验仍匹配。
+原 catalog、注册 / 登录、state、events、logout、invite 和 room/* 保持兼容。SSE state / notice / logout，在线依赖 SSE，心跳每秒。
 
-SQLite 表：`users`、`sessions`、`results`、`result_players`、`active_rooms`。密码是随机盐 + scrypt 哈希；快照含秘密，只能留在私有数据目录。
+新增：
 
-## 已知限制，不要误判为已完成
+- `POST /api/rooms/:code/actions`：type、payload、requestId、matchId、expectedRevision。
+- `GET /api/results/:id`：仅参与者可读；available=false 表示旧结果没有保存复盘。
+- `GET /api/games/:gameId/me`、`GET /api/games/:gameId/players/:owner`。
+- `POST /api/games/:gameId/actions`：长期型动作，版本和请求去重。
 
-- 平台目前仍将创建、恢复、人数、阶段和结算绑定 `Duel`，还没有通用游戏注册与引擎分发。
-- 当前 broadcast 会保存所有房间并向在线用户发送各自完整 state；不是按变化房间增量保存，也不是跨进程协调。
-- 在线连接、邀请和限流是进程内状态；邀请不跨重启恢复。只支持一个 API 进程，不可直接多实例横向扩容。
-- 完整复盘保存在活动房间快照；离开销毁或重开后不能从旧 results 找回。results 只保存摘要，迁移不能补出未保存的旧历史。
-- 当前没有 TypeScript、Vue、Fastify、PostgreSQL、持续档案、动作 requestId 去重、revision 机制或多游戏 worker。
-- 当前未提供固定测试域名 / 公网测试端口，手机验收需要先配置合适入口；SSH 隧道可用于电脑访问。
+当前只注册 guess-number，长期 API 不会凭空开放一个农场。默认世界 default；具体长期游戏需要实现定义和资源规则。
 
-## 已认可的下一阶段
+## 当前限制与后续
 
-目标：Vue 3 + TypeScript + Vite，Node.js LTS + Fastify + TypeScript，PostgreSQL，沿用 Caddy。开发和测试在京东云；初期一个 PostgreSQL 实例，分别建 `playroom_dev`、`playroom_prod`，独立角色和权限。PostgreSQL 本身免费开源，数据保存服务器磁盘。
+单个 API 进程负责在线 / 邀请和房间调度，不可直接多实例扩容。广播仍发送按用户裁剪的完整 state；已经按变化房间写入，但未做事件增量 / 跨进程分发。
 
-保持一个模块化后端，不按每个游戏另起账号或数据库。短局用 `match`，农场 / 牧场用 `persistent`，长期存档不能随退出房间删除。先迁平台边界与猜数字，再完成数据库迁移演练，正式长期游戏累积存档前切换 PostgreSQL。
+为兼容原游戏，房间 phase 和传统设置路由仍保留；猜数字通过独立适配模块提供规则、视图和结果。未来游戏可使用自己的内部阶段与公开字段，公共平台视图不要求秘密数字 / 骰子字段。
 
-这些选择已确认，但用户本次要求是建开发工作区与接手文档，未将所有目标重构视为本次必须完成。具体实现见三份架构设计。
+旧结果没有完整猜测历史，不能补造。新结果有权限控制的持久复盘 API，当前大厅尚未提供点击往届复盘的 UI（本局结束复盘已保留）。
 
-## 下一个 Agent 的起步
+尚未加入实际农场 / 牧场、仓库 / 经济表、作业执行器、交易或偷菜规则。长期存档基础并不等于这些玩法已完成。
 
-读 AGENTS 和本文件 → 确认 `git status` 与两个服务状态 → 按 development-guide 在开发目录修改 → 按 testing-guide 验证 → 更新本文与测试记录 → 在当前用户授权范围内按 deployment-runbook 发布。
+浏览器已验证桌面和 390px 手机视口、日夜主题、双账号完整记忆模式对局、草稿 / 最新提示、结束复盘 / 刷新 / 筛选。真实手机键盘与后台行为仍需要用户实际设备验收。
 
-若继续技术迁移，优先建立前后端工程、公共契约与注册表，再迁现有猜数字，保持现有行为和数据可恢复；不要先写农场 UI 而跳过平台与事务基础。
+下一游戏先实现后端定义和 Vue 模块，补专属测试，再注册。持续游戏要完成资源事务 / 时间 / 权限规则，不能将档案塞进 active_rooms。

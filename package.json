@@ -1,8 +1,38 @@
 {
-  "name": "pair-play",
-  "version": "1.0.0",
+  "name": "playroom",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
-  "scripts": { "start": "node server.mjs", "test": "node --test test/*.test.mjs" },
-  "engines": { "node": ">=22.13" }
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "tsx apps/api/src/main.ts",
+    "start": "node dist/apps/api/src/main.js",
+    "typecheck": "tsc --noEmit && vue-tsc -p apps/web/tsconfig.json --noEmit",
+    "build": "tsc && vite build --config apps/web/vite.config.ts",
+    "test": "tsx --test test-v2/*.test.ts",
+    "db:migrate": "tsx apps/api/src/platform/db/migrate.ts",
+    "db:import": "tsx scripts/import-sqlite.ts"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "@fastify/static": "^8",
+    "fastify": "^5",
+    "pg": "^8",
+    "vue": "^3"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/pg": "^8",
+    "@vitejs/plugin-vue": "^6",
+    "prettier": "^3.9.9",
+    "tsx": "^4",
+    "typescript": "^5",
+    "vite": "^7",
+    "vue-tsc": "^3"
+  }
 }

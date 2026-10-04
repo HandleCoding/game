@@ -1,0 +1,28 @@
+[Unit]
+Description=Playroom friends game lobby
+After=network.target
+
+[Service]
+Type=simple
+User=pairplay
+Group=pairplay
+WorkingDirectory=/opt/pair-play/releases/v2-20261004-124028
+ExecStart=/usr/bin/node /opt/pair-play/releases/v2-20261004-124028/dist/apps/api/src/main.js
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/pair-play/prod.env
+Environment=HOST=127.0.0.1
+Environment=PORT=3210
+Environment=DATA_DIR=/var/lib/pair-play
+Environment=PUBLIC_ORIGIN=https://game.aicoding.ltd
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/pair-play
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

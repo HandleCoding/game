@@ -1,0 +1,100 @@
+
+> playroom@2.0.0 test
+> tsx --test test-v2/*.test.ts
+
+TAP version 13
+# Subtest: exact positions only, repeated digits and numeric bounds
+ok 1 - exact positions only, repeated digits and numeric bounds
+  ---
+  duration_ms: 1.289246
+  type: 'test'
+  ...
+# Subtest: two ready players required and immutable secret; third player rejected
+ok 2 - two ready players required and immutable secret; third player rejected
+  ---
+  duration_ms: 2.246946
+  type: 'test'
+  ...
+# Subtest: dice tie retries both rolls, then high roll starts
+ok 3 - dice tie retries both rolls, then high roll starts
+  ---
+  duration_ms: 0.930876
+  type: 'test'
+  ...
+# Subtest: turn enforcement, valid guesses and complete victory
+ok 4 - turn enforcement, valid guesses and complete victory
+  ---
+  duration_ms: 0.667713
+  type: 'test'
+  ...
+# Subtest: late guess cannot win; timeout consumes one turn
+ok 5 - late guess cannot win; timeout consumes one turn
+  ---
+  duration_ms: 0.286039
+  type: 'test'
+  ...
+# Subtest: disconnect pauses, reconnect preserves remaining time, 60s grace ends game
+ok 6 - disconnect pauses, reconnect preserves remaining time, 60s grace ends game
+  ---
+  duration_ms: 0.648885
+  type: 'test'
+  ...
+# Subtest: both offline draw, settings reset readiness, rematch resets secrets and dice
+ok 7 - both offline draw, settings reset readiness, rematch resets secrets and dice
+  ---
+  duration_ms: 0.301187
+  type: 'test'
+  ...
+# Subtest: memory mode hides history and exposes only latest opponent guess, while giving current feedback
+ok 8 - memory mode hides history and exposes only latest opponent guess, while giving current feedback
+  ---
+  duration_ms: 0.524234
+  type: 'test'
+  ...
+# Subtest: zero-prefixed secrets and memory mode expose only latest opponent guess
+ok 9 - zero-prefixed secrets and memory mode expose only latest opponent guess
+  ---
+  duration_ms: 0.956373
+  type: 'test'
+  ...
+# Subtest: finished games reveal full review to both players in either mode and clear it on rematch
+ok 10 - finished games reveal full review to both players in either mode and clear it on rematch
+  ---
+  duration_ms: 1.274096
+  type: 'test'
+  ...
+# (node:1052173) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Migration retains IDs, original passwords, sessions, results, and private room snapshots
+ok 11 - Migration retains IDs, original passwords, sessions, results, and private room snapshots
+  ---
+  duration_ms: 896.427422
+  type: 'test'
+  ...
+# Subtest: PostgreSQL: persistent isolation, concurrent duplicate actions, and rollback
+ok 12 - PostgreSQL: persistent isolation, concurrent duplicate actions, and rollback
+  ---
+  duration_ms: 143.467544
+  type: 'test'
+  ...
+# Subtest: Room registry, three-player capacity, action deduplication, stale revisions, and durable reviews
+ok 13 - Room registry, three-player capacity, action deduplication, stale revisions, and durable reviews
+  ---
+  duration_ms: 196.317256
+  type: 'test'
+  ...
+# Subtest: 真实服务器：账号、邀请、隐私、完整对局、重开与重启恢复
+ok 14 - 真实服务器：账号、邀请、隐私、完整对局、重开与重启恢复
+  ---
+  duration_ms: 24756.816523
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 25545.130692
