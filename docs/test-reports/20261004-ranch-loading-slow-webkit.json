@@ -1,0 +1,14 @@
+{
+  "browser": "webkit",
+  "isolatedDevelopmentSchema": true,
+  "results": [
+    {
+      "name": "六资源正常下载超过25秒仍能完成",
+      "passed": true,
+      "elapsedMs": 32159,
+      "progressAt27s": 96.96771861845596,
+      "maxConcurrentAssets": 2
+    }
+  ],
+  "failures": []
+}

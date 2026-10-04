@@ -16,7 +16,7 @@ const clipId = "ranch-tool-" + useId();
       </clipPath>
     </defs>
     <image
-      href="/ranch/ui/ranch-tools-v1.png"
+      href="/ranch/ui/ranch-tools-v1.webp"
       :x="-(index % 3) * 100"
       :y="-Math.floor(index / 3) * 100"
       width="300"

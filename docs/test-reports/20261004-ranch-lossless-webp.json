@@ -1,0 +1,134 @@
+[
+  {
+    "source": "apps/web/public/ranch/scene/pasture.png",
+    "output": "apps/web/public/ranch/scene/pasture-v1.webp",
+    "pngBytes": 2922830,
+    "webpBytes": 2163724,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "14c76ecfafede4b6cf21ee16d76bd8c1c00f32ba2b0132e7a5878bf26979e9b8"
+  },
+  {
+    "source": "apps/web/public/ranch/ui/ranch-tools-v1.png",
+    "output": "apps/web/public/ranch/ui/ranch-tools-v1.webp",
+    "pngBytes": 2141090,
+    "webpBytes": 1620078,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "sha256": "1415e9c0149c5e6b646ed7235322636ef6bd3062c97cf1abd2a96b0c8d0c6c5a"
+  },
+  {
+    "source": "apps/web/public/ranch/scene/soft/baby-3.png",
+    "output": "apps/web/public/ranch/scene/soft/baby-3-v1.webp",
+    "pngBytes": 1573742,
+    "webpBytes": 1156224,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      836,
+      1881
+    ],
+    "sha256": "61038d548f82351fb0a9a3745086374054b359f369400121c2dc268a85effd01"
+  },
+  {
+    "source": "apps/web/public/ranch/scene/soft/adult-2.png",
+    "output": "apps/web/public/ranch/scene/soft/adult-2-v1.webp",
+    "pngBytes": 1631655,
+    "webpBytes": 1211290,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      836,
+      1881
+    ],
+    "sha256": "501de3fb71678a3280471715f0369d98de66e10dbe3d1c7152ba30b89249207a"
+  },
+  {
+    "source": "apps/web/public/ranch/scene/soft/adult-1.png",
+    "output": "apps/web/public/ranch/scene/soft/adult-1-v1.webp",
+    "pngBytes": 1604691,
+    "webpBytes": 1217642,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      836,
+      1881
+    ],
+    "sha256": "d411f2ec60589c882f961849ae232744754d2a33fad045ba8c98d6cc6afec9de"
+  },
+  {
+    "source": "apps/web/public/ranch/scene/soft/baby-0.png",
+    "output": "apps/web/public/ranch/scene/soft/baby-0-v1.webp",
+    "pngBytes": 1660057,
+    "webpBytes": 1243234,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      836,
+      1881
+    ],
+    "sha256": "7f05bbb6918a0ebb25a8ef5903a7f422e4a5a7915399c95ec2b79c5299ea9ef8"
+  },
+  {
+    "source": "apps/web/public/ranch/scene/soft/rabbit-stages.png",
+    "output": "apps/web/public/ranch/scene/soft/rabbit-stages-v1.webp",
+    "pngBytes": 1112482,
+    "webpBytes": 804832,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      1774,
+      887
+    ],
+    "sha256": "231ac4af4eeb8fec7b6544a0cc983314ca564618d237663c49e3d5f1c6f46fa0"
+  },
+  {
+    "source": "apps/web/public/ranch/scene/soft/adult-0.png",
+    "output": "apps/web/public/ranch/scene/soft/adult-0-v1.webp",
+    "pngBytes": 1691854,
+    "webpBytes": 1264004,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      836,
+      1881
+    ],
+    "sha256": "b4619dee4c2283f28cd92ff3a56c656aa594a62f08ab0b68cdd0d69162509ce2"
+  },
+  {
+    "source": "apps/web/public/ranch/scene/soft/adult-3.png",
+    "output": "apps/web/public/ranch/scene/soft/adult-3-v1.webp",
+    "pngBytes": 1738781,
+    "webpBytes": 1278650,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      836,
+      1881
+    ],
+    "sha256": "5fd4f7102dfb9f776a5619b6ab6c38befe0cc0df17fb6747018aa7ebdfaf9c9e"
+  },
+  {
+    "source": "apps/web/public/ranch/scene/soft/baby-2.png",
+    "output": "apps/web/public/ranch/scene/soft/baby-2-v1.webp",
+    "pngBytes": 1621378,
+    "webpBytes": 1202304,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      836,
+      1881
+    ],
+    "sha256": "1e4593bf2411bb7c6f46721c0186fc20d2346c3bd4bb76ccbbc6bc912758c614"
+  },
+  {
+    "source": "apps/web/public/ranch/scene/soft/baby-1.png",
+    "output": "apps/web/public/ranch/scene/soft/baby-1-v1.webp",
+    "pngBytes": 1647474,
+    "webpBytes": 1231626,
+    "visiblePixelsIdentical": true,
+    "dimensions": [
+      836,
+      1881
+    ],
+    "sha256": "b1d0b3834eaa0dfe2021f65d7339dfa00ae992f8c90ceaa9c1dbf8c54f3e7a13"
+  }
+]

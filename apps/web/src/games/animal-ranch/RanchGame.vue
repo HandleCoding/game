@@ -348,7 +348,7 @@ function productAnimal(id: string) {
         @feed="panel = 'feed'"
         @shop="panel = 'animals'"
       />
-      <div v-show="sceneReady" style="display: contents">
+      <div v-if="sceneReady" style="display: contents">
         <header class="game-profile">
           <div class="ranch-avatar" aria-hidden="true">
             <RanchIcon :index="1" />

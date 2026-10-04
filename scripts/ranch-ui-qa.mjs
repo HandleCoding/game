@@ -107,7 +107,7 @@ try {
         "soft-realistic",
       );
       assert(
-        spriteRequests.some((u) => u.endsWith("/soft/adult-0.png")),
+        spriteRequests.some((u) => u.endsWith("/soft/adult-0-v1.webp")),
         "Adult artwork not loaded",
       );
       assert(
@@ -262,7 +262,7 @@ try {
         await page
           .locator(".catalog-detail .detail-art image")
           .getAttribute("href")
-          .then((h) => h.endsWith("/baby-0.png")),
+          .then((h) => h.endsWith("/baby-0-v1.webp")),
         "Shop baby preview uses adult art",
       );
       await page.screenshot({
@@ -281,10 +281,10 @@ try {
       await page.waitForFunction(() =>
         performance
           .getEntriesByType("resource")
-          .some((r) => r.name.endsWith("/soft/baby-0.png")),
+          .some((r) => r.name.endsWith("/soft/baby-0-v1.webp")),
       );
       assert(
-        spriteRequests.some((u) => u.endsWith("/soft/baby-0.png")),
+        spriteRequests.some((u) => u.endsWith("/soft/baby-0-v1.webp")),
         "Baby uses adult artwork instead of independent atlas",
       );
       await page.getByRole("button", { name: "关闭牧场面板" }).click();
@@ -352,7 +352,7 @@ try {
         await page
           .locator(".catalog-detail .detail-art image")
           .getAttribute("href")
-          .then((h) => h.endsWith("/rabbit-stages.png")),
+          .then((h) => h.endsWith("/rabbit-stages-v1.webp")),
         "Album rabbit artwork missing",
       );
       await page.screenshot({
@@ -748,7 +748,7 @@ try {
     await context.close();
   }
   await writeFile(
-    "docs/test-reports/20261004-ranch-game-ui-" + engine + ".json",
+    "docs/test-reports/" + (process.env.UI_REPORT_PREFIX || "20261004-ranch-game-ui") + "-" + engine + ".json",
     JSON.stringify(
       {
         browser: engine,

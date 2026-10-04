@@ -1,0 +1,96 @@
+{
+  "browser": "chromium",
+  "isolatedDevelopmentSchema": true,
+  "checks": 22,
+  "failures": [],
+  "results": [
+    {
+      "name": "存档读取阶段显示不确定进度",
+      "passed": true
+    },
+    {
+      "name": "背景未完成时资源进度真实介于0和100",
+      "passed": true
+    },
+    {
+      "name": "加载时隐藏工具栏及HUD",
+      "passed": true
+    },
+    {
+      "name": "首屏仅加载必要动物资源",
+      "passed": true
+    },
+    {
+      "name": "加载面板适配390",
+      "passed": true
+    },
+    {
+      "name": "加载面板适配1440",
+      "passed": true
+    },
+    {
+      "name": "加载面板适配844",
+      "passed": true
+    },
+    {
+      "name": "完成后自动进入并显示工具栏",
+      "passed": true
+    },
+    {
+      "name": "隐藏加载页前首帧已经绘制",
+      "passed": true
+    },
+    {
+      "name": "fail显示失败与重试",
+      "passed": true
+    },
+    {
+      "name": "fail失败时不露出空白游戏工具",
+      "passed": true
+    },
+    {
+      "name": "fail原地重试恢复",
+      "passed": true
+    },
+    {
+      "name": "fail重试保留成功资源",
+      "passed": true
+    },
+    {
+      "name": "invalid显示失败与重试",
+      "passed": true
+    },
+    {
+      "name": "invalid失败时不露出空白游戏工具",
+      "passed": true
+    },
+    {
+      "name": "invalid原地重试恢复",
+      "passed": true
+    },
+    {
+      "name": "invalid重试保留成功资源",
+      "passed": true
+    },
+    {
+      "name": "45秒未响应资源超时提供重试",
+      "passed": true
+    },
+    {
+      "name": "资源超时后重试恢复",
+      "passed": true
+    },
+    {
+      "name": "加载中可以回大厅",
+      "passed": true
+    },
+    {
+      "name": "退出后重新进入不会被旧加载覆盖",
+      "passed": true
+    },
+    {
+      "name": "没有未捕获浏览器错误",
+      "passed": true
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "name": "playroom",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -17,7 +17,8 @@
     "db:import": "tsx scripts/import-sqlite.ts",
     "test:ui": "node scripts/ranch-ui-qa.mjs",
     "test:portraits": "node scripts/ranch-portrait-qa.mjs",
-    "test:loading": "node scripts/ranch-loading-qa.mjs"
+    "test:loading": "node scripts/ranch-loading-qa.mjs",
+    "test:loading-slow": "node scripts/ranch-loading-slow-qa.mjs"
   },
   "engines": {
     "node": ">=22.13"

@@ -63,7 +63,7 @@ app.setErrorHandler((cause, req, reply) => {
 });
 app.get("/healthz", async () => {
   await pool.query("SELECT 1");
-  return { ok: true, version: "2.5.2", database: "postgresql" };
+  return { ok: true, version: "2.5.3", database: "postgresql" };
 });
 app.get("/api/catalog", async () => ({
   games: registry.catalog(),
@@ -306,7 +306,8 @@ await app.register(staticFiles, {
   setHeaders(res, path) {
     res.header(
       "Cache-Control",
-      path.includes("/assets/")
+      path.includes("/assets/") ||
+        (path.includes("/ranch/") && path.endsWith("-v1.webp"))
         ? "public, max-age=31536000, immutable"
         : "no-cache",
     );

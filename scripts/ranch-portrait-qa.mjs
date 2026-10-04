@@ -278,7 +278,9 @@ try {
   await pool.end();
 }
 await writeFile(
-  "docs/test-reports/20261004-ranch-portrait-" +
+  "docs/test-reports/" +
+    (process.env.PORTRAIT_REPORT_PREFIX || "20261004-ranch-portrait") +
+    "-" +
     (baseline ? "baseline-" : "") +
     engine +
     ".json",

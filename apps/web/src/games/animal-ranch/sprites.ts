@@ -39,14 +39,18 @@ export const spriteGroups: RanchSpecies[][] = [
 export function spriteLocation(species: RanchSpecies, baby = false) {
   if (species === "rabbit")
     return {
-      url: "/ranch/scene/soft/rabbit-stages.png",
+      url: "/ranch/scene/soft/rabbit-stages-v1.webp",
       group: 8,
       row: baby ? 1 : 0,
     };
   const atlas = spriteGroups.findIndex((row) => row.includes(species));
   return {
     url:
-      "/ranch/scene/soft/" + (baby ? "baby" : "adult") + "-" + atlas + ".png",
+      "/ranch/scene/soft/" +
+      (baby ? "baby" : "adult") +
+      "-" +
+      atlas +
+      "-v1.webp",
     group: atlas + (baby ? 4 : 0),
     row: spriteGroups[atlas].indexOf(species),
   };

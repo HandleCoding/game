@@ -1,0 +1,2466 @@
+{
+  "browser": "chromium",
+  "baseline": false,
+  "isolatedDevelopmentSchema": true,
+  "checks": 351,
+  "failures": [],
+  "results": [
+    {
+      "label": "chicken:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 23638
+    },
+    {
+      "label": "chicken:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13298
+    },
+    {
+      "label": "chicken:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8055
+    },
+    {
+      "label": "chicken:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 29112
+    },
+    {
+      "label": "chicken:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13296
+    },
+    {
+      "label": "chicken:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9897
+    },
+    {
+      "label": "rabbit:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 24446
+    },
+    {
+      "label": "rabbit:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 25680
+    },
+    {
+      "label": "rabbit:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8421
+    },
+    {
+      "label": "rabbit:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 21894
+    },
+    {
+      "label": "rabbit:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 27485
+    },
+    {
+      "label": "rabbit:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7547
+    },
+    {
+      "label": "dog:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 24628
+    },
+    {
+      "label": "dog:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14439
+    },
+    {
+      "label": "dog:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8372
+    },
+    {
+      "label": "dog:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 31131
+    },
+    {
+      "label": "dog:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 16335
+    },
+    {
+      "label": "dog:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10597
+    },
+    {
+      "label": "duck:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 20330
+    },
+    {
+      "label": "duck:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 11399
+    },
+    {
+      "label": "duck:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6919
+    },
+    {
+      "label": "duck:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 27999
+    },
+    {
+      "label": "duck:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12601
+    },
+    {
+      "label": "duck:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9519
+    },
+    {
+      "label": "sheep:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 29522
+    },
+    {
+      "label": "sheep:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 15720
+    },
+    {
+      "label": "sheep:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10044
+    },
+    {
+      "label": "sheep:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 30415
+    },
+    {
+      "label": "sheep:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13531
+    },
+    {
+      "label": "sheep:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10698
+    },
+    {
+      "label": "goose:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 16019
+    },
+    {
+      "label": "goose:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 8348
+    },
+    {
+      "label": "goose:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 5459
+    },
+    {
+      "label": "goose:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22104
+    },
+    {
+      "label": "goose:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9810
+    },
+    {
+      "label": "goose:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9582
+    },
+    {
+      "label": "goat:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22679
+    },
+    {
+      "label": "goat:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 11580
+    },
+    {
+      "label": "goat:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7706
+    },
+    {
+      "label": "goat:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 27560
+    },
+    {
+      "label": "goat:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12251
+    },
+    {
+      "label": "goat:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 11032
+    },
+    {
+      "label": "cow:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 26518
+    },
+    {
+      "label": "cow:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13853
+    },
+    {
+      "label": "cow:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9037
+    },
+    {
+      "label": "cow:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 26766
+    },
+    {
+      "label": "cow:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14221
+    },
+    {
+      "label": "cow:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9115
+    },
+    {
+      "label": "cat:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22482
+    },
+    {
+      "label": "cat:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9988
+    },
+    {
+      "label": "cat:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8705
+    },
+    {
+      "label": "cat:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 29552
+    },
+    {
+      "label": "cat:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13135
+    },
+    {
+      "label": "cat:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10612
+    },
+    {
+      "label": "pig:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 23447
+    },
+    {
+      "label": "pig:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 21408
+    },
+    {
+      "label": "pig:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7981
+    },
+    {
+      "label": "pig:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 25059
+    },
+    {
+      "label": "pig:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 16100
+    },
+    {
+      "label": "pig:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8521
+    },
+    {
+      "label": "parrot:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 14777
+    },
+    {
+      "label": "parrot:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12325
+    },
+    {
+      "label": "parrot:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 5021
+    },
+    {
+      "label": "parrot:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22351
+    },
+    {
+      "label": "parrot:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13239
+    },
+    {
+      "label": "parrot:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7594
+    },
+    {
+      "label": "turtle:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 19118
+    },
+    {
+      "label": "turtle:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 21194
+    },
+    {
+      "label": "turtle:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6505
+    },
+    {
+      "label": "turtle:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 19663
+    },
+    {
+      "label": "turtle:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 25266
+    },
+    {
+      "label": "turtle:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6697
+    },
+    {
+      "label": "horse:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 21548
+    },
+    {
+      "label": "horse:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 11840
+    },
+    {
+      "label": "horse:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7339
+    },
+    {
+      "label": "horse:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22356
+    },
+    {
+      "label": "horse:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9954
+    },
+    {
+      "label": "horse:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9100
+    },
+    {
+      "label": "frog:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 17731
+    },
+    {
+      "label": "frog:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 19773
+    },
+    {
+      "label": "frog:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6030
+    },
+    {
+      "label": "frog:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 17847
+    },
+    {
+      "label": "frog:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 18225
+    },
+    {
+      "label": "frog:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6059
+    },
+    {
+      "label": "peacock:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 16759
+    },
+    {
+      "label": "peacock:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9343
+    },
+    {
+      "label": "peacock:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 5705
+    },
+    {
+      "label": "peacock:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22862
+    },
+    {
+      "label": "peacock:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 10412
+    },
+    {
+      "label": "peacock:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7770
+    },
+    {
+      "label": "fox:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 19488
+    },
+    {
+      "label": "fox:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14592
+    },
+    {
+      "label": "fox:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6632
+    },
+    {
+      "label": "fox:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 24838
+    },
+    {
+      "label": "fox:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12901
+    },
+    {
+      "label": "fox:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8451
+    },
+    {
+      "label": "alpaca:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 20361
+    },
+    {
+      "label": "alpaca:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9050
+    },
+    {
+      "label": "alpaca:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 11285
+    },
+    {
+      "label": "alpaca:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 18904
+    },
+    {
+      "label": "alpaca:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 8409
+    },
+    {
+      "label": "alpaca:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 14631
+    },
+    {
+      "label": "hedgehog:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 28121
+    },
+    {
+      "label": "hedgehog:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 24276
+    },
+    {
+      "label": "hedgehog:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9569
+    },
+    {
+      "label": "hedgehog:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 27359
+    },
+    {
+      "label": "hedgehog:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 23410
+    },
+    {
+      "label": "hedgehog:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9322
+    },
+    {
+      "label": "deer:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 18986
+    },
+    {
+      "label": "deer:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9208
+    },
+    {
+      "label": "deer:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6475
+    },
+    {
+      "label": "deer:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 21560
+    },
+    {
+      "label": "deer:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9596
+    },
+    {
+      "label": "deer:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8297
+    },
+    {
+      "label": "owl:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 24900
+    },
+    {
+      "label": "owl:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12046
+    },
+    {
+      "label": "owl:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8477
+    },
+    {
+      "label": "owl:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 31429
+    },
+    {
+      "label": "owl:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13955
+    },
+    {
+      "label": "owl:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 14301
+    },
+    {
+      "label": "penguin:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 21847
+    },
+    {
+      "label": "penguin:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9717
+    },
+    {
+      "label": "penguin:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 12681
+    },
+    {
+      "label": "penguin:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 28433
+    },
+    {
+      "label": "penguin:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12643
+    },
+    {
+      "label": "penguin:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 13920
+    },
+    {
+      "label": "snake:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 8967
+    },
+    {
+      "label": "snake:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9789
+    },
+    {
+      "label": "snake:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 3048
+    },
+    {
+      "label": "snake:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 11257
+    },
+    {
+      "label": "snake:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 17370
+    },
+    {
+      "label": "snake:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 3833
+    },
+    {
+      "label": "buffalo:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 24384
+    },
+    {
+      "label": "buffalo:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 16742
+    },
+    {
+      "label": "buffalo:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8303
+    },
+    {
+      "label": "buffalo:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 27642
+    },
+    {
+      "label": "buffalo:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14014
+    },
+    {
+      "label": "buffalo:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9420
+    },
+    {
+      "label": "moose:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22942
+    },
+    {
+      "label": "moose:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 10212
+    },
+    {
+      "label": "moose:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8343
+    },
+    {
+      "label": "moose:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22542
+    },
+    {
+      "label": "moose:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 10006
+    },
+    {
+      "label": "moose:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8769
+    },
+    {
+      "label": "zebra:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 21122
+    },
+    {
+      "label": "zebra:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 11496
+    },
+    {
+      "label": "zebra:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7172
+    },
+    {
+      "label": "zebra:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22293
+    },
+    {
+      "label": "zebra:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9886
+    },
+    {
+      "label": "zebra:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9399
+    },
+    {
+      "label": "bear:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 26716
+    },
+    {
+      "label": "bear:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 21612
+    },
+    {
+      "label": "bear:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9093
+    },
+    {
+      "label": "bear:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 30822
+    },
+    {
+      "label": "bear:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 16198
+    },
+    {
+      "label": "bear:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10495
+    },
+    {
+      "label": "monkey:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 18826
+    },
+    {
+      "label": "monkey:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14361
+    },
+    {
+      "label": "monkey:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6411
+    },
+    {
+      "label": "monkey:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 23557
+    },
+    {
+      "label": "monkey:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 10467
+    },
+    {
+      "label": "monkey:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8437
+    },
+    {
+      "label": "gorilla:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 23226
+    },
+    {
+      "label": "gorilla:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 15446
+    },
+    {
+      "label": "gorilla:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7904
+    },
+    {
+      "label": "gorilla:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 26678
+    },
+    {
+      "label": "gorilla:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14087
+    },
+    {
+      "label": "gorilla:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9079
+    },
+    {
+      "label": "giraffe:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 11895
+    },
+    {
+      "label": "giraffe:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 5275
+    },
+    {
+      "label": "giraffe:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 5826
+    },
+    {
+      "label": "giraffe:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 13909
+    },
+    {
+      "label": "giraffe:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 6194
+    },
+    {
+      "label": "giraffe:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9296
+    },
+    {
+      "label": "rhino:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22440
+    },
+    {
+      "label": "rhino:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 22744
+    },
+    {
+      "label": "rhino:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7621
+    },
+    {
+      "label": "rhino:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 25960
+    },
+    {
+      "label": "rhino:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 17669
+    },
+    {
+      "label": "rhino:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8828
+    },
+    {
+      "label": "hippo:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22080
+    },
+    {
+      "label": "hippo:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 26179
+    },
+    {
+      "label": "hippo:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7510
+    },
+    {
+      "label": "hippo:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 25707
+    },
+    {
+      "label": "hippo:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 23154
+    },
+    {
+      "label": "hippo:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8721
+    },
+    {
+      "label": "crocodile:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 12668
+    },
+    {
+      "label": "crocodile:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 36616
+    },
+    {
+      "label": "crocodile:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 4310
+    },
+    {
+      "label": "crocodile:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 10100
+    },
+    {
+      "label": "crocodile:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 23584
+    },
+    {
+      "label": "crocodile:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 3448
+    },
+    {
+      "label": "lion:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 21488
+    },
+    {
+      "label": "lion:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 15696
+    },
+    {
+      "label": "lion:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7303
+    },
+    {
+      "label": "lion:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 19729
+    },
+    {
+      "label": "lion:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 17967
+    },
+    {
+      "label": "lion:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6701
+    },
+    {
+      "label": "elephant:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 35167
+    },
+    {
+      "label": "elephant:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 17798
+    },
+    {
+      "label": "elephant:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 11961
+    },
+    {
+      "label": "elephant:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 31400
+    },
+    {
+      "label": "elephant:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 18041
+    },
+    {
+      "label": "elephant:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10703
+    },
+    {
+      "label": "panda:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 26051
+    },
+    {
+      "label": "panda:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 23086
+    },
+    {
+      "label": "panda:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8868
+    },
+    {
+      "label": "panda:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 31011
+    },
+    {
+      "label": "panda:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 20901
+    },
+    {
+      "label": "panda:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10563
+    },
+    {
+      "label": "sloth:adult",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 19869
+    },
+    {
+      "label": "sloth:adult",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 25932
+    },
+    {
+      "label": "sloth:adult",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6753
+    },
+    {
+      "label": "sloth:baby",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 27049
+    },
+    {
+      "label": "sloth:baby",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 20141
+    },
+    {
+      "label": "sloth:baby",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9209
+    },
+    {
+      "label": "tile:chicken",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 23638
+    },
+    {
+      "label": "tile:chicken",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13298
+    },
+    {
+      "label": "tile:chicken",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8055
+    },
+    {
+      "label": "tile:rabbit",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 24446
+    },
+    {
+      "label": "tile:rabbit",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 25680
+    },
+    {
+      "label": "tile:rabbit",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8421
+    },
+    {
+      "label": "tile:dog",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 24628
+    },
+    {
+      "label": "tile:dog",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14439
+    },
+    {
+      "label": "tile:dog",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8372
+    },
+    {
+      "label": "tile:duck",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 20330
+    },
+    {
+      "label": "tile:duck",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 11399
+    },
+    {
+      "label": "tile:duck",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6919
+    },
+    {
+      "label": "tile:sheep",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 29522
+    },
+    {
+      "label": "tile:sheep",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 15720
+    },
+    {
+      "label": "tile:sheep",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10044
+    },
+    {
+      "label": "tile:goose",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 16019
+    },
+    {
+      "label": "tile:goose",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 8348
+    },
+    {
+      "label": "tile:goose",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 5459
+    },
+    {
+      "label": "tile:goat",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22679
+    },
+    {
+      "label": "tile:goat",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 11580
+    },
+    {
+      "label": "tile:goat",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7706
+    },
+    {
+      "label": "tile:cow",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 26518
+    },
+    {
+      "label": "tile:cow",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13853
+    },
+    {
+      "label": "tile:cow",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9037
+    },
+    {
+      "label": "tile:cat",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22482
+    },
+    {
+      "label": "tile:cat",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9988
+    },
+    {
+      "label": "tile:cat",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8705
+    },
+    {
+      "label": "tile:pig",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 23447
+    },
+    {
+      "label": "tile:pig",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 21408
+    },
+    {
+      "label": "tile:pig",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7981
+    },
+    {
+      "label": "tile:parrot",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 14777
+    },
+    {
+      "label": "tile:parrot",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12325
+    },
+    {
+      "label": "tile:parrot",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 5021
+    },
+    {
+      "label": "tile:turtle",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 19118
+    },
+    {
+      "label": "tile:turtle",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 21194
+    },
+    {
+      "label": "tile:turtle",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6505
+    },
+    {
+      "label": "tile:horse",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 21548
+    },
+    {
+      "label": "tile:horse",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 11840
+    },
+    {
+      "label": "tile:horse",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7339
+    },
+    {
+      "label": "tile:frog",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 17731
+    },
+    {
+      "label": "tile:frog",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 19773
+    },
+    {
+      "label": "tile:frog",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6030
+    },
+    {
+      "label": "tile:peacock",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 16759
+    },
+    {
+      "label": "tile:peacock",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9343
+    },
+    {
+      "label": "tile:peacock",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 5705
+    },
+    {
+      "label": "tile:fox",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 19488
+    },
+    {
+      "label": "tile:fox",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14592
+    },
+    {
+      "label": "tile:fox",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6632
+    },
+    {
+      "label": "tile:alpaca",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 20361
+    },
+    {
+      "label": "tile:alpaca",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9050
+    },
+    {
+      "label": "tile:alpaca",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 11285
+    },
+    {
+      "label": "tile:hedgehog",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 28121
+    },
+    {
+      "label": "tile:hedgehog",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 24276
+    },
+    {
+      "label": "tile:hedgehog",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9569
+    },
+    {
+      "label": "tile:deer",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 18986
+    },
+    {
+      "label": "tile:deer",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9208
+    },
+    {
+      "label": "tile:deer",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6475
+    },
+    {
+      "label": "tile:owl",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 24900
+    },
+    {
+      "label": "tile:owl",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12046
+    },
+    {
+      "label": "tile:owl",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8477
+    },
+    {
+      "label": "tile:penguin",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 21847
+    },
+    {
+      "label": "tile:penguin",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9717
+    },
+    {
+      "label": "tile:penguin",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 12681
+    },
+    {
+      "label": "tile:snake",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 8967
+    },
+    {
+      "label": "tile:snake",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 9789
+    },
+    {
+      "label": "tile:snake",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 3048
+    },
+    {
+      "label": "tile:buffalo",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 24384
+    },
+    {
+      "label": "tile:buffalo",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 16742
+    },
+    {
+      "label": "tile:buffalo",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8303
+    },
+    {
+      "label": "tile:moose",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22942
+    },
+    {
+      "label": "tile:moose",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 10212
+    },
+    {
+      "label": "tile:moose",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8343
+    },
+    {
+      "label": "tile:zebra",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 21122
+    },
+    {
+      "label": "tile:zebra",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 11496
+    },
+    {
+      "label": "tile:zebra",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7172
+    },
+    {
+      "label": "tile:bear",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 26716
+    },
+    {
+      "label": "tile:bear",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 21612
+    },
+    {
+      "label": "tile:bear",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9093
+    },
+    {
+      "label": "tile:monkey",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 18826
+    },
+    {
+      "label": "tile:monkey",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14361
+    },
+    {
+      "label": "tile:monkey",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6411
+    },
+    {
+      "label": "tile:gorilla",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 23226
+    },
+    {
+      "label": "tile:gorilla",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 15446
+    },
+    {
+      "label": "tile:gorilla",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7904
+    },
+    {
+      "label": "tile:giraffe",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 11895
+    },
+    {
+      "label": "tile:giraffe",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 5275
+    },
+    {
+      "label": "tile:giraffe",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 5826
+    },
+    {
+      "label": "tile:rhino",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22440
+    },
+    {
+      "label": "tile:rhino",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 22744
+    },
+    {
+      "label": "tile:rhino",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7621
+    },
+    {
+      "label": "tile:hippo",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 22080
+    },
+    {
+      "label": "tile:hippo",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 26179
+    },
+    {
+      "label": "tile:hippo",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7510
+    },
+    {
+      "label": "tile:crocodile",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 12668
+    },
+    {
+      "label": "tile:crocodile",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 36616
+    },
+    {
+      "label": "tile:crocodile",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 4310
+    },
+    {
+      "label": "tile:lion",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 21488
+    },
+    {
+      "label": "tile:lion",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 15696
+    },
+    {
+      "label": "tile:lion",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 7303
+    },
+    {
+      "label": "tile:elephant",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 35167
+    },
+    {
+      "label": "tile:elephant",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 17798
+    },
+    {
+      "label": "tile:elephant",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 11961
+    },
+    {
+      "label": "tile:panda",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 26051
+    },
+    {
+      "label": "tile:panda",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 23086
+    },
+    {
+      "label": "tile:panda",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8868
+    },
+    {
+      "label": "tile:sloth",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 19869
+    },
+    {
+      "label": "tile:sloth",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 25932
+    },
+    {
+      "label": "tile:sloth",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 6753
+    },
+    {
+      "label": "tool:{\"x\":\"-100\",\"y\":\"0\"}",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 33333
+    },
+    {
+      "label": "tool:{\"x\":\"-100\",\"y\":\"0\"}",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14962
+    },
+    {
+      "label": "tool:{\"x\":\"-100\",\"y\":\"0\"}",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 11463
+    },
+    {
+      "label": "tool:{\"x\":\"-100\",\"y\":\"-200\"}",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 27356
+    },
+    {
+      "label": "tool:{\"x\":\"-100\",\"y\":\"-200\"}",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12296
+    },
+    {
+      "label": "tool:{\"x\":\"-100\",\"y\":\"-200\"}",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9422
+    },
+    {
+      "label": "tool:{\"x\":\"-200\",\"y\":\"-200\"}",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 29933
+    },
+    {
+      "label": "tool:{\"x\":\"-200\",\"y\":\"-200\"}",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13476
+    },
+    {
+      "label": "tool:{\"x\":\"-200\",\"y\":\"-200\"}",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10341
+    },
+    {
+      "label": "tool:{\"x\":\"0\",\"y\":\"-200\"}",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 31109
+    },
+    {
+      "label": "tool:{\"x\":\"0\",\"y\":\"-200\"}",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 13978
+    },
+    {
+      "label": "tool:{\"x\":\"0\",\"y\":\"-200\"}",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10713
+    },
+    {
+      "label": "tool:{\"x\":\"0\",\"y\":\"0\"}",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 28796
+    },
+    {
+      "label": "tool:{\"x\":\"0\",\"y\":\"0\"}",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12987
+    },
+    {
+      "label": "tool:{\"x\":\"0\",\"y\":\"0\"}",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9920
+    },
+    {
+      "label": "tool:{\"x\":\"-200\",\"y\":\"0\"}",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 25693
+    },
+    {
+      "label": "tool:{\"x\":\"-200\",\"y\":\"0\"}",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 11542
+    },
+    {
+      "label": "tool:{\"x\":\"-200\",\"y\":\"0\"}",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 8851
+    },
+    {
+      "label": "tool:{\"x\":\"0\",\"y\":\"-100\"}",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 31221
+    },
+    {
+      "label": "tool:{\"x\":\"0\",\"y\":\"-100\"}",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 14056
+    },
+    {
+      "label": "tool:{\"x\":\"0\",\"y\":\"-100\"}",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 10766
+    },
+    {
+      "label": "tool:{\"x\":\"-100\",\"y\":\"-100\"}",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 38785
+    },
+    {
+      "label": "tool:{\"x\":\"-100\",\"y\":\"-100\"}",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 17392
+    },
+    {
+      "label": "tool:{\"x\":\"-100\",\"y\":\"-100\"}",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 13326
+    },
+    {
+      "label": "tool:{\"x\":\"-200\",\"y\":\"-100\"}",
+      "width": 240,
+      "height": 240,
+      "leakedPixels": 0,
+      "paintedPixels": 27078
+    },
+    {
+      "label": "tool:{\"x\":\"-200\",\"y\":\"-100\"}",
+      "width": 420,
+      "height": 160,
+      "leakedPixels": 0,
+      "paintedPixels": 12197
+    },
+    {
+      "label": "tool:{\"x\":\"-200\",\"y\":\"-100\"}",
+      "width": 140,
+      "height": 320,
+      "leakedPixels": 0,
+      "paintedPixels": 9355
+    }
+  ]
+}

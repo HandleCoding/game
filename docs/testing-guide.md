@@ -56,4 +56,8 @@ npm run test:portraits（scripts/ranch-portrait-qa.mjs），同样要求 dev.env
 
 ## 牧场首次加载
 
-npm run test:loading，scripts/ranch-loading-qa.mjs。使用同样的playroom_dev、独立schema、3221锁和浏览器路径；通过真实页面请求延迟/失败/损坏图片检查进度与恢复，Chromium覆盖25秒实际超时。报告20261004-ranch-loading-{chromium,webkit}.json。需新文档冷图片请求验证网络错误，已解码浏览器缓存的图片可能不再访问网络。
+npm run test:loading，scripts/ranch-loading-qa.mjs。使用同样的playroom_dev、独立schema、3221锁和浏览器路径；通过真实页面请求延迟/失败/损坏图片检查进度与恢复，Chromium覆盖45秒连续无数据超时。报告20261004-ranch-loading-{chromium,webkit}.json。需新文档冷图片请求验证网络错误，已解码浏览器缓存的图片可能不再访问网络。
+
+## 公网慢速资源回归（v2.5.3）
+
+npm run test:loading-slow，scripts/ranch-loading-slow-qa.mjs：同一开发库/3221锁，增加仅测试的3222流代理；实际分块背景传输32秒、六图清单，27秒检查仍在下载，最终进入。两个引擎均验证峰值并发2与进度更新。不可只用route延迟响应或回环加载代替带宽测试。报告20261004-ranch-loading-slow-{chromium,webkit}.json。图集报告通过PORTRAIT_REPORT_PREFIX可独立保存，避免覆盖旧版本历史。

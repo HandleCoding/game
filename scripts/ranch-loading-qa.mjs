@@ -15,7 +15,8 @@ const pool = new pg.Pool({ connectionString: connection }),
 const engine = process.env.UI_BROWSER || "chromium",
   baseline = false;
 const base = "http://127.0.0.1:3221",
-  folder = "artifacts/ranch-loading/" + (baseline ? "baseline-" : "") + engine;
+  folder =
+    "artifacts/ranch-loading-fix/" + (baseline ? "baseline-" : "") + engine;
 await mkdir(folder, { recursive: true });
 await pool.query("CREATE SCHEMA " + schema);
 const server = spawn(process.execPath, ["dist/apps/api/src/main.js"], {
@@ -63,7 +64,7 @@ try {
   await page.getByRole("button", { name: "登录 / 注册", exact: true }).click();
   await page.getByRole("button", { name: "创建账号", exact: true }).click();
   await page.getByLabel("昵称", { exact: true }).fill("加载验收");
-  await page.getByLabel("账号", { exact: true }).fill("loading_" + engine);
+  await page.getByLabel("账号", { exact: true }).fill("loadingfix_" + engine);
   await page.getByLabel("密码", { exact: true }).fill("OnlyQA_12345");
   await page.locator("#auth-dialog form button[type=submit]").click();
 
@@ -88,8 +89,9 @@ try {
   });
   await page.route("**/ranch/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
-    requests.set(path, (requests.get(path) || 0) + 1);
-    if (path === "/ranch/scene/pasture.png") {
+    if (route.request().resourceType() === "fetch")
+      requests.set(path, (requests.get(path) || 0) + 1);
+    if (path === "/ranch/scene/pasture-v1.webp") {
       if (backgroundMode === "hold") await backgroundGate;
       else if (backgroundMode === "fail") {
         backgroundMode = "normal";
@@ -134,7 +136,12 @@ try {
     !(await page.locator(".ranch-toolbelt").isVisible()) &&
       !(await page.locator(".game-profile").isVisible()),
   );
-  check("首屏仅加载必要动物资源", progress.max < 11);
+  check(
+    "首屏仅加载必要动物资源",
+    Number(
+      (await page.locator(".entry-count").textContent()).match(/\/\s*(\d+)/)[1],
+    ) < 11,
+  );
   for (const viewport of [
     { width: 390, height: 844 },
     { width: 1440, height: 1000 },
@@ -199,7 +206,7 @@ try {
       mode + "重试保留成功资源",
       [...before].every(
         ([path, n]) =>
-          path === "/ranch/scene/pasture.png" || requests.get(path) === n,
+          path === "/ranch/scene/pasture-v1.webp" || requests.get(path) === n,
       ),
     );
   }
@@ -216,8 +223,8 @@ try {
     await enter();
     await page
       .getByRole("button", { name: "重新加载", exact: true })
-      .waitFor({ timeout: 30000 });
-    check("25秒未响应资源超时提供重试", await loader.isVisible());
+      .waitFor({ timeout: 55000 });
+    check("45秒未响应资源超时提供重试", await loader.isVisible());
     backgroundMode = "normal";
     releaseBackground();
     await page.getByRole("button", { name: "重新加载", exact: true }).click();
@@ -261,7 +268,7 @@ try {
   await pool.end();
 }
 await writeFile(
-  "docs/test-reports/20261004-ranch-loading-" + engine + ".json",
+  "docs/test-reports/20261004-ranch-loading-fix-" + engine + ".json",
   JSON.stringify(
     {
       browser: engine,

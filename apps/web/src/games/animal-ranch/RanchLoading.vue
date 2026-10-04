@@ -1,5 +1,6 @@
 <script setup lang="ts">
 defineProps<{
+  progress?: number;
   completed?: number;
   total?: number;
   failed?: boolean;
@@ -52,14 +53,15 @@ defineEmits<{ retry: []; leave: [] }>();
         ></progress>
         <progress
           v-else
-          :value="completed || 0"
-          :max="total || 1"
+          :value="progress ?? ((completed || 0) / (total || 1)) * 100"
+          :max="100"
           aria-label="牧场资源加载进度"
         ></progress>
         <span class="entry-percent">{{
           pending
             ? "准备中"
-            : Math.floor(((completed || 0) / (total || 1)) * 100) + "%"
+            : Math.floor(progress ?? ((completed || 0) / (total || 1)) * 100) +
+              "%"
         }}</span>
       </div>
       <p class="entry-count" role="status">

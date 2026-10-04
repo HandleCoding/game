@@ -110,65 +110,111 @@ let preparing = false;
 function updateProgress() {
   completed.value = resourceUrls.value.filter((url) => loaded.has(url)).length;
 }
+const ratios = ref<Record<string, number>>({});
+const progress = computed(() =>
+  total.value
+    ? (resourceUrls.value.reduce(
+        (n, url) => n + (loaded.has(url) ? 1 : ratios.value[url] || 0),
+        0,
+      ) /
+        total.value) *
+      100
+    : 0,
+);
 function getImage(url: string) {
   const cached = loaded.get(url);
   if (cached) return Promise.resolve(cached);
   const existing = pending.get(url);
   if (existing) return existing;
-  const promise = new Promise<HTMLImageElement>((resolve, reject) => {
-    const img = new Image();
-    let settled = false;
-    const cleanup = () => {
-      clearTimeout(timeout);
-      img.onload = null;
-      img.onerror = null;
-      cancelLoads.delete(cancel);
-    };
-    const fail = () => {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      reject(new Error("牧场图片未能加载"));
-    };
+  const promise = (async () => {
+    const controller = new AbortController();
+    let timeout: ReturnType<typeof setTimeout>;
+    let rejectAbort: (error: Error) => void;
+    const aborted = new Promise<never>((_, reject) => {
+      rejectAbort = reject;
+    });
     const cancel = () => {
-      fail();
-      img.src = "";
+      controller.abort();
+      rejectAbort(new Error("资源下载暂时没有响应"));
     };
-    const timeout = setTimeout(cancel, 25000);
+    const arm = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(cancel, 45000);
+    };
+    ratios.value[url] = 0;
     cancelLoads.add(cancel);
-    img.onload = async () => {
-      try {
+    arm();
+    try {
+      const work = (async () => {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error("资源暂时无法下载");
+        arm();
+        const length = Number(response.headers.get("Content-Length")) || 0;
+        const chunks: ArrayBuffer[] = [];
+        let received = 0;
+        if (response.body) {
+          const reader = response.body.getReader();
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            arm(); // Active transfers can exceed 25s; only an idle transfer times out.
+            chunks.push(
+              value.buffer.slice(
+                value.byteOffset,
+                value.byteOffset + value.byteLength,
+              ) as ArrayBuffer,
+            );
+            received += value.byteLength;
+            if (length)
+              ratios.value[url] = Math.min(0.95, (received / length) * 0.95);
+          }
+        } else {
+          const buffer = await response.arrayBuffer();
+          chunks.push(buffer);
+        }
+        arm();
+        const blob = new Blob(chunks, {
+          type: response.headers.get("Content-Type") || "image/webp",
+        });
+        // data: is already allowed by our CSP. Do not weaken CSP to permit blob: images.
+        const source = await new Promise<string>((resolve, reject) => {
+          const file = new FileReader();
+          file.onload = () => resolve(file.result as string);
+          file.onerror = () => reject(new Error("图片读取失败"));
+          file.readAsDataURL(blob);
+        });
+        const img = new Image();
+        img.src = source;
         await img.decode();
-        if (settled || disposed) return;
+        if (controller.signal.aborted || disposed)
+          throw new Error("加载已取消");
         if (!img.naturalWidth) throw new Error("Empty image");
-        settled = true;
-        cleanup();
         loaded.set(url, img);
         updateProgress();
-        resolve(img);
-      } catch {
-        fail();
-      }
-    };
-    img.onerror = fail;
-    img.src = url;
-  }).finally(() => pending.delete(url));
+        return img;
+      })();
+      return await Promise.race([work, aborted]);
+    } finally {
+      clearTimeout(timeout!);
+      cancelLoads.delete(cancel);
+    }
+  })().finally(() => pending.delete(url));
   pending.set(url, promise);
   return promise;
 }
 function sheetUrl(i: number) {
   return i === 8
-    ? "/ranch/scene/soft/rabbit-stages.png"
+    ? "/ranch/scene/soft/rabbit-stages-v1.webp"
     : "/ranch/scene/soft/" +
         (i >= 4 ? "baby" : "adult") +
         "-" +
         (i % 4) +
-        ".png";
+        "-v1.webp";
 }
 function neededUrls() {
   return [
-    "/ranch/scene/pasture.png",
-    "/ranch/ui/ranch-tools-v1.png",
+    "/ranch/scene/pasture-v1.webp",
+    "/ranch/ui/ranch-tools-v1.webp",
     ...new Set(
       props.animals.map((a) =>
         sheetUrl(spriteLocation(a.species, a.baby).group),
@@ -188,14 +234,33 @@ async function prepareScene() {
     while (!disposed) {
       resourceUrls.value = neededUrls();
       updateProgress();
-      const results = await Promise.allSettled(
-        resourceUrls.value.map(getImage),
+      const queue = resourceUrls.value.filter((url) => !loaded.has(url));
+      let next = 0;
+      const errors: unknown[] = [];
+      await Promise.all(
+        Array.from({ length: Math.min(2, queue.length) }, async () => {
+          while (next < queue.length && !disposed) {
+            const url = queue[next++];
+            try {
+              await getImage(url);
+            } catch (error) {
+              errors.push(error);
+              if (!disposed)
+                console.warn(
+                  "牧场资源加载未完成",
+                  url,
+                  error instanceof Error ? error.message : "网络异常",
+                );
+            }
+          }
+        }),
       );
+      const results = errors.map(() => ({ status: "rejected" }));
       if (disposed) return;
       if (results.some((r) => r.status === "rejected"))
         throw new Error("Resources unavailable");
       if (neededUrls().some((url) => !loaded.has(url))) continue;
-      background = loaded.get("/ranch/scene/pasture.png")!;
+      background = loaded.get("/ranch/scene/pasture-v1.webp")!;
       for (const a of props.animals) {
         const i = spriteLocation(a.species, a.baby).group;
         sheets[i] = loaded.get(sheetUrl(i))!;
@@ -671,6 +736,7 @@ onUnmounted(() => {
     <RanchLoading
       v-if="!ready"
       class="scene-loading"
+      :progress="progress"
       :completed="completed"
       :total="total"
       :failed="failure"
