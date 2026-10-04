@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import RanchScene from "./RanchScene.vue";
 import AnimalPortrait from "./AnimalPortrait.vue";
+import RanchIcon from "./RanchIcon.vue";
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from "vue";
 import {
   api,
@@ -26,6 +27,7 @@ const panel = ref<
     | "detail"
     | "journal"
     | "help"
+    | "album"
     | null
   >(null),
   busy = ref(false),
@@ -170,22 +172,6 @@ function animalStatus(a: NonNullable<typeof selected.value>) {
   if (a.nextAt && a.nextAt <= now.value) return "正在确认产出…";
   return a.baby ? "幼崽成长中" : "悠闲产出中";
 }
-const vectorAnimals = new Set([
-  "cat",
-  "sheep",
-  "goose",
-  "fox",
-  "deer",
-  "alpaca",
-  "peacock",
-  "hedgehog",
-  "turtle",
-  "lion",
-]);
-function image(kind: string, baby = false) {
-  const name = kind === "chicken" && baby ? "chick" : kind;
-  return "/ranch/" + name + (vectorAnimals.has(name) ? ".svg" : ".png");
-}
 async function sellAnimal() {
   const a = selected.value;
   if (!a) return;
@@ -267,6 +253,7 @@ const panelTitle = computed(
       feed: "食槽 · 自动喂养",
       detail: selected.value?.name || "动物伙伴",
       journal: "扩建与牧场日记",
+      album: "动物图鉴",
     })[panel.value || "animals"],
 );
 function selectAnimal(id: string) {
@@ -278,7 +265,57 @@ watch(panel, async (value) => {
   await nextTick();
   if (value && !panelDialog.value?.open) panelDialog.value?.showModal();
 });
+
+const pickedSpecies = ref<RanchSpecies | null>(null);
+const previewBaby = ref(false);
+const pickedProduct = ref<string | null>(null);
+const neighborSearch = ref("");
+const neighborSort = ref("level");
+const shopChoice = computed(
+  () =>
+    filteredSpecies.value.find((k) => k.id === pickedSpecies.value) ||
+    filteredSpecies.value[0],
+);
+const inventory = computed(
+  () => farm.value?.inventory?.filter((p) => p.count > 0) || [],
+);
+const productChoice = computed(
+  () =>
+    inventory.value.find((p) => p.id === pickedProduct.value) ||
+    inventory.value[0],
+);
+const inventoryCount = computed(() =>
+  inventory.value.reduce((n, p) => n + p.count, 0),
+);
+const availableSpecies = computed(
+  () =>
+    farm.value?.species.filter((k) => k.unlockLevel <= farm.value!.level)
+      .length || 0,
+);
+const filteredNeighbors = computed(() =>
+  neighbors.value
+    .filter((p) => p.name.includes(neighborSearch.value.trim()))
+    .sort((a, b) =>
+      neighborSort.value === "level"
+        ? b.level - a.level
+        : a.name.localeCompare(b.name, "zh-CN"),
+    ),
+);
+const adoptionReason = computed(() => {
+  const k = shopChoice.value;
+  if (!k) return "";
+  if (farm.value!.level < k.unlockLevel)
+    return "Lv. " + k.unlockLevel + " 解锁";
+  if (farm.value!.animals.length >= farm.value!.capacity)
+    return "位置已满 · 先扩建牧场";
+  if ((farm.value!.coins || 0) < k.price) return "金币不足";
+  return k.price + " 金币 · 认养";
+});
+function productAnimal(id: string) {
+  return farm.value?.species.find((k) => k.product === id);
+}
 </script>
+
 <template>
   <main
     ref="gameRoot"
@@ -286,7 +323,9 @@ watch(panel, async (value) => {
     aria-label="一起牧场游戏"
   >
     <div v-if="!farm" class="ranch-loading" role="status">
-      <span>🌿</span>{{ loading ? "正在走进你的牧场…" : "牧场暂时未加载" }}
+      <RanchIcon :index="1" />{{
+        loading ? "正在走进你的牧场…" : "牧场暂时未加载"
+      }}
       <button class="quiet small" @click="returnLobby">← 游戏大厅</button>
     </div>
     <template v-else>
@@ -302,7 +341,9 @@ watch(panel, async (value) => {
         @shop="panel = 'animals'"
       />
       <header class="game-profile">
-        <div class="ranch-avatar" aria-hidden="true">🐾</div>
+        <div class="ranch-avatar" aria-hidden="true">
+          <RanchIcon :index="1" />
+        </div>
         <div class="profile-text">
           <h1>
             {{
@@ -311,7 +352,7 @@ watch(panel, async (value) => {
                 : state?.me.name + "的牧场"
             }}
           </h1>
-          <span
+          <span class="profile-level"
             >Lv. {{ farm.level }}
             <small
               >{{ farm.animals.length }} / {{ farm.capacity }} 伙伴</small
@@ -327,7 +368,7 @@ watch(panel, async (value) => {
       </header>
       <div class="game-wallet">
         <span v-if="owner" class="wallet-coins" aria-label="我的金币"
-          >🪙 {{ farm.coins }}</span
+          ><RanchIcon :index="7" />{{ farm.coins }}</span
         >
         <span v-else class="visitor-label">参观中</span>
         <button
@@ -336,7 +377,7 @@ watch(panel, async (value) => {
           :class="{ hungry: farm.hungry }"
           @click="panel = 'feed'"
         >
-          🌾 {{ farm.feed }} 份
+          <RanchIcon :index="8" />{{ farm.feed }} 份
         </button>
         <button v-else class="wallet-feed" @click="visit(null)">
           回我的牧场
@@ -352,6 +393,13 @@ watch(panel, async (value) => {
         >
           <span>{{ theme === "light" ? "☾" : "☀" }}</span
           ><small>{{ theme === "light" ? "夜间" : "日间" }}</small>
+        </button>
+        <button
+          class="album-menu"
+          aria-label="动物图鉴"
+          @click="panel = 'album'"
+        >
+          <RanchIcon :index="6" /><small>图鉴</small>
         </button>
         <button aria-label="牧场玩法说明" @click="panel = 'help'">
           <span>?</span><small>玩法</small>
@@ -370,28 +418,33 @@ watch(panel, async (value) => {
           :disabled="busy || loading || !harvestCount"
           @click="action('harvest')"
         >
-          <span>🧺</span>一键收获<small
-            class="tool-count"
-            v-if="harvestCount"
-            >{{ harvestCount }}</small
-          >
+          <span class="tool-art"><RanchIcon :index="0" /></span
+          ><span class="tool-name">一键收获</span
+          ><small class="tool-count" v-if="harvestCount">{{
+            harvestCount
+          }}</small>
         </button>
-        <button @click="panel = 'animals'"><span>🐣</span>动物商店</button>
+        <button @click="panel = 'animals'">
+          <span class="tool-art"><RanchIcon :index="1" /></span
+          ><span class="tool-name">动物商店</span>
+        </button>
         <button v-if="owner" @click="panel = 'feed'">
-          <span>🌾</span>添饲料<small
-            class="tool-count alert-count"
-            v-if="farm.hungry"
-            >!</small
-          >
+          <span class="tool-art"><RanchIcon :index="2" /></span
+          ><span class="tool-name">添饲料</span
+          ><small class="tool-count alert-count" v-if="farm.hungry">!</small>
         </button>
         <button v-if="owner" @click="panel = 'store'">
-          <span>📦</span>我的仓库<small class="tool-count" v-if="stockValue"
-            >●</small
-          >
+          <span class="tool-art"><RanchIcon :index="3" /></span
+          ><span class="tool-name">我的仓库</span
+          ><small class="tool-count" v-if="stockValue">●</small>
         </button>
-        <button @click="panel = 'neighbors'"><span>🏡</span>去串门</button>
+        <button @click="panel = 'neighbors'">
+          <span class="tool-art"><RanchIcon :index="4" /></span
+          ><span class="tool-name">去串门</span>
+        </button>
         <button v-if="owner" @click="panel = 'journal'">
-          <span>🔨</span>扩建 / 日记
+          <span class="tool-art"><RanchIcon :index="5" /></span
+          ><span class="tool-name">扩建 / 日记</span>
         </button>
       </nav>
       <span class="game-offline-note">{{
@@ -399,15 +452,18 @@ watch(panel, async (value) => {
       }}</span>
     </template>
     <div v-if="error" class="game-error" role="alert">
-      {{ error }}
-      <button :disabled="busy || loading" @click="load">重试</button>
+      {{ error }}<button :disabled="busy || loading" @click="load">重试</button>
     </div>
   </main>
   <Teleport to="body">
     <dialog
       v-if="panel && farm"
       ref="panelDialog"
-      class="card ranch-window"
+      class="ranch-window"
+      :class="{
+        'catalog-window': panel === 'animals' || panel === 'album',
+        'store-window': panel === 'store',
+      }"
       aria-labelledby="ranch-window-title"
       @cancel.prevent="panel = null"
       @click="
@@ -417,41 +473,300 @@ watch(panel, async (value) => {
       "
     >
       <div class="ranch-window-heading">
+        <span class="window-emblem" aria-hidden="true"
+          ><RanchIcon
+            :index="
+              panel === 'animals'
+                ? 1
+                : panel === 'store'
+                  ? 3
+                  : panel === 'neighbors'
+                    ? 4
+                    : panel === 'feed'
+                      ? 2
+                      : panel === 'journal'
+                        ? 5
+                        : 6
+            "
+        /></span>
         <h2 id="ranch-window-title">{{ panelTitle }}</h2>
         <button
-          class="quiet small"
+          class="window-close"
           aria-label="关闭牧场面板"
           @click="panel = null"
         >
-          关闭 ✕
+          ✕
         </button>
       </div>
-      <p v-if="error" role="alert" class="error">{{ error }}</p>
-      <section v-if="panel === 'help'" class="ranch-help">
-        <h3>一群小伙伴，一块快乐草地</h3>
-        <p>
-          点动物或头顶状态查看详情；“可收获”表示产物已准备好。左侧围栏旁的食槽可以点击添粮，动物会过去吃。
-        </p>
-        <p>
-          收获 → 仓库出售 → 认养幼崽 → 喂养成长。每只动物每分钟吃 1
-          份，缺粮暂停、不死亡，最多存 3 轮产物。
-        </p>
-        <p>
-          36
-          种伙伴按等级解锁，多设备共用一份存档。拖动场景、双指缩放，也可以用右侧按钮查看全景。
-        </p>
-        <p>“一起牧场”在离线时也继续成长，其他玩家的牧场可以只读参观。</p>
-      </section>
-      <section v-if="panel === 'feed' && owner" class="card ranch-feed">
-        <div class="section-label">
-          <h2>食槽</h2>
-          <span class="tag" :class="{ danger: farm.hungry }">{{
-            farm.hungry ? "需要喂食" : "自动喂养"
-          }}</span>
+      <p v-if="error" role="alert" class="error panel-error">{{ error }}</p>
+      <template v-if="panel === 'animals' || panel === 'album'">
+        <div class="ranch-shop-filters">
+          <div class="wood-tabs" aria-label="动物分类">
+            <button
+              v-for="c in [
+                { id: 'all', name: '全部' },
+                { id: 'farm', name: '家禽家畜' },
+                { id: 'pets', name: '萌宠' },
+                { id: 'zoo', name: '动物园' },
+              ]"
+              :key="c.id"
+              :class="{ active: shopCategory === c.id }"
+              :aria-pressed="shopCategory === c.id"
+              @click="shopCategory = c.id"
+            >
+              {{ c.name }}
+            </button>
+          </div>
+          <div class="catalog-search">
+            <input
+              v-model="search"
+              type="search"
+              aria-label="搜索动物"
+              placeholder="搜索动物名字"
+            /><label
+              ><input v-model="unlockedOnly" type="checkbox" />已解锁</label
+            >
+          </div>
+          <div class="catalog-summary">
+            <span>{{
+              panel === "album"
+                ? "已解锁 " +
+                  availableSpecies +
+                  " / " +
+                  farm.species.length +
+                  " 种"
+                : "认养幼崽，陪它慢慢长大"
+            }}</span
+            ><span v-if="panel === 'animals'"
+              >{{ farm.animals.length }} / {{ farm.capacity }} 位置</span
+            ><span v-else>幼年 / 成年可切换</span>
+          </div>
         </div>
-        <div class="ranch-feed-amount">
-          <span aria-hidden="true">✿</span><strong>{{ farm.feed }}</strong
-          ><span>份饲料</span>
+        <div class="catalog-layout">
+          <div class="ranch-shop-grid panel-scroll" aria-label="动物列表">
+            <button
+              v-for="kind in filteredSpecies"
+              :key="kind.id"
+              type="button"
+              class="ranch-shop-animal item-tile"
+              :class="{
+                'tile-is-locked': farm.level < kind.unlockLevel,
+                selected: shopChoice?.id === kind.id,
+              }"
+              :aria-pressed="shopChoice?.id === kind.id"
+              :aria-label="'查看' + kind.name + '资料'"
+              @click="pickedSpecies = kind.id"
+            >
+              <span class="tile-level">Lv. {{ kind.unlockLevel }}</span>
+              <div class="shop-fullbody">
+                <AnimalPortrait :species="kind.id" :name="kind.name" />
+              </div>
+              <strong>{{ kind.name }}</strong>
+              <span class="tile-price" v-if="panel === 'animals'"
+                ><RanchIcon :index="7" />{{ kind.price }}</span
+              ><small v-else>{{ kind.productName }}</small>
+              <span v-if="farm.level < kind.unlockLevel" class="tile-lock"
+                ><svg viewBox="0 0 20 24" aria-hidden="true" class="flat-lock">
+                  <path
+                    d="M5 10V7a5 5 0 0 1 10 0v3"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                  />
+                  <rect
+                    x="2"
+                    y="10"
+                    width="16"
+                    height="13"
+                    rx="3"
+                    fill="currentColor"
+                  />
+                  <circle cx="10" cy="15" r="1.5" fill="#8d805a" />
+                  <path
+                    d="M10 16v3"
+                    stroke="#8d805a"
+                    stroke-width="1.7"
+                    stroke-linecap="round"
+                  /></svg
+                >Lv. {{ kind.unlockLevel }} 解锁</span
+              >
+            </button>
+            <p v-if="!filteredSpecies.length" class="empty">
+              没找到这位伙伴，换个名字试试吧。
+            </p>
+          </div>
+          <aside
+            v-if="shopChoice"
+            class="item-detail catalog-detail"
+            aria-label="动物资料"
+          >
+            <div class="detail-overview">
+              <div class="detail-art meadow-art">
+                <AnimalPortrait
+                  :species="shopChoice.id"
+                  :name="shopChoice.name"
+                  :baby="previewBaby"
+                />
+              </div>
+              <div class="detail-title">
+                <span class="detail-kicker">{{
+                  previewBaby ? "幼年伙伴" : "成年伙伴"
+                }}</span>
+                <h3>
+                  {{ previewBaby ? shopChoice.babyName : shopChoice.name }}
+                </h3>
+                <div class="stage-switch">
+                  <button
+                    :aria-pressed="previewBaby"
+                    :class="{ active: previewBaby }"
+                    @click="previewBaby = true"
+                  >
+                    幼年</button
+                  ><button
+                    :aria-pressed="!previewBaby"
+                    :class="{ active: !previewBaby }"
+                    @click="previewBaby = false"
+                  >
+                    成年
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="detail-copy">
+              <p>{{ shopChoice.description }}</p>
+              <div class="detail-facts">
+                <span
+                  >长大需时<strong>{{
+                    duration(shopChoice.growthMs)
+                  }}</strong></span
+                ><span
+                  >产出周期<strong>{{
+                    duration(shopChoice.cycleMs)
+                  }}</strong></span
+                ><span
+                  >{{ shopChoice.productName
+                  }}<strong>{{ shopChoice.yield }} 份 / 轮</strong></span
+                >
+              </div>
+            </div>
+            <div class="detail-actions" v-if="panel === 'animals' && owner">
+              <button
+                class="ranch-primary"
+                :disabled="
+                  busy ||
+                  loading ||
+                  farm.level < shopChoice.unlockLevel ||
+                  (farm.coins || 0) < shopChoice.price ||
+                  farm.animals.length >= farm.capacity
+                "
+                @click="buy(shopChoice.id)"
+              >
+                {{ adoptionReason }}
+              </button>
+            </div>
+            <p v-else class="detail-footnote">
+              {{
+                farm.level < shopChoice.unlockLevel
+                  ? "牧场达到 Lv. " + shopChoice.unlockLevel + " 后可以认养。"
+                  : "已解锁 · 在动物商店认养幼崽"
+              }}
+            </p>
+          </aside>
+        </div>
+      </template>
+      <template v-else-if="panel === 'store' && owner">
+        <div class="wood-tabs store-tabs">
+          <span class="active">动物产物</span
+          ><span>{{ inventory.length }} 种 · {{ inventoryCount }} 份</span>
+        </div>
+        <div class="catalog-layout">
+          <div class="ranch-inventory panel-scroll">
+            <button
+              v-for="product in inventory"
+              :key="product.id"
+              class="ranch-product item-tile"
+              :class="{ selected: productChoice?.id === product.id }"
+              :aria-pressed="productChoice?.id === product.id"
+              :aria-label="'查看' + product.name + '库存'"
+              @click="pickedProduct = product.id"
+            >
+              <div class="product-art">
+                <AnimalPortrait
+                  v-if="productAnimal(product.id)"
+                  :species="productAnimal(product.id)!.id"
+                  :name="product.name"
+                /><RanchIcon v-else :index="0" />
+              </div>
+              <strong>{{ product.name }}</strong
+              ><span class="product-count">× {{ product.count }}</span>
+            </button>
+            <p v-if="!stockValue" class="empty">
+              <RanchIcon :index="0" />仓库还是空的<br />先去收获动物的产物吧。
+            </p>
+          </div>
+          <aside class="item-detail inventory-detail" aria-label="库存详情">
+            <template v-if="productChoice"
+              ><div class="detail-overview">
+                <div class="detail-art meadow-art">
+                  <AnimalPortrait
+                    v-if="productAnimal(productChoice.id)"
+                    :species="productAnimal(productChoice.id)!.id"
+                    :name="productChoice.name"
+                  /><RanchIcon v-else :index="0" />
+                </div>
+                <div class="detail-title">
+                  <span class="detail-kicker">来自牧场伙伴的礼物</span>
+                  <h3>{{ productChoice.name }}</h3>
+                  <p>库存 {{ productChoice.count }} 份</p>
+                </div>
+              </div>
+              <div class="detail-facts">
+                <span
+                  >出售单价<strong>{{ productChoice.price }} 金币</strong></span
+                ><span
+                  >本项总值<strong
+                    >{{
+                      productChoice.count * productChoice.price
+                    }}
+                    金币</strong
+                  ></span
+                >
+              </div>
+              <button
+                class="ranch-primary"
+                :disabled="busy || loading || !productChoice.count"
+                @click="action('sellProducts', { product: productChoice.id })"
+              >
+                出售此产物 · {{ productChoice.count }} 份
+              </button>
+            </template>
+            <div class="ranch-sell-all">
+              <p>
+                仓库估值 <strong>{{ stockValue }} 金币</strong>
+              </p>
+              <button
+                class="ranch-secondary"
+                :disabled="busy || loading || !stockValue"
+                @click="action('sellProducts')"
+              >
+                出售全部产物
+              </button>
+            </div>
+          </aside>
+        </div>
+      </template>
+      <section
+        v-else-if="panel === 'feed' && owner"
+        class="ranch-feed panel-scroll"
+      >
+        <div class="feed-hero">
+          <RanchIcon :index="2" /><span
+            class="tag"
+            :class="{ danger: farm.hungry }"
+            >{{ farm.hungry ? "需要喂食" : "自动喂养" }}</span
+          >
+          <h3>{{ farm.feed }} <small>份饲料</small></h3>
         </div>
         <progress
           :value="farm.feed"
@@ -477,21 +792,30 @@ watch(panel, async (value) => {
             "
             @click="action('buyFeed', { units })"
           >
-            +{{ units }}<small>{{ units }} 金币</small>
+            <RanchIcon :index="8" /><strong>+{{ units }}</strong
+            ><small>{{ units }} 金币</small>
           </button>
         </div>
-        <small>缺粮暂停成长，动物不会死亡。</small>
+        <small>食槽最多容纳 1000 份；缺粮暂停成长，动物不会死亡。</small>
       </section>
-      <section v-if="panel === 'detail'" class="card ranch-animal-detail">
+      <section
+        v-else-if="panel === 'detail'"
+        class="ranch-animal-detail panel-scroll"
+      >
         <template v-if="selected"
-          ><div class="row spread">
-            <h2>{{ selected.name }}</h2>
-            <span class="tag">{{ selected.baby ? "幼崽" : "成年" }}</span>
+          ><div class="animal-detail-stage">
+            <span class="tag">{{
+              selected.baby ? "幼崽成长中" : "成年伙伴"
+            }}</span>
+            <div class="ranch-detail-portrait">
+              <AnimalPortrait
+                :species="selected.species"
+                :name="selected.name"
+                :baby="selected.baby"
+              />
+            </div>
+            <strong class="animal-state">{{ animalStatus(selected) }}</strong>
           </div>
-          <div class="ranch-detail-portrait">
-            <AnimalPortrait :species="selected.species" :name="selected.name" :baby="selected.baby" />
-          </div>
-          <strong>{{ animalStatus(selected) }}</strong>
           <p v-if="!selected.hungry && selected.stored < selected.capacity">
             {{ selected.baby ? "距离成年" : "下次产出" }}：{{
               countdown(selected.nextAt)
@@ -514,7 +838,7 @@ watch(panel, async (value) => {
             >
               收获这只</button
             ><button
-              class="quiet small"
+              class="ranch-secondary"
               :disabled="busy || loading || !!selected.stored"
               @click="sellAnimal"
             >
@@ -522,143 +846,65 @@ watch(panel, async (value) => {
             </button>
           </div>
         </template>
-        <template v-else
-          ><span class="eyebrow">LITTLE COMPANIONS</span>
-          <h2>点一下你的伙伴</h2>
-          <p>查看成长进度、下次产出和已经准备好的礼物。</p>
-        </template>
+        <p v-else class="empty">点一下场景里的伙伴，看看它的成长进度。</p>
       </section>
-      <div v-if="panel === 'animals'" class="ranch-shop-filters">
-        <div>
-          <button
-            v-for="c in [
-              { id: 'all', name: '全部 36 种' },
-              { id: 'farm', name: '家禽家畜' },
-              { id: 'pets', name: '可爱萌宠' },
-              { id: 'zoo', name: '动物园' },
-            ]"
-            :key="c.id"
-            class="quiet small"
-            :class="{ active: shopCategory === c.id }"
-            @click="shopCategory = c.id"
-          >
-            {{ c.name }}
-          </button>
+      <section
+        v-else-if="panel === 'neighbors'"
+        class="ranch-neighbors panel-scroll"
+      >
+        <div class="neighbor-filters">
+          <input
+            v-model="neighborSearch"
+            type="search"
+            aria-label="搜索牧场主"
+            placeholder="搜昵称，去朋友家看看"
+          /><select v-model="neighborSort" aria-label="牧场主排序">
+            <option value="level">等级优先</option>
+            <option value="name">昵称排序</option>
+          </select>
         </div>
-        <input
-          v-model="search"
-          type="search"
-          aria-label="搜索动物"
-          placeholder="搜索动物名字"
-        /><label
-          ><input v-model="unlockedOnly" type="checkbox" />仅看已解锁</label
-        ><span class="muted">{{ filteredSpecies.length }} 种伙伴</span>
-      </div>
-      <div v-if="panel === 'animals'" class="ranch-shop-grid">
-        <article
-          v-for="kind in filteredSpecies"
-          :key="kind.id"
-          class="ranch-shop-animal"
-          :class="{ locked: farm.level < kind.unlockLevel }"
-        >
-          <span class="ranch-shop-lock">{{
-            farm.level < kind.unlockLevel
-              ? "Lv. " + kind.unlockLevel + " 解锁"
-              : "Lv. " + kind.unlockLevel + " 起可养"
-          }}</span>
-          <div class="shop-fullbody">
-            <AnimalPortrait :species="kind.id" :name="kind.name" />
-          </div>
-          <h3>{{ kind.name }}</h3>
-          <p class="ranch-animal-description">{{ kind.description }}</p>
-          <p>{{ kind.productName }} · 每轮 {{ kind.yield }} 份</p>
-          <div class="ranch-shop-meta">
-            <span>成长 {{ duration(kind.growthMs) }}</span
-            ><span>产出 {{ duration(kind.cycleMs) }}</span>
-          </div>
-          <button
-            v-if="owner"
-            class="ranch-primary"
-            :disabled="
-              busy ||
-              loading ||
-              farm.level < kind.unlockLevel ||
-              (farm.coins || 0) < kind.price ||
-              farm.animals.length >= farm.capacity
-            "
-            @click="buy(kind.id)"
-          >
-            {{
-              farm.level < kind.unlockLevel
-                ? "尚未解锁"
-                : kind.price + " 金币 · 认养"
-            }}
-          </button>
-        </article>
-      </div>
-      <div v-else-if="panel === 'store' && owner" class="ranch-inventory">
+        <p class="panel-hint">所有牧场主都可以串门，离线也能参观。</p>
         <div
-          v-for="product in farm.inventory?.filter((p) => p.count > 0)"
-          :key="product.id"
-          class="ranch-product"
+          v-for="player in filteredNeighbors"
+          :key="player.id"
+          class="player-line"
         >
-          <span>{{ product.name }}</span
-          ><strong>{{ product.count }} <small>份</small></strong>
-          <p>{{ product.price }} 金币 / 份</p>
-          <button
-            class="quiet small"
-            :disabled="busy || loading || !product.count"
-            @click="action('sellProducts', { product: product.id })"
-          >
-            出售
-          </button>
-        </div>
-        <p v-if="!stockValue" class="empty" style="grid-column: 1/-1">
-          仓库还是空的，先去收获动物的产物吧。
-        </p>
-        <div class="ranch-sell-all">
-          <p>
-            仓库估值 <strong>{{ stockValue }} 金币</strong>
-          </p>
-          <button
-            class="ranch-primary"
-            :disabled="busy || loading || !stockValue"
-            @click="action('sellProducts')"
-          >
-            出售全部产物
-          </button>
-        </div>
-      </div>
-      <div v-else-if="panel === 'neighbors'" class="ranch-neighbors">
-        <p class="muted">已经开过牧场的玩家都在这里，离线也可以参观。</p>
-        <div v-for="player in neighbors" :key="player.id" class="player-line">
-          <div class="avatar">{{ player.name.slice(0, 1) }}</div>
+          <div class="neighbor-avatar">
+            {{ player.name.slice(0, 1) }}<span>Lv. {{ player.level }}</span>
+          </div>
           <div class="details">
             <strong>{{ player.name }}</strong
-            ><small>Lv. {{ player.level }} · {{ player.animals }} 只动物</small>
+            ><small>{{ player.animals }} 位动物伙伴</small>
           </div>
           <button
-            class="quiet small"
+            class="ranch-primary"
             :disabled="busy || loading"
             @click="visit(player.id)"
           >
             参观牧场
           </button>
         </div>
-        <p v-if="!neighbors.length" class="empty">
-          还没有其他牧场主，叫朋友来认养第一只小动物吧。
+        <p v-if="!filteredNeighbors.length" class="empty">
+          {{
+            neighbors.length
+              ? "没找到这个昵称，换个关键词试试。"
+              : "还没有其他牧场主，叫朋友来认养第一只小动物吧。"
+          }}
         </p>
-        <button class="quiet small" @click="list">刷新玩家</button>
-      </div>
-      <div v-if="panel === 'journal' && owner" class="ranch-bottom">
-        <section class="card ranch-expand">
-          <span class="eyebrow">MAKE ROOM FOR MORE</span>
-          <h2>给新伙伴一个位置</h2>
+        <button class="ranch-secondary" @click="list">刷新玩家</button>
+      </section>
+      <section
+        v-else-if="panel === 'journal' && owner"
+        class="ranch-bottom panel-scroll"
+      >
+        <div class="ranch-expand">
+          <RanchIcon :index="5" />
+          <h3>给新伙伴一个位置</h3>
           <p>
-            当前 {{ farm.capacity }} 个位置。扩建每次增加 2 个，最多 16 个。
+            当前 {{ farm.capacity }} 个位置。每次扩建增加 2 个，最多 16 个。
           </p>
           <button
-            class="quiet"
+            class="ranch-primary"
             :disabled="
               busy ||
               loading ||
@@ -673,1513 +919,1816 @@ watch(panel, async (value) => {
                 : "已完成全部扩建"
             }}
           </button>
-        </section>
-        <section class="card">
-          <h2>牧场日记</h2>
-          <div
-            v-for="entry in farm.log?.slice(0, 5)"
-            :key="entry.id"
-            class="ranch-log"
-          >
-            <span>{{ entry.message }}</span
-            ><small>{{
-              new Date(entry.at).toLocaleTimeString("zh-CN", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            }}</small>
-          </div>
-          <p v-if="!farm.log?.length" class="muted">
-            第一只小鸡正在等你。收获一次，故事就开始了。
-          </p>
-        </section>
-      </div>
+        </div>
+        <h3 class="journal-title">牧场日记</h3>
+        <div
+          v-for="entry in farm.log?.slice(0, 8)"
+          :key="entry.id"
+          class="ranch-log"
+        >
+          <span>{{ entry.message }}</span
+          ><small>{{
+            new Date(entry.at).toLocaleTimeString("zh-CN", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          }}</small>
+        </div>
+        <p v-if="!farm.log?.length">
+          第一只小鸡正在等你。收获一次，故事就开始了。
+        </p>
+      </section>
+      <section v-else-if="panel === 'help'" class="ranch-help panel-scroll">
+        <h3>一群小伙伴，一块快乐草地</h3>
+        <p>
+          点动物或头顶状态查看详情；“可收获”表示产物已准备好。左侧围栏旁的食槽可以点击添粮，动物会过去吃。
+        </p>
+        <p>
+          收获 → 仓库出售 → 认养幼崽 → 喂养成长。每只动物每分钟吃 1
+          份，缺粮暂停、不死亡，最多存 3 轮产物。
+        </p>
+        <p>
+          36
+          种伙伴按等级解锁，图鉴可以查看幼年与成年外观。拖动场景、双指缩放，右侧按钮可查看全景。
+        </p>
+        <p>离线时也会成长，多设备共用一份存档。串门为只读参观。</p>
+      </section>
     </dialog>
   </Teleport>
 </template>
+
 <style scoped>
-.ranch-page {
-  --ranch-green: #285b3b;
-  --ranch-button: #c9e58b;
-  --ranch-light: #edf3e3;
-  --ranch-ink: #30462f;
-  padding-top: 30px;
-}
-.ranch-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: end;
-  margin-bottom: 25px;
-}
-.ranch-heading h1 {
-  font-size: clamp(1.9rem, 4vw, 2.8rem);
-  margin: 6px 0 2px;
-  letter-spacing: -0.05em;
-}
-.ranch-heading p {
-  color: var(--muted);
-  margin: 0;
-}
-.ranch-back {
-  display: block;
-  margin-bottom: 18px;
-}
-.ranch-heading .eyebrow {
-  color: var(--muted);
-  font-size: 0.65rem;
-}
-.ranch-heading-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.ranch-level {
-  color: var(--ranch-green);
-  background: var(--ranch-button);
-  padding: 8px 14px;
-  border-radius: 100px;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-.ranch-summary {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin-bottom: 22px;
-}
-.ranch-summary > div {
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 17px 21px;
-  background: var(--surface);
-}
-.ranch-summary span,
-.ranch-summary small {
-  display: block;
-  color: var(--muted);
-  font-size: 0.75rem;
-}
-.ranch-summary strong {
-  font-size: 1.65rem;
-  display: block;
-  margin: 4px 0;
-}
-.ranch-summary em {
-  font-style: normal;
-  font-size: 0.85rem;
-  font-weight: 400;
-  color: var(--muted);
-}
-.ranch-summary i {
-  font-style: normal;
-  color: #ddb963;
-  font-size: 1rem;
-}
-.ranch-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1.9fr) minmax(280px, 1fr);
-  gap: 22px;
-  margin-bottom: 24px;
-}
-.ranch-pasture-card {
-  border-radius: 22px;
-  overflow: hidden;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  align-self: start;
-}
-.ranch-scene-title,
-.ranch-scene-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 17px 20px;
-}
-.ranch-scene-title {
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-.ranch-scene-title > span {
-  font-size: 0.75rem;
-  color: var(--muted);
-  font-weight: 400;
-}
-.ranch-live-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #77a354;
-  margin-right: 7px;
-}
-.ranch-scene {
-  background: #b4d395 url("/ranch/pasture.svg") center/cover;
-  min-height: 380px;
-  position: relative;
-}
-.ranch-field-grid {
-  position: absolute;
-  inset: 33% 5% 6%;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-content: space-around;
-  gap: 12px 4px;
-}
-.ranch-large {
-  min-height: 510px;
-}
-.ranch-field-animal {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: 0;
-  padding: 4px;
-  min-height: 92px;
-  color: #244331;
-  border-radius: 18px;
-}
-.ranch-field-animal:hover:not(:disabled) {
-  background: #fff4;
-}
-.ranch-field-animal.selected {
-  background: #fff5;
-  outline: 2px solid #eef7d2;
-}
-.ranch-field-animal img {
-  width: 65px;
-  height: 65px;
-  object-fit: contain;
-  z-index: 1;
-  animation: animal-idle 3.5s ease-in-out infinite;
-  animation-delay: var(--delay);
-}
-.ranch-field-animal.young img {
-  width: 50px;
-  height: 50px;
-}
-.animal-shadow {
-  position: absolute;
-  width: 55px;
-  height: 12px;
-  top: 66px;
-  background: #35532925;
-  border-radius: 50%;
-}
-.animal-caption {
-  display: block;
-  font-weight: 600;
-  font-size: 0.72rem;
-  padding: 1px 8px;
-  border-radius: 9px;
-  background: #f8ffe0ce;
-  z-index: 2;
-}
-.animal-caption small {
-  margin-left: 4px;
-  font-weight: 400;
-  font-size: 0.6rem;
-}
-.ranch-produce {
-  background: #fff9df;
-  color: #685726;
-  box-shadow: 0 2px 7px #3453311a;
-  border-radius: 20px;
-  padding: 2px 9px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  position: absolute;
-  top: -12px;
-  z-index: 3;
-  white-space: nowrap;
-}
-.ranch-produce.hungry {
-  background: #ffe0bc;
-  color: #795631;
-}
-.empty-circle {
-  border: 1px dashed #fff9;
-  border-radius: 50%;
-  width: 46px;
-  height: 46px;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  font-size: 1.2rem;
-  background: #6e944222;
-  margin-bottom: 6px;
-}
-.empty-plot .animal-caption {
-  opacity: 0.7;
-  background: none;
-}
-.ranch-scene-footer p {
-  font-size: 0.75rem;
-  color: var(--muted);
-  max-width: 230px;
-  margin: 0;
-}
-.ranch-primary {
-  background: var(--ranch-button);
-  color: var(--ranch-ink);
-  border-color: transparent;
-}
-.ranch-primary:hover:not(:disabled) {
-  background: #d8edac;
-}
-.ranch-primary span {
-  padding: 2px 6px;
-  background: #ffffff40;
-  border-radius: 6px;
-  margin-left: 6px;
-}
-.ranch-side {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-.ranch-side .card {
-  padding: 20px;
-}
-.ranch-side h2,
-.ranch-bottom h2,
-.ranch-workshop h3 {
-  font-size: 1.05rem;
-  margin: 0;
-}
-.ranch-feed p,
-.ranch-animal-detail p {
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-.ranch-feed-amount {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 14px 0 9px;
-}
-.ranch-feed-amount > span:first-child {
-  color: #729752;
-  font-size: 1.7rem;
-}
-.ranch-feed-amount strong {
-  font-size: 1.8rem;
-}
-.ranch-feed-amount span {
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-progress {
-  width: 100%;
-  height: 7px;
-  border: 0;
-  appearance: none;
-  border-radius: 9px;
-  overflow: hidden;
-  background: var(--raised);
-}
-progress::-webkit-progress-bar {
-  background: var(--raised);
-}
-progress::-webkit-progress-value {
-  background: #94b76c;
-  border-radius: 9px;
-}
-progress::-moz-progress-bar {
-  background: #94b76c;
-}
-.ranch-feed-buttons {
-  display: flex;
-  gap: 8px;
-  margin: 16px 0 10px;
-}
-.ranch-feed-buttons button {
-  flex: 1;
-  padding: 7px 4px;
-  font-size: 0.85rem;
-}
-.ranch-feed-buttons small {
-  display: block;
-  color: var(--muted);
-  font-weight: 400;
-  font-size: 0.65rem;
-}
-.ranch-feed > small {
-  font-size: 0.7rem;
-  color: var(--muted);
-}
-.ranch-mini-animals {
-  display: flex;
-  gap: 18px;
-  margin-top: 26px;
-  justify-content: center;
-}
-.ranch-mini-animals img {
-  width: 50px;
-  height: 50px;
-  object-fit: contain;
-}
-.ranch-detail-portrait {
-  margin: 14px auto;
-  text-align: center;
-}
-.ranch-detail-portrait img {
-  height: 70px;
-  width: 70px;
-  object-fit: contain;
-}
-.ranch-animal-detail .actions {
-  margin-top: 16px;
-}
-.ranch-workshop {
-  padding: 0;
-  overflow: hidden;
-  margin-bottom: 22px;
-}
-.ranch-tabs {
-  display: flex;
-  gap: 6px;
-  border-bottom: 1px solid var(--line);
-  padding: 12px 18px;
-}
-.ranch-tabs button {
-  border: 0;
-  background: none;
-  font-size: 0.85rem;
-  min-height: 44px;
-}
-.ranch-tabs button.active {
-  background: var(--ranch-light);
-  color: var(--ranch-green);
-}
-.ranch-shop-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  padding: 22px;
-  gap: 16px;
-}
-.ranch-shop-animal {
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 18px 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  position: relative;
-}
-.ranch-shop-animal img {
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-  margin: 18px 0 12px;
-}
-.ranch-shop-animal p {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin: 5px 0 12px;
-}
-.ranch-shop-lock {
-  font-size: 0.6rem;
-  background: var(--raised);
-  padding: 3px 7px;
-  border-radius: 7px;
-  position: absolute;
-  left: 10px;
-  top: 9px;
-  color: var(--muted);
-}
-.ranch-shop-meta {
-  font-size: 0.65rem;
-  color: var(--muted);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 5px;
-  margin-bottom: 15px;
-}
-.ranch-shop-animal button {
-  font-size: 0.72rem;
-  width: 100%;
-  padding: 9px 4px;
-  min-height: 44px;
-}
-.ranch-shop-animal.locked img {
-  filter: grayscale(0.65);
-  opacity: 0.6;
-}
-.ranch-shop-filters {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  padding: 18px 22px 0;
-}
-.ranch-shop-filters > div {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-}
-.ranch-shop-filters button {
-  font-size: 0.72rem;
-  min-height: 44px;
-}
-.ranch-shop-filters button.active {
-  background: var(--ranch-light);
-  color: var(--ranch-green);
-}
-.ranch-shop-filters > input {
-  width: 160px;
-  font-size: 0.8rem;
-  padding: 8px 12px;
-}
-.ranch-shop-filters label {
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.ranch-shop-filters label input {
-  width: 16px;
-  height: 16px;
-}
-.ranch-shop-filters > span {
-  font-size: 0.7rem;
-}
-.ranch-animal-description {
-  min-height: 34px;
-  line-height: 1.5;
-  font-size: 0.68rem !important;
-}
-.ranch-inventory {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  padding: 24px;
-}
-.ranch-product {
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 16px;
-  text-align: center;
-}
-.ranch-product > span {
-  font-size: 0.8rem;
-}
-.ranch-product strong {
-  display: block;
-  font-size: 1.6rem;
-  margin: 9px;
-}
-.ranch-product strong small {
-  font-size: 0.65rem;
-  color: var(--muted);
-}
-.ranch-product p {
-  font-size: 0.7rem;
-  color: var(--muted);
-}
-.ranch-sell-all {
-  grid-column: 1/-1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-.ranch-sell-all p {
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-.ranch-sell-all strong {
-  color: var(--text);
-}
-.ranch-neighbors {
-  padding: 22px;
-}
-.ranch-neighbors > .muted {
-  font-size: 0.8rem;
-  margin-top: 0;
-}
-.ranch-bottom {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
-}
-.ranch-expand p {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-.ranch-expand .eyebrow {
-  color: var(--muted);
-  font-size: 0.6rem;
-  margin-bottom: 9px;
-}
-.ranch-log {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 0.8rem;
-}
-.ranch-log small {
-  font-size: 0.65rem;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.ranch-loading {
-  padding: 60px;
-  text-align: center;
-  color: var(--muted);
-}
-:global([data-theme="dark"]) .ranch-scene {
-  background-blend-mode: multiply;
-  background-color: #87a279;
-}
-:global([data-theme="dark"]) .ranch-tabs button.active {
-  background: #2c3d28;
-  color: #d0e8a9;
-}
-@keyframes animal-idle {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-  50% {
-    transform: translateY(-5px) rotate(2deg);
-  }
-}
-@media (max-width: 900px) {
-  .ranch-main {
-    grid-template-columns: 1fr;
-  }
-  .ranch-side {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-  .ranch-shop-grid {
-    gap: 10px;
-    padding: 16px;
-  }
-  .ranch-summary > div {
-    padding: 14px;
-  }
-  .ranch-summary small {
-    font-size: 0.65rem;
-  }
-}
-@media (max-width: 600px) {
-  .ranch-page {
-    padding-top: 18px;
-  }
-  .ranch-heading {
-    display: block;
-  }
-  .ranch-heading-actions {
-    margin-top: 16px;
-  }
-  .ranch-back {
-    margin-bottom: 12px;
-  }
-  .ranch-summary {
-    grid-template-columns: 1fr 1fr;
-    gap: 9px;
-  }
-  .ranch-summary > div {
-    padding: 12px 14px;
-  }
-  .ranch-summary strong {
-    font-size: 1.45rem;
-  }
-  .ranch-main {
-    gap: 14px;
-  }
-  .ranch-side {
-    grid-template-columns: 1fr;
-  }
-  .ranch-scene {
-    min-height: 300px;
-  }
-  .ranch-large {
-    min-height: 450px;
-  }
-  .ranch-field-animal img {
-    height: 49px;
-    width: 49px;
-  }
-  .ranch-field-animal.young img {
-    height: 40px;
-    width: 40px;
-  }
-  .ranch-field-grid {
-    gap: 15px 2px;
-    inset: 32% 3% 6%;
-  }
-  .ranch-field-animal {
-    min-height: 78px;
-  }
-  .animal-shadow {
-    top: 50px;
-    width: 42px;
-  }
-  .animal-caption {
-    font-size: 0.65rem;
-    padding: 1px 5px;
-  }
-  .animal-caption small {
-    display: none;
-  }
-  .ranch-scene-title,
-  .ranch-scene-footer {
-    padding: 13px 14px;
-  }
-  .ranch-scene-title > span {
-    font-size: 0.65rem;
-  }
-  .ranch-scene-footer p {
-    max-width: 155px;
-    font-size: 0.65rem;
-  }
-  .ranch-scene-footer button {
-    font-size: 0.75rem;
-    padding: 10px;
-  }
-  .ranch-shop-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 14px;
-  }
-  .ranch-tabs {
-    padding: 8px;
-    gap: 0;
-  }
-  .ranch-tabs button {
-    font-size: 0.75rem;
-    padding: 8px 12px;
-  }
-  .ranch-inventory {
-    grid-template-columns: 1fr 1fr;
-    padding: 14px;
-    gap: 10px;
-  }
-  .ranch-neighbors {
-    padding: 15px;
-  }
-  .ranch-bottom {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  .ranch-heading-actions button {
-    min-height: 44px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ranch-field-animal img {
-    animation: none;
-  }
-}
-
-.scene-page {
-  --ranch-ink: #544328;
-  --ranch-green: #447432;
-  --ranch-button: #d6e58f;
-  color: #574b30;
-  padding-top: 18px;
-  max-width: 1320px;
-}
-.scene-heading {
-  margin-bottom: 16px;
-  align-items: center;
-  flex-direction: row;
-  display: flex;
-}
-.scene-heading h1 {
-  font-size: 2rem;
-  letter-spacing: 0;
-  margin: 8px 0 3px;
-  color: #567036;
-  text-shadow: 1px 2px #e9e5c7;
-}
-.scene-heading p {
-  font-size: 13px;
-}
-.ranch-hud {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-  background: #fff3d4;
-  border: 2px solid #c7aa74;
-  border-radius: 14px;
-  padding: 9px 16px;
-  color: #695132;
-  font-size: 14px;
-  font-weight: 700;
-}
-.ranch-hud button {
-  background: #e2edbb;
-  border: 1px solid #b1c47a;
-  border-radius: 10px;
-  min-height: 44px;
-  color: #4f652f;
-  padding: 7px 13px;
-}
-.ranch-hud .hungry {
-  background: #ffe4aa;
-  color: #925c2f;
-}
-.hud-level {
-  min-width: 130px;
-}
-.hud-level progress {
-  display: block;
-  height: 6px;
-  width: 130px;
-  margin-top: 4px;
-  accent-color: #6a9e42;
-}
-.hud-coin {
-  color: #a36d19;
-}
-.ranch-toolbelt {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  background: linear-gradient(#d5b88a, #bd986b);
-  padding: 10px;
-  border: 2px solid #92704b;
-  border-radius: 16px;
-  margin-top: 10px;
-  box-shadow: 0 5px 0 #8f6d49;
-}
-.ranch-toolbelt button {
-  min-height: 80px;
-  background: linear-gradient(#fff6dd, #efddaa);
-  border: 2px solid #e4c590;
-  border-radius: 12px;
-  color: #5e492b;
-  font-weight: 800;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  font-size: 14px;
-  box-shadow: 0 2px 0 #a58253;
-  cursor: pointer;
-}
-.ranch-toolbelt button:hover {
-  background: #fff8e5;
-  transform: translateY(-2px);
-}
-.ranch-toolbelt button:active {
-  transform: translateY(1px);
-}
-.ranch-toolbelt button:disabled {
-  opacity: 0.6;
-  transform: none;
-}
-.ranch-toolbelt button > span {
-  font-size: 28px;
-}
-.ranch-toolbelt small {
-  font-size: 11px;
-  font-weight: 500;
-  color: #907650;
-}
-.ranch-footnote {
-  color: var(--muted);
-  text-align: center;
-  font-size: 12px;
-  margin: 20px 0;
-}
-:global(dialog.ranch-window) {
-  width: min(900px, calc(100% - 24px));
-  max-height: 84dvh;
-  padding: 20px;
-  border: 3px solid #b19161;
-  border-radius: 18px;
-  background: #fff5dc;
-  color: #5d4b30;
-  box-sizing: border-box;
-  overflow: auto;
-}
-:global(dialog.ranch-window::backdrop) {
-  background: #253a24a3;
-}
-.ranch-window-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  position: sticky;
-  top: -20px;
-  background: #fff5dc;
-  z-index: 2;
-  padding: 10px 0;
-  border-bottom: 1px solid #dec9a1;
-  margin-bottom: 15px;
-}
-.ranch-window-heading h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  color: #556e34;
-}
-.ranch-window .card {
-  background: transparent;
-  border: none;
-  padding: 10px;
-  box-shadow: none;
-  color: inherit;
-}
-.ranch-window button.quiet,
-.ranch-window button {
-  color: #5d4b30;
-}
-.ranch-window .ranch-primary {
-  background: #d4e393;
-  border-color: #a9be66;
-  color: #465f29;
-  min-height: 44px;
-}
-.ranch-window .muted,
-.ranch-window p,
-.ranch-window small {
-  color: #806e4e;
-}
-.ranch-window input {
-  background: #fffdf1;
-  color: #604d32;
-  border-color: #cdb688;
-  max-width: 100%;
-}
-.ranch-window .ranch-tabs {
-  display: none;
-}
-.ranch-window .ranch-shop-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-.ranch-window .ranch-shop-animal {
-  background: #fffaf0;
-  border-color: #e1cba1;
-  color: #58482f;
-  padding: 12px;
-  min-width: 0;
-}
-.shop-fullbody {
-  width: 120px;
-  height: 120px;
-  margin: 5px auto;
-}
-.ranch-window .ranch-detail-portrait {
-  width: 190px;
-  height: 190px;
-  margin: 0 auto;
-}
-.ranch-window .ranch-shop-lock {
-  position: static;
-  display: block;
-  background: #f4e5bd;
-  color: #846a42;
-}
-.ranch-window .ranch-shop-filters > div {
-  flex-wrap: wrap;
-}
-.ranch-window .ranch-shop-filters {
-  gap: 8px;
-}
-.ranch-window .ranch-shop-filters input[type="search"] {
-  flex-basis: 100%;
-  min-width: 0;
-}
-.ranch-window .ranch-shop-animal h3 {
-  color: #56713d;
-}
-.ranch-window .ranch-animal-description {
-  font-size: 12px;
-  min-height: 36px;
-}
-.ranch-window .ranch-shop-meta {
-  font-size: 11px;
-}
-.ranch-window .ranch-bottom {
-  display: block;
-  margin: 0;
-}
-.ranch-window .ranch-product {
-  background: #fff8e9;
-  border-color: #d4bd90;
-}
-.ranch-window .ranch-feed-buttons button {
-  background: #fff9e8;
-  border-color: #d4bd90;
-  min-height: 60px;
-}
-.ranch-window .player-line {
-  border-color: #dbc7a1;
-}
-.ranch-window .avatar {
-  background: #e2d5ac;
-  color: #7b6842;
-}
-.ranch-window .tag {
-  background: #ecdfb8;
-  border-color: #cdb889;
-  color: #7c6946;
-}
-:global([data-theme="dark"]) .scene-page {
-  color: #e8dbbd;
-}
-:global([data-theme="dark"]) .scene-heading h1 {
-  color: #d9dea6;
-  text-shadow: none;
-}
-:global([data-theme="dark"] dialog.ranch-window) {
-  background: #352f26;
-  color: #f1dfb6;
-  border-color: #8d724c;
-}
-:global([data-theme="dark"]) .ranch-window-heading {
-  background: #352f26;
-}
-:global([data-theme="dark"]) .ranch-window-heading h2 {
-  color: #d5df9b;
-}
-:global([data-theme="dark"]) .ranch-window .ranch-shop-animal,
-:global([data-theme="dark"]) .ranch-window .ranch-product,
-:global([data-theme="dark"]) .ranch-window input {
-  background: #433b2e;
-  color: #f1dfb6;
-  border-color: #756047;
-}
-:global([data-theme="dark"]) .ranch-window p,
-:global([data-theme="dark"]) .ranch-window small,
-:global([data-theme="dark"]) .ranch-window button.quiet {
-  color: #dac9aa;
-}
-:global([data-theme="dark"]) .ranch-window .ranch-shop-animal h3 {
-  color: #d5df9b;
-}
-@media (max-width: 900px) {
-  .ranch-window .ranch-shop-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-@media (max-width: 640px) {
-  .scene-page {
-    padding-top: 12px;
-  }
-  .scene-heading h1 {
-    font-size: 1.65rem;
-  }
-  .scene-heading p {
-    max-width: 230px;
-    line-height: 1.5;
-  }
-  .scene-heading {
-    align-items: start;
-  }
-  .ranch-hud {
-    gap: 8px;
-    padding: 8px 10px;
-    font-size: 12px;
-    justify-content: space-between;
-  }
-  .hud-level {
-    min-width: 100px;
-  }
-  .hud-level progress {
-    width: 100px;
-  }
-  .ranch-hud button {
-    padding: 4px 8px;
-  }
-  .ranch-toolbelt {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 7px;
-    padding: 7px;
-  }
-  .ranch-toolbelt button {
-    min-height: 70px;
-    font-size: 12px;
-  }
-  .ranch-toolbelt button > span {
-    font-size: 24px;
-  }
-  .ranch-toolbelt small {
-    font-size: 10px;
-  }
-  .ranch-window .ranch-shop-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
-  .ranch-window .ranch-shop-animal {
-    padding: 8px;
-  }
-  .shop-fullbody {
-    width: 100px;
-    height: 100px;
-  }
-  .ranch-window .ranch-shop-animal .ranch-primary {
-    font-size: 11px;
-    padding: 7px 3px;
-  }
-  .ranch-window .ranch-shop-meta {
-    display: block;
-  }
-  .ranch-window .ranch-shop-meta span {
-    display: block;
-  }
-  .ranch-window .ranch-neighbors .player-line {
-    flex-wrap: wrap;
-  }
-  .ranch-window .details {
-    min-width: 100px;
-  }
-  :global(dialog.ranch-window) {
-    padding: 12px;
-    max-height: 88dvh;
-  }
-  .ranch-window-heading {
-    top: -12px;
-  }
-  .ranch-window .ranch-shop-filters > div {
-    display: flex;
-    gap: 4px;
-  }
-  .ranch-window .ranch-shop-filters > div button {
-    font-size: 11px;
-    padding: 6px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ranch-toolbelt button:hover {
-    transform: none;
-  }
-}
-
-.ranch-window button {
-  min-height: 44px;
-}
-.ranch-window .ranch-shop-filters label {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  gap: 8px;
-}
-:global([data-theme="dark"] .ranch-window .ranch-window-heading) {
-  background: #352f26;
-}
-:global([data-theme="dark"] .ranch-window .ranch-window-heading h2) {
-  color: #d9e2a8;
-}
-:global([data-theme="dark"] .ranch-window .ranch-shop-animal),
-:global([data-theme="dark"] .ranch-window .ranch-product) {
-  background: #473e30;
-  border-color: #8c7653;
-  color: #f6e8c7;
-}
-:global([data-theme="dark"] .ranch-window input) {
-  background: #473e30;
-  color: #f6e8c7;
-  border-color: #8c7653;
-}
-:global([data-theme="dark"] .ranch-window p),
-:global([data-theme="dark"] .ranch-window small),
-:global([data-theme="dark"] .ranch-window .muted) {
-  color: #dccba9;
-}
-:global([data-theme="dark"] .ranch-window button.quiet) {
-  color: #f6e8c7;
-}
-:global([data-theme="dark"] .ranch-window .ranch-shop-animal h3) {
-  color: #d9e2a8;
-}
-:global([data-theme="dark"] .ranch-window .ranch-shop-lock) {
-  background: #5d5038;
-  color: #f0ddae;
-}
-:global([data-theme="dark"] .ranch-window .ranch-shop-filters button) {
-  background: #574931;
-  color: #f0ddae;
-  border-color: #8c7653;
-}
-
-/* The game owns the viewport; the scene is the screen, every control floats over it. */
 .immersive-ranch {
   position: fixed;
   inset: 0;
-  z-index: 30;
   width: 100%;
-  height: 100vh;
   height: 100dvh;
-  max-width: none;
-  margin: 0;
-  padding: 0;
+  z-index: 30;
   overflow: hidden;
-  background: #b9daa2;
-  --ranch-ink: #544328;
-  --ranch-button: #d6e58f;
-  --top-safe: max(12px, env(safe-area-inset-top));
-  --bottom-safe: max(10px, env(safe-area-inset-bottom));
+  background: #b6d79b;
+  color: #65462c;
+}
+.immersive-ranch *,
+.ranch-window * {
+  box-sizing: border-box;
 }
 .game-profile {
   position: absolute;
-  top: var(--top-safe);
-  left: max(12px, env(safe-area-inset-left));
+  top: max(16px, env(safe-area-inset-top));
+  left: 18px;
   display: flex;
   align-items: center;
-  gap: 9px;
-  border: 2px solid #b28555;
-  border-radius: 40px 18px 18px 40px;
-  background: linear-gradient(#eac79be8, #cb9d6ee8);
-  padding: 7px 12px 7px 7px;
-  color: #fff7da;
+  gap: 10px;
+  max-width: calc(100% - 200px);
+  padding: 8px 18px 8px 8px;
+  border: 2px solid #eed3a0;
+  border-radius: 38px 18px 18px 38px;
+  background: linear-gradient(165deg, #dfaf78, #b88052);
   box-shadow:
-    0 4px 0 #85613855,
-    inset 0 1px 0 #fff9;
-  max-width: calc(100% - 148px);
+    0 4px 0 #80523055,
+    0 6px 15px #43332025;
   pointer-events: none;
 }
 .ranch-avatar {
-  width: 54px;
-  height: 54px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
+  background: radial-gradient(#fff5ca, #d8d992);
+  border: 3px solid #f9e0a6;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
-  flex-shrink: 0;
-  font-size: 28px;
-  background: linear-gradient(#faffd9, #d1e596);
-  border: 3px solid #f7efc0;
+}
+.ranch-avatar :deep(svg) {
+  width: 54px;
+  height: 54px;
 }
 .profile-text {
   min-width: 0;
+  color: #fff5dd;
+  text-shadow: 0 2px #815237;
 }
-.game-profile h1 {
-  margin: 0 0 5px;
-  font-size: 16px;
-  color: #fff9e4;
-  text-shadow: 0 1px 2px #795732;
+.profile-text h1 {
+  margin: 0 0 4px;
+  font-size: 17px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: 0;
 }
-.game-profile span {
-  display: block;
+.profile-level {
   font-weight: 800;
-  font-size: 13px;
+  font-size: 15px;
 }
-.game-profile small {
-  margin-left: 8px;
+.profile-level small {
   font-size: 11px;
-  color: #fff8df;
-  font-weight: 500;
+  margin-left: 8px;
+  color: #fff2cd;
 }
-.game-profile progress {
+progress {
+  appearance: none;
+  -webkit-appearance: none;
   display: block;
+  width: 100%;
+  height: 12px;
+  border: 2px solid #b7a167;
+  background: #ccba8e;
+  border-radius: 20px;
+  overflow: hidden;
+}
+progress::-webkit-progress-bar {
+  background: #b9a77f;
+}
+progress::-webkit-progress-value {
+  background: linear-gradient(#c2ee61, #80b725);
+  border-radius: 20px;
+}
+progress::-moz-progress-bar {
+  background: #99c83b;
+  border-radius: 20px;
+}
+.profile-text progress {
+  height: 9px;
+  min-width: 110px;
   margin-top: 5px;
-  height: 5px;
-  background: #81683f70;
-  min-width: 84px;
+  border-color: #9c7648;
 }
 .game-wallet {
   position: absolute;
-  right: max(12px, env(safe-area-inset-right));
-  top: var(--top-safe);
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
-  color: #72522b;
-  font-size: 14px;
-  font-weight: 800;
+  top: max(19px, env(safe-area-inset-top));
+  right: 20px;
+  display: grid;
+  gap: 7px;
+  min-width: 140px;
 }
 .wallet-coins,
+.wallet-feed,
 .visitor-label {
-  padding: 7px 14px;
-  border: 2px solid #ddbd7e;
-  border-radius: 30px;
-  background: #fff7dae8;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 36px;
+  padding: 2px 14px 2px 3px;
+  border: 2px solid #dac19a;
+  border-radius: 24px;
+  color: #78502f;
+  background: linear-gradient(#fff7dd, #f7e9bd);
+  font-size: 17px;
+  font-weight: 850;
+  box-shadow: 0 3px 0 #72593a36;
 }
-.game-wallet .wallet-feed {
-  background: #edf5cbe8;
-  color: #4e6b31;
-  border: 2px solid #a6bd71;
+.wallet-coins :deep(svg),
+.wallet-feed :deep(svg) {
+  width: 35px;
+  height: 30px;
+  flex-shrink: 0;
+}
+.wallet-feed {
+  cursor: pointer;
   min-height: 44px;
-  border-radius: 26px;
-  padding: 4px 12px;
-  font-size: 12px;
+  font-size: 14px;
 }
-.game-wallet .hungry {
-  color: #94522c;
-  background: #ffe1afe8;
-  border-color: #d69955;
+.wallet-feed.hungry {
+  border-color: #cd7747;
 }
 .game-side-actions {
   position: absolute;
-  top: calc(var(--top-safe) + 96px);
-  left: max(12px, env(safe-area-inset-left));
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
+  top: 124px;
+  left: 20px;
+  display: grid;
+  gap: 12px;
 }
 .game-side-actions button {
-  width: 50px;
-  min-height: 50px;
-  padding: 4px 0;
-  border-radius: 50%;
+  width: 54px;
+  height: 58px;
+  border: 2px solid #e0af70;
+  border-radius: 50% 50% 40% 40%;
+  background: linear-gradient(145deg, #e5b87b, #b87947);
+  color: #fff1cb;
+  box-shadow:
+    inset 0 2px #ffe2a3,
+    0 3px 0 #7d5035a1;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  background: linear-gradient(#e5bd8dea, #bd8b5ce8);
-  border: 2px solid #ad7a46;
-  color: #fff6d4;
-  box-shadow: 0 3px 0 #73553550;
-  text-shadow: 0 1px #765530;
+  justify-content: center;
+  flex-direction: column;
+  padding: 3px;
+  cursor: pointer;
 }
 .game-side-actions span {
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1.05;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 28px;
+}
+.game-side-actions :deep(svg) {
+  height: 32px;
+  width: 36px;
 }
 .game-side-actions small {
-  color: #fff9e4;
   font-size: 10px;
-  margin-top: 2px;
+  font-weight: 800;
+  text-shadow: 0 1px #684023;
 }
-.immersive-ranch .ranch-toolbelt {
+.ranch-toolbelt {
   position: absolute;
-  bottom: var(--bottom-safe);
+  bottom: max(14px, env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
-  width: min(
-    640px,
-    calc(100% - 20px - env(safe-area-inset-left) - env(safe-area-inset-right))
-  );
-  margin: 0;
-  padding: 0;
-  gap: 8px;
   display: flex;
+  align-items: end;
   justify-content: center;
-  background: none;
-  border: 0;
-  box-shadow: none;
-  border-radius: 0;
+  gap: 16px;
+  max-width: calc(100% - 16px);
+  padding: 0 4px;
+  z-index: 5;
 }
-.immersive-ranch .ranch-toolbelt button {
+.ranch-toolbelt button {
   position: relative;
-  flex: 1;
-  min-width: 0;
-  min-height: 85px;
-  padding: 4px 0;
-  background: none;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: end;
+  gap: 0;
+  min-width: 86px;
+  min-height: 100px;
   border: 0;
-  box-shadow: none;
-  color: #fffbea;
-  font-size: 13px;
-  gap: 4px;
-  text-shadow:
-    0 2px 2px #6c5429,
-    1px 0 1px #6c5429,
-    -1px 0 1px #6c5429;
-  border-radius: 18px;
+  background: transparent;
+  padding: 0;
+  color: #fff4d9;
+  cursor: pointer;
 }
-.immersive-ranch .ranch-toolbelt button > span {
-  width: 64px;
-  height: 64px;
-  max-width: 100%;
+.tool-art {
+  width: 76px;
+  height: 76px;
+  border: 2px solid #f2ce87;
   border-radius: 50%;
-  background: linear-gradient(145deg, #f6d29be8, #ba8254eb);
-  border: 3px solid #d7a064;
+  background: radial-gradient(circle at 35% 30%, #f2ce8e, #be8650);
   box-shadow:
-    0 4px 0 #8f643bd9,
-    inset 0 2px 3px #fff9;
+    inset 0 0 0 4px #dfad72,
+    0 4px 0 #7f5536a1;
   display: grid;
   place-items: center;
-  font-size: 31px;
-  box-sizing: border-box;
-  text-shadow: none;
+  transition: transform 0.15s;
 }
-.immersive-ranch .ranch-toolbelt button:hover:not(:disabled) {
-  background: #fff2;
-  transform: none;
+.tool-art :deep(svg) {
+  width: 74px;
+  height: 74px;
+  filter: drop-shadow(0 2px 1px #69402940);
 }
-.immersive-ranch .ranch-toolbelt button:active:not(:disabled) > span {
-  transform: translateY(2px);
+.tool-name {
+  margin-top: -3px;
+  padding: 5px 9px;
+  z-index: 1;
+  white-space: nowrap;
+  border: 1px solid #dcb580;
+  border-radius: 9px;
+  background: linear-gradient(#cb9865, #aa7147);
+  box-shadow: 0 3px 0 #74472765;
+  font-weight: 850;
+  font-size: 13px;
+  text-shadow: 0 1px #74482b;
 }
-.immersive-ranch .ranch-toolbelt button:disabled {
-  opacity: 0.65;
+.ranch-toolbelt button:hover:not(:disabled) .tool-art {
+  transform: translateY(-3px);
 }
-.immersive-ranch .ranch-toolbelt .tool-count {
+.ranch-toolbelt button:disabled {
+  filter: saturate(0.6);
+  opacity: 0.7;
+  cursor: default;
+}
+.tool-count {
   position: absolute;
-  top: 0;
+  top: 1px;
   right: 4px;
-  background: #fff6d6;
-  color: #6c512f;
-  padding: 2px 6px;
+  min-width: 21px;
+  min-height: 21px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  border: 2px solid #fff0b2;
+  border-radius: 50%;
+  background: #719a35;
+  color: white;
   font-size: 11px;
-  min-width: 17px;
-  border: 1px solid #a77b41;
-  border-radius: 20px;
-  text-shadow: none;
+  font-weight: 900;
 }
-.immersive-ranch .ranch-toolbelt .alert-count {
-  background: #ed8651;
-  color: #fff;
+.alert-count {
+  background: #d57240;
 }
 .game-offline-note {
   position: absolute;
-  bottom: calc(var(--bottom-safe) + 96px);
   left: 50%;
+  bottom: 130px;
   transform: translateX(-50%);
-  background: #edf4d3b3;
-  color: #526431;
-  border-radius: 15px;
-  padding: 3px 12px;
-  font-size: 11px;
   white-space: nowrap;
+  border-radius: 20px;
+  padding: 5px 13px;
+  background: #fff2c8ba;
+  color: #587239;
+  font-size: 12px;
   pointer-events: none;
 }
 .game-error {
   position: absolute;
+  top: 120px;
   left: 50%;
-  top: calc(var(--top-safe) + 86px);
   transform: translateX(-50%);
+  max-width: 90%;
+  padding: 10px;
+  border: 2px solid #d89475;
+  background: #fff2dc;
+  border-radius: 12px;
   z-index: 10;
-  background: #fff0ddea;
-  color: #95492d;
-  padding: 8px 12px;
-  border-radius: 15px;
-  max-width: 75%;
-  font-size: 12px;
 }
 .game-error button {
   min-height: 44px;
-  color: inherit;
-  padding: 3px 10px;
 }
-.immersive-ranch .ranch-loading {
+.ranch-loading {
   position: absolute;
   inset: 0;
   display: flex;
-  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  background: #e5eed1;
+}
+.ranch-loading :deep(svg) {
+  width: 70px;
+  height: 70px;
+}
+.ranch-window {
+  --ink: #6f4d31;
+  --soft-ink: #8b7350;
+  --paper: #fff5d9;
+  --tile: #fff8e7;
+  --edge: #dcc294;
+  color: var(--ink);
+  width: min(960px, calc(100% - 28px));
+  max-height: 88dvh;
+  padding: 0;
+  overflow: hidden;
+  border: 3px solid #eac291;
+  border-radius: 24px;
+  background: linear-gradient(120deg, #d09a6b, #b97b52);
+  box-shadow:
+    0 7px 0 #754b3166,
+    0 22px 80px #17291366;
+}
+.ranch-window[open] {
+  display: flex;
+  flex-direction: column;
+}
+.ranch-window::backdrop {
+  background: #112d3d8c;
+  backdrop-filter: blur(3px);
+}
+.ranch-window-heading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 12px;
+  padding: 10px 66px;
+  min-height: 76px;
+  border-bottom: 2px solid #ae704a;
+  background:
+    repeating-linear-gradient(
+      3deg,
+      transparent 0 19px,
+      #a3643720 20px 22px,
+      transparent 24px 40px
+    ),
+    linear-gradient(#dba77b, #c3895f);
+  box-shadow: inset 0 3px #ffe3ad45;
+}
+.ranch-window-heading h2 {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #fff3d9;
+  text-shadow: 0 2px 0 #92623f;
+}
+.window-emblem {
+  width: 52px;
+  height: 48px;
+}
+.window-emblem :deep(svg) {
+  width: 100%;
+  height: 100%;
+}
+.window-close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border: 2px solid #ffe1b5;
+  border-radius: 16px;
+  background: linear-gradient(#e6b58d, #c8885f);
+  box-shadow:
+    inset 0 3px #f9d3b4,
+    0 3px 0 #a26743;
+  color: #fff4dc;
+  font-size: 28px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.ranch-window button {
+  font-family: inherit;
+  touch-action: manipulation;
+}
+.ranch-window button:focus-visible,
+.immersive-ranch button:focus-visible {
+  outline: 3px solid #53912b;
+  outline-offset: 2px;
+}
+.ranch-window button:disabled {
+  opacity: 0.55;
+  filter: saturate(0.3);
+  cursor: not-allowed;
+}
+.ranch-window input,
+.ranch-window select {
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--edge);
+  border-radius: 12px;
+  min-height: 44px;
+  padding: 7px 12px;
+  font-size: 14px;
+  min-width: 0;
+}
+.ranch-window input::placeholder {
+  color: var(--soft-ink);
+}
+.wood-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 3px solid #996239;
+  padding: 0 12px;
+}
+.wood-tabs button,
+.wood-tabs > span:first-child {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 8px 3px;
+  color: #fff6db;
+  font-size: 15px;
+  font-weight: 850;
+  border: 1px solid #d9a478;
+  border-radius: 15px 15px 0 0;
+  background: linear-gradient(#cf9567, #bd8052);
+  text-shadow: 0 1px #945a38;
+  box-shadow: inset 0 2px #ecbc8d85;
+  cursor: pointer;
+}
+.wood-tabs button.active,
+.wood-tabs > span.active {
+  color: #7f4b26;
+  background: linear-gradient(#ffe394, #f4b64c);
+  border-color: #f4cb76;
+  text-shadow: 0 1px #ffe9b9;
+}
+.ranch-shop-filters {
+  flex-shrink: 0;
+  padding-top: 10px;
+}
+.catalog-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 16px 0;
+}
+.catalog-search > input {
+  flex: 1;
+  width: 60%;
+}
+.catalog-search label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff4da;
+  font-size: 13px;
+  white-space: nowrap;
+  min-height: 44px;
+}
+.catalog-search label input {
+  width: 21px;
+  height: 21px;
+  min-height: 0;
+  accent-color: #6e9d39;
+}
+.catalog-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 18px;
+  color: #fff2d6;
+  font-size: 12px;
+}
+.catalog-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 285px;
+  min-height: 0;
+  height: min(550px, calc(88dvh - 226px));
+  padding: 0 14px 14px;
+  gap: 12px;
+}
+.panel-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #b98b5b #f3e4bf;
+  -webkit-overflow-scrolling: touch;
+}
+.ranch-shop-grid,
+.ranch-inventory {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-content: start;
+  gap: 8px;
+  background: var(--paper);
+  border: 2px solid var(--edge);
+  border-radius: 15px;
+  padding: 12px;
+}
+.item-tile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 6px 9px;
+  border: 2px solid #e0cda7;
+  border-radius: 11px;
+  background: linear-gradient(var(--tile), var(--paper));
+  box-shadow:
+    inset 0 2px #fff9e6,
+    0 3px 0 #bfa87c85;
+  color: var(--ink);
+  cursor: pointer;
+}
+.item-tile.selected {
+  border-color: #73a52f;
+  box-shadow:
+    inset 0 0 0 2px #b8cf6d,
+    0 3px 0 #9baa63;
+}
+.item-tile strong {
+  max-width: 100%;
+  font-size: 13px;
+  line-height: 19px;
+  overflow-wrap: anywhere;
+}
+.item-tile small {
+  font-size: 10px;
+  color: var(--soft-ink);
+}
+.tile-level {
+  align-self: flex-start;
+  font-size: 10px;
+  line-height: 15px;
+  font-weight: 800;
+  color: var(--soft-ink);
+}
+.shop-fullbody,
+.product-art {
+  width: 100%;
+  height: 94px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 3px 1px #66802b20);
+}
+.tile-price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  gap: 3px;
+}
+.tile-price :deep(svg) {
+  width: 23px;
+  height: 23px;
+}
+.tile-lock {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  background: #665d41a3;
+  color: #fff7d9;
+  display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background: linear-gradient(#b8ddea, #d3e9ad);
-  color: #567036;
+  font-size: 12px;
+  font-weight: 850;
+  pointer-events: none;
+  text-shadow: 0 2px #49442e;
 }
-.immersive-ranch .ranch-loading > span {
-  font-size: 44px;
+.tile-lock > span {
+  font-size: 35px;
+  line-height: 44px;
 }
-@media (max-width: 640px) {
+.item-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--paper);
+  border: 2px solid var(--edge);
+  border-radius: 15px;
+  padding: 16px;
+  overflow-y: auto;
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+.detail-overview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.detail-title {
+  width: 100%;
+  text-align: center;
+}
+.detail-title h3 {
+  font-size: 22px;
+  margin: 4px 0 7px;
+  color: var(--ink);
+}
+.detail-title p {
+  margin: 4px 0;
+  font-size: 13px;
+}
+.detail-kicker {
+  font-size: 11px;
+  color: var(--soft-ink);
+}
+.detail-art {
+  width: 155px;
+  height: 145px;
+  padding: 13px;
+  flex-shrink: 0;
+}
+.meadow-art {
+  background: radial-gradient(ellipse at 50% 74%, #acc97686, transparent 68%);
+  border-radius: 50%;
+}
+.stage-switch {
+  display: inline-flex;
+  border: 2px solid #d8bd8c;
+  border-radius: 24px;
+  background: #eedfbd;
+  padding: 2px;
+  max-width: 100%;
+}
+.stage-switch button {
+  padding: 6px 16px;
+  min-height: 36px;
+  border: 0;
+  border-radius: 20px;
+  color: #85704e;
+  background: transparent;
+  font-weight: 800;
+}
+.stage-switch button.active {
+  background: #a8bf51;
+  color: #fffbe7;
+  box-shadow: 0 2px 0 #829942;
+}
+.detail-copy p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 12px;
+  color: var(--soft-ink);
+}
+.detail-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  border-top: 1px solid var(--edge);
+  padding-top: 12px;
+}
+.detail-facts span {
+  font-size: 11px;
+  color: var(--soft-ink);
+}
+.detail-facts strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.detail-actions {
+  margin-top: auto;
+}
+.detail-footnote {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: auto 0 0;
+  color: var(--soft-ink);
+}
+.ranch-primary,
+.ranch-secondary {
+  border: 2px solid #c0d460;
+  border-radius: 24px;
+  min-height: 46px;
+  padding: 9px 18px;
+  color: #fffce6;
+  background: linear-gradient(#b9d741, #80af16);
+  box-shadow:
+    inset 0 3px #dceb855c,
+    0 3px 0 #618e20;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  text-shadow: 0 1px #6d941b;
+}
+.ranch-secondary {
+  color: #815832;
+  border-color: #d3ad73;
+  background: linear-gradient(#ffe3a2, #edbd67);
+  text-shadow: none;
+  box-shadow:
+    inset 0 3px #fff0c35c,
+    0 3px 0 #b18a4e;
+}
+.item-detail .ranch-primary,
+.item-detail .ranch-secondary {
+  width: 100%;
+}
+.store-tabs {
+  padding: 10px 15px 0;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.store-tabs > span:first-child {
+  flex: initial;
+  min-width: 120px;
+}
+.store-tabs > span:last-child {
+  margin-left: auto;
+  color: #fff1d8;
+  font-size: 12px;
+  padding: 0 10px;
+}
+.store-window .catalog-layout {
+  height: min(530px, calc(88dvh - 157px));
+}
+.product-count {
+  color: #8a713f;
+  font-weight: 800;
+  font-size: 14px;
+}
+.ranch-sell-all {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--edge);
+}
+.ranch-sell-all p {
+  font-size: 12px;
+  margin: 0 0 12px;
+}
+.ranch-sell-all strong {
+  float: right;
+  color: var(--ink);
+}
+.empty {
+  grid-column: 1/-1;
+  align-self: center;
+  text-align: center;
+  padding: 30px 12px;
+  color: var(--soft-ink);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.empty :deep(svg) {
+  width: 95px;
+  height: 95px;
+  margin: 0 auto 15px;
+  display: block;
+}
+.ranch-feed,
+.ranch-animal-detail,
+.ranch-neighbors,
+.ranch-bottom,
+.ranch-help {
+  margin: 14px;
+  padding: 20px;
+  background: var(--paper);
+  border: 2px solid var(--edge);
+  border-radius: 16px;
+  color: var(--ink);
+}
+.ranch-window:not(.catalog-window):not(.store-window) {
+  width: min(640px, calc(100% - 28px));
+}
+.feed-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.feed-hero :deep(svg) {
+  width: 180px;
+  height: 145px;
+}
+.feed-hero h3 {
+  font-size: 32px;
+  margin: 8px 0 14px;
+}
+.feed-hero h3 small {
+  font-size: 15px;
+  color: var(--soft-ink);
+}
+.tag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #e4efbd;
+  border: 1px solid #b7ca71;
+  color: #64882e;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.tag.danger {
+  background: #ffe3bd;
+  color: #a65f33;
+  border-color: #d7a172;
+}
+.ranch-feed p,
+.ranch-animal-detail p,
+.ranch-help p,
+.ranch-bottom p {
+  font-size: 13px;
+  color: var(--soft-ink);
+  line-height: 1.9;
+}
+.ranch-feed > small {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--soft-ink);
+  display: block;
+  margin-top: 18px;
+}
+.ranch-feed-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.ranch-feed-buttons button {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 5px;
+  border: 2px solid var(--edge);
+  border-radius: 16px;
+  background: var(--tile);
+  color: var(--ink);
+  box-shadow: 0 3px #ccb287;
+  cursor: pointer;
+}
+.ranch-feed-buttons :deep(svg) {
+  width: 70px;
+  height: 70px;
+}
+.ranch-feed-buttons strong {
+  font-size: 22px;
+}
+.ranch-feed-buttons small {
+  font-size: 12px;
+}
+.animal-detail-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 14px;
+  padding: 16px;
+  background: radial-gradient(ellipse at center, #d1e4a6, #f5eabd);
+  overflow: hidden;
+}
+.ranch-detail-portrait {
+  width: 230px;
+  height: 210px;
+  margin: 10px 0;
+  filter: drop-shadow(0 4px 2px #83933955);
+}
+.animal-state {
+  font-size: 17px;
+  color: #587d2f;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+}
+.actions button {
+  flex: 1;
+}
+.neighbor-filters {
+  display: flex;
+  gap: 8px;
+}
+.neighbor-filters input {
+  flex: 1;
+  width: 60%;
+}
+.neighbor-filters select {
+  max-width: 115px;
+  font-size: 12px;
+  padding: 5px;
+}
+.panel-hint {
+  font-size: 12px;
+  color: var(--soft-ink);
+  line-height: 1.6;
+}
+.player-line {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 16px 12px;
+  margin: 14px 0;
+  border: 2px solid var(--edge);
+  border-radius: 16px;
+  background: var(--tile);
+  box-shadow: 0 3px 0 #c4ad7e55;
+}
+.neighbor-avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 3px solid #ddb974;
+  border-radius: 50%;
+  background: linear-gradient(#d4e7a6, #b4ca78);
+  color: #647b3c;
+  font-size: 23px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.neighbor-avatar > span {
+  position: absolute;
+  bottom: -8px;
+  right: -10px;
+  padding: 3px 5px;
+  font-size: 9px;
+  border-radius: 7px;
+  background: #f6d178;
+  color: #845a2f;
+  border: 1px solid #d4a455;
+  white-space: nowrap;
+}
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+.details strong {
+  overflow-wrap: anywhere;
+  font-size: 16px;
+}
+.details small {
+  font-size: 11px;
+  color: var(--soft-ink);
+}
+.player-line button {
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+.ranch-expand {
+  text-align: center;
+  padding-bottom: 20px;
+}
+.ranch-expand :deep(svg) {
+  width: 110px;
+  height: 95px;
+  margin: 0 auto;
+}
+.ranch-expand h3 {
+  margin: 5px 0;
+  font-size: 21px;
+}
+.journal-title {
+  padding-top: 16px;
+  border-top: 1px solid var(--edge);
+  margin: 0 0 10px;
+  font-size: 17px;
+}
+.ranch-log {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--edge);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.ranch-log small {
+  color: var(--soft-ink);
+  white-space: nowrap;
+}
+.ranch-help h3 {
+  font-size: 21px;
+  color: var(--ink);
+}
+.panel-error {
+  flex-shrink: 0;
+  color: #7e2828;
+  background: #fff0dc;
+  padding: 8px;
+  margin: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+:global([data-theme="dark"] .ranch-window) {
+  --ink: #eedcc0;
+  --soft-ink: #cbb696;
+  --paper: #463d2b;
+  --tile: #514630;
+  --edge: #7c6745;
+  background: linear-gradient(#927050, #785b40);
+  border-color: #b99c70;
+}
+:global([data-theme="dark"] .ranch-window-heading) {
+  background: linear-gradient(#a47b54, #906442);
+}
+:global([data-theme="dark"] .item-tile) {
+  border-color: #796744;
+  background: linear-gradient(#574a34, #463d2b);
+  box-shadow:
+    inset 0 2px #665a41,
+    0 3px 0 #2b281d;
+}
+:global([data-theme="dark"] .item-tile.selected) {
+  border-color: #b1c65b;
+  box-shadow: inset 0 0 0 2px #799240;
+}
+:global([data-theme="dark"] .wood-tabs button) {
+  background: linear-gradient(#a47a50, #865c3d);
+}
+:global([data-theme="dark"] .wood-tabs button.active) {
+  background: linear-gradient(#e7c472, #c99642);
+  color: #543617;
+}
+:global([data-theme="dark"] .animal-detail-stage) {
+  background: radial-gradient(ellipse, #5d7241, #4b432e);
+}
+:global([data-theme="dark"] .animal-state) {
+  color: #c7de8a;
+}
+:global([data-theme="dark"] .game-profile) {
+  background: linear-gradient(#997951, #755a3d);
+  border-color: #be9e69;
+}
+@media (max-width: 700px) {
   .game-profile {
-    max-width: calc(100% - 132px);
-    gap: 6px;
+    left: 10px;
+    top: max(10px, env(safe-area-inset-top));
+    gap: 7px;
     padding: 6px 9px 6px 6px;
+    max-width: calc(100% - 126px);
+    border-radius: 32px 14px 14px 32px;
   }
   .ranch-avatar {
-    width: 38px;
-    height: 38px;
-    font-size: 22px;
-    border-width: 2px;
+    width: 45px;
+    height: 45px;
   }
-  .game-profile h1 {
+  .ranch-avatar :deep(svg) {
+    width: 40px;
+    height: 40px;
+  }
+  .profile-text h1 {
     font-size: 13px;
   }
-  .game-profile span {
-    font-size: 11px;
+  .profile-level {
+    font-size: 12px;
   }
-  .game-profile small {
-    display: none;
+  .profile-level small {
+    font-size: 9px;
+    margin-left: 3px;
   }
-  .game-profile progress {
-    min-width: 60px;
+  .profile-text progress {
+    min-width: 70px;
+    height: 8px;
   }
   .game-wallet {
-    font-size: 12px;
-    gap: 4px;
+    right: 10px;
+    top: max(12px, env(safe-area-inset-top));
+    min-width: 103px;
+    gap: 5px;
   }
   .wallet-coins {
-    padding: 5px 10px;
+    min-height: 29px;
+    font-size: 14px;
+    padding-right: 8px;
   }
-  .game-wallet .wallet-feed {
-    padding: 3px 8px;
+  .wallet-coins :deep(svg),
+  .wallet-feed :deep(svg) {
+    height: 25px;
+    width: 26px;
+  }
+  .wallet-feed {
+    font-size: 11px;
+    padding: 1px 6px 1px 2px;
+    min-height: 44px;
   }
   .game-side-actions {
-    top: calc(var(--top-safe) + 90px);
+    left: 10px;
+    top: 109px;
+    gap: 10px;
+  }
+  .game-side-actions button {
+    width: 44px;
+    height: 49px;
+  }
+  .game-side-actions span {
+    font-size: 24px;
+    line-height: 23px;
+  }
+  .game-side-actions :deep(svg) {
+    height: 27px;
+    width: 30px;
+  }
+  .game-side-actions small {
+    font-size: 9px;
+  }
+  .ranch-toolbelt {
+    gap: 5px;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    width: calc(100% - 12px);
+    padding: 0;
+  }
+  .ranch-toolbelt button {
+    min-width: 0;
+    flex: 1;
+    min-height: 78px;
+  }
+  .tool-art {
+    width: 52px;
+    height: 52px;
+    border-width: 1px;
+    box-shadow:
+      inset 0 0 0 3px #dfad72,
+      0 3px 0 #7f5536a1;
+  }
+  .tool-art :deep(svg) {
+    width: 52px;
+    height: 52px;
+  }
+  .tool-name {
+    font-size: 10px;
+    padding: 5px 3px;
+    letter-spacing: -0.3px;
+  }
+  .tool-count {
+    right: 0;
+    top: 0;
+    font-size: 9px;
+    min-width: 18px;
+    min-height: 18px;
+  }
+  .game-offline-note {
+    bottom: 106px;
+    font-size: 10px;
+    padding: 4px 10px;
+  }
+  .ranch-window {
+    width: calc(100% - 16px);
+    border-width: 2px;
+    border-radius: 22px;
+    max-height: 89dvh;
+  }
+  .ranch-window:not(.catalog-window):not(.store-window) {
+    width: calc(100% - 16px);
+  }
+  .ranch-window-heading {
+    min-height: 62px;
+    padding: 7px 55px;
+    gap: 8px;
+  }
+  .ranch-window-heading h2 {
+    font-size: 21px;
+  }
+  .window-emblem {
+    width: 37px;
+    height: 38px;
+  }
+  .window-close {
+    width: 44px;
+    height: 44px;
+    right: 7px;
+    top: 7px;
+    font-size: 25px;
+    border-radius: 13px;
+  }
+  .wood-tabs {
+    padding: 0 9px;
+  }
+  .wood-tabs button {
+    min-height: 44px;
+    font-size: 13px;
+    border-radius: 13px 13px 0 0;
+  }
+  .catalog-search {
+    margin: 9px 11px 0;
+    gap: 8px;
+  }
+  .catalog-search input {
+    font-size: 12px;
+  }
+  .catalog-search label {
+    font-size: 12px;
+  }
+  .catalog-summary {
+    padding: 6px 13px;
+    font-size: 10px;
+  }
+  .catalog-layout {
+    display: flex;
+    flex-direction: column;
+    height: min(670px, calc(89dvh - 201px));
+    padding: 0 9px 10px;
+    gap: 9px;
+  }
+  .ranch-shop-grid,
+  .ranch-inventory {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    flex: 1;
+    min-height: 118px;
+    padding: 8px;
+    gap: 6px;
+    border-radius: 12px;
+  }
+  .item-tile {
+    padding: 5px 3px;
+    gap: 3px;
+    border-radius: 8px;
+  }
+  .item-tile strong {
+    font-size: 11px;
+    line-height: 16px;
+  }
+  .item-tile small {
+    font-size: 9px;
+  }
+  .shop-fullbody,
+  .product-art {
+    height: 70px;
+  }
+  .tile-level {
+    font-size: 9px;
+    line-height: 12px;
+  }
+  .tile-price {
+    font-size: 11px;
+  }
+  .tile-price :deep(svg) {
+    width: 19px;
+    height: 19px;
+  }
+  .tile-lock {
+    font-size: 10px;
+  }
+  .tile-lock > span {
+    font-size: 25px;
+    line-height: 32px;
+  }
+  .item-detail {
+    flex-shrink: 0;
+    padding: 11px;
+    gap: 8px;
+    overflow: auto;
+    max-height: 44%;
+    border-radius: 13px;
+  }
+  .detail-overview {
+    flex-direction: row;
+    gap: 10px;
+  }
+  .detail-art {
+    width: 84px;
+    height: 80px;
+    padding: 6px;
+  }
+  .detail-title {
+    text-align: left;
+    min-width: 0;
+    flex: 1;
+  }
+  .detail-title h3 {
+    font-size: 19px;
+    margin: 2px 0 4px;
+  }
+  .detail-kicker {
+    font-size: 10px;
+  }
+  .stage-switch button {
+    font-size: 11px;
+    min-height: 32px;
+    padding: 5px 15px;
+  }
+  .detail-copy p {
+    display: none;
+  }
+  .detail-facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    padding-top: 7px;
+  }
+  .detail-facts span {
+    font-size: 10px;
+  }
+  .detail-facts strong {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+  .ranch-primary,
+  .ranch-secondary {
+    font-size: 13px;
+    padding: 8px 10px;
+    min-height: 44px;
+  }
+  .detail-actions {
+    margin-top: 0;
+  }
+  .detail-footnote {
+    font-size: 11px;
+    margin: 0;
+  }
+  .store-window .catalog-layout {
+    height: min(650px, calc(89dvh - 126px));
+  }
+  .store-tabs {
+    padding: 8px 10px 0;
+    margin-bottom: 9px;
+  }
+  .store-tabs > span:first-child {
+    min-width: 105px;
+    min-height: 44px;
+    font-size: 14px;
+  }
+  .inventory-detail {
+    max-height: 55%;
+  }
+  .inventory-detail .detail-art {
+    width: 65px;
+    height: 60px;
+  }
+  .inventory-detail .detail-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ranch-sell-all {
+    padding-top: 8px;
+    margin-top: 0;
+  }
+  .ranch-sell-all p {
+    margin-bottom: 8px;
+  }
+  .product-count {
+    font-size: 12px;
+  }
+  .ranch-feed,
+  .ranch-animal-detail,
+  .ranch-neighbors,
+  .ranch-bottom,
+  .ranch-help {
+    margin: 9px;
+    padding: 14px;
+    border-radius: 13px;
+  }
+  .feed-hero :deep(svg) {
+    height: 115px;
+    width: 145px;
+  }
+  .feed-hero h3 {
+    font-size: 28px;
+  }
+  .ranch-feed-buttons {
+    gap: 7px;
+  }
+  .ranch-feed-buttons :deep(svg) {
+    width: 58px;
+    height: 58px;
+  }
+  .ranch-detail-portrait {
+    width: 190px;
+    height: 175px;
+  }
+  .player-line {
+    gap: 10px;
+    padding: 14px 9px;
+  }
+  .neighbor-avatar {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+  .details strong {
+    font-size: 14px;
+  }
+  .player-line button {
+    padding: 6px 9px;
+    font-size: 11px;
+  }
+  .neighbor-filters select {
+    max-width: 101px;
+  }
+}
+@media (max-width: 350px) {
+  .tool-art {
+    width: 46px;
+    height: 46px;
+  }
+  .tool-art :deep(svg) {
+    width: 46px;
+    height: 46px;
+  }
+  .tool-name {
+    font-size: 9px;
+    padding: 4px 2px;
+  }
+  .ranch-toolbelt {
+    gap: 3px;
+  }
+  .shop-fullbody,
+  .product-art {
+    height: 61px;
+  }
+  .ranch-shop-grid,
+  .ranch-inventory {
+    gap: 4px;
+    padding: 6px;
+  }
+  .tile-lock {
+    font-size: 9px;
+  }
+  .item-tile strong {
+    font-size: 10px;
+  }
+}
+@media (max-height: 500px) and (min-width: 600px) {
+  .game-profile {
+    top: 8px;
+    left: 10px;
+    padding: 4px 10px 4px 4px;
+  }
+  .ranch-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  .ranch-avatar :deep(svg) {
+    width: 36px;
+    height: 36px;
+  }
+  .profile-text h1 {
+    font-size: 13px;
+  }
+  .profile-level {
+    font-size: 12px;
+  }
+  .game-side-actions {
+    left: 12px;
+    top: 89px;
     gap: 8px;
   }
   .game-side-actions button {
     width: 44px;
-    min-height: 44px;
+    height: 44px;
   }
   .game-side-actions span {
-    font-size: 19px;
+    font-size: 22px;
+    line-height: 20px;
   }
-  .immersive-ranch .ranch-toolbelt {
-    width: calc(
-      100% - 12px - env(safe-area-inset-left) - env(safe-area-inset-right)
-    );
-    gap: 3px;
+  .game-wallet {
+    top: 8px;
+    right: 12px;
   }
-  .immersive-ranch .ranch-toolbelt button {
-    min-height: 72px;
-    font-size: 10px;
-    gap: 4px;
+  .ranch-toolbelt {
+    gap: 10px;
+    bottom: 8px;
   }
-  .immersive-ranch .ranch-toolbelt button > span {
-    width: 49px;
-    height: 49px;
-    border-width: 2px;
-    font-size: 26px;
+  .ranch-toolbelt button {
+    min-height: 68px;
+    min-width: 62px;
   }
-  .game-offline-note {
-    bottom: calc(var(--bottom-safe) + 82px);
-    font-size: 10px;
-  }
-}
-@media (max-height: 500px) and (min-width: 641px) {
-  .game-profile {
-    transform: scale(0.85);
-    transform-origin: top left;
-  }
-  .game-side-actions {
-    flex-direction: row;
-    top: calc(var(--top-safe) + 75px);
-    gap: 5px;
-  }
-  .game-side-actions button {
-    width: 44px;
-    min-height: 44px;
-  }
-  .immersive-ranch .ranch-toolbelt {
-    width: min(540px, calc(100% - 140px));
-  }
-  .immersive-ranch .ranch-toolbelt button {
-    min-height: 66px;
-    font-size: 11px;
-  }
-  .immersive-ranch .ranch-toolbelt button > span {
+  .tool-art {
     width: 44px;
     height: 44px;
-    font-size: 23px;
-    border-width: 2px;
+  }
+  .tool-art :deep(svg) {
+    width: 44px;
+    height: 44px;
+  }
+  .tool-name {
+    font-size: 10px;
+    padding: 4px 6px;
   }
   .game-offline-note {
-    top: calc(var(--top-safe) + 98px);
-    right: max(12px, env(safe-area-inset-right));
-    left: auto;
-    bottom: auto;
-    transform: none;
+    bottom: 88px;
+    font-size: 10px;
+  }
+  .ranch-window {
+    max-height: 94dvh;
+    width: min(790px, calc(100% - 36px));
+  }
+  .ranch-window-heading {
+    min-height: 50px;
+    padding: 4px 55px;
+  }
+  .ranch-window-heading h2 {
+    font-size: 19px;
+  }
+  .window-close {
+    width: 44px;
+    height: 44px;
+    top: 1px;
+  }
+  .window-emblem {
+    height: 35px;
+    width: 38px;
+  }
+  .ranch-shop-filters {
+    padding-top: 5px;
+  }
+  .wood-tabs button {
+    min-height: 44px;
+    padding: 5px;
+  }
+  .catalog-search {
+    margin-top: 6px;
+  }
+  .catalog-summary {
+    padding: 4px 17px;
+  }
+  .catalog-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 255px;
+    height: calc(94dvh - 188px);
+    padding: 0 10px 10px;
+    gap: 8px;
+  }
+  .ranch-shop-grid,
+  .ranch-inventory {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding: 8px;
+    gap: 6px;
+  }
+  .shop-fullbody,
+  .product-art {
+    height: 65px;
+  }
+  .item-detail {
+    padding: 10px;
+    gap: 8px;
+  }
+  .detail-overview {
+    flex-direction: row;
+    gap: 8px;
+  }
+  .detail-art {
+    width: 72px;
+    height: 70px;
+    padding: 5px;
+  }
+  .detail-title {
+    text-align: left;
+  }
+  .detail-title h3 {
+    font-size: 18px;
+  }
+  .detail-copy p {
+    display: none;
+  }
+  .detail-facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding-top: 7px;
+  }
+  .detail-facts strong {
+    font-size: 11px;
+  }
+  .detail-actions {
+    margin-top: 0;
+  }
+  .store-window .catalog-layout {
+    height: calc(94dvh - 118px);
+  }
+  .ranch-feed,
+  .ranch-animal-detail,
+  .ranch-neighbors,
+  .ranch-bottom,
+  .ranch-help {
+    margin: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Keep scene utilities away from the painted trough and the animal picker. */
+.game-side-actions .album-menu {
+  position: fixed;
+  right: 20px;
+  top: 124px;
+}
+.ranch-window .item-tile {
+  margin: 0;
+  letter-spacing: normal;
+}
+.ranch-window .item-tile:hover:not(:disabled) {
+  background: var(--tile);
+}
+.ranch-window .ranch-primary:hover:not(:disabled) {
+  background: linear-gradient(#c2dd54, #8fb924);
+}
+.ranch-window .ranch-secondary:hover:not(:disabled) {
+  background: linear-gradient(#ffeab5, #f0c777);
+}
+.immersive-ranch .wallet-feed:hover {
+  background: linear-gradient(#fff7dd, #f7e9bd);
+}
+.immersive-ranch .ranch-toolbelt button:hover {
+  background: transparent;
+}
+.ranch-window .stage-switch button:hover:not(:disabled) {
+  background: #ded1ad;
+}
+.ranch-window .stage-switch button.active:hover {
+  background: #a8bf51;
+}
+.ranch-window .window-close:hover {
+  background: linear-gradient(#edbd96, #d29669);
+}
+:global([data-theme="light"] dialog.ranch-window) {
+  border-color: #eac291;
+  box-shadow:
+    0 7px 0 #754b3166,
+    0 22px 80px #17291366;
+}
+:global([data-theme="light"] dialog.ranch-window::backdrop) {
+  background: #112d3d8c;
+}
+@media (max-width: 700px) {
+  .game-side-actions .album-menu {
+    right: 10px;
+    top: 109px;
+  }
+}
+@media (max-height: 500px) and (min-width: 600px) {
+  .game-side-actions {
+    display: flex;
+    flex-direction: row;
+    top: 84px;
+  }
+  .game-side-actions .album-menu {
+    position: static;
+  }
+}
+
+.ranch-shop-animal {
+  min-height: 176px;
+}
+.ranch-product {
+  min-height: 150px;
+}
+.ranch-window .stage-switch button {
+  min-height: 44px;
+}
+@media (max-width: 700px) {
+  .ranch-shop-animal {
+    min-height: 124px;
+  }
+  .ranch-product {
+    min-height: 120px;
+  }
+  .catalog-detail {
+    max-height: none;
+    overflow: visible;
+  }
+  .catalog-detail .detail-art {
+    width: 76px;
+    height: 74px;
+  }
+  .catalog-detail .detail-title h3 {
+    font-size: 18px;
+  }
+  .catalog-detail .stage-switch button {
+    padding: 4px 14px;
+    min-height: 44px;
+  }
+}
+@media (max-width: 350px) {
+  .catalog-detail {
+    padding: 9px;
+    gap: 6px;
+  }
+  .catalog-detail .detail-art {
+    width: 68px;
+    height: 66px;
+  }
+  .catalog-detail .detail-title h3 {
+    font-size: 17px;
+  }
+  .catalog-detail .detail-facts {
+    padding-top: 5px;
+  }
+}
+@media (max-height: 500px) and (min-width: 600px) {
+  .catalog-summary {
+    display: none;
+  }
+  .catalog-layout {
+    height: calc(94dvh - 166px);
+  }
+  .ranch-shop-animal {
+    min-height: 145px;
+  }
+  .catalog-detail {
+    padding: 8px;
+    gap: 5px;
+    overflow: visible;
+  }
+  .catalog-detail .detail-art {
+    width: 58px;
+    height: 58px;
+  }
+  .catalog-detail .detail-kicker {
+    display: none;
+  }
+  .catalog-detail .detail-title h3 {
+    font-size: 16px;
+    line-height: 20px;
+    margin: 0;
+  }
+  .catalog-detail .stage-switch button {
+    padding: 2px 12px;
+    min-height: 44px;
+  }
+  .catalog-detail .detail-facts {
+    padding-top: 4px;
+  }
+  .catalog-detail .detail-facts span {
+    font-size: 9px;
+    line-height: 12px;
+  }
+  .catalog-detail .detail-facts strong {
+    font-size: 10px;
+    line-height: 14px;
+    margin-top: 2px;
+  }
+  .catalog-detail .ranch-primary {
+    min-height: 44px;
+    padding: 7px;
+  }
+}
+
+/* Quiet, flat level badge; no platform-dependent emoji padlock. */
+.ranch-window .tile-lock {
+  background: #68604466;
+  color: #fff9e6;
+  gap: 4px;
+  font-size: 11px;
+  text-shadow: 0 1px #635a4166;
+}
+.ranch-window .flat-lock {
+  display: block;
+  width: 15px;
+  height: 18px;
+  flex-shrink: 0;
+}
+@media (max-width: 700px) {
+  .ranch-window .tile-lock {
+    font-size: 10px;
+    gap: 3px;
+  }
+}
+@media (max-width: 350px) {
+  .ranch-window .tile-lock {
+    font-size: 9px;
   }
 }
 </style>

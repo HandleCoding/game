@@ -11,7 +11,7 @@ const pool = new pg.Pool({ connectionString: connection }),
   schema = "ui_" + randomBytes(8).toString("hex");
 const engine = process.env.UI_BROWSER || "chromium";
 const base = "http://127.0.0.1:3221",
-  folder = "artifacts/ranch-soft-ui/" + engine;
+  folder = "artifacts/ranch-game-ui/" + engine;
 await mkdir(folder, { recursive: true });
 await pool.query("CREATE SCHEMA " + schema);
 const server = spawn(process.execPath, ["dist/apps/api/src/main.js"], {
@@ -187,6 +187,14 @@ try {
       await page.getByRole("button", { name: "播放动物动画" }).click();
       await page.getByRole("button", { name: /一键收获/ }).click();
       await page.getByRole("button", { name: /我的仓库/ }).click();
+      await page.screenshot({
+        path: folder + "/" + size.width + "-warehouse.png",
+        fullPage: true,
+      });
+      assert(
+        (await page.locator(".ranch-product.selected").count()) === 1,
+        "Warehouse did not select available stock",
+      );
       await page
         .getByRole("button", { name: "出售全部产物", exact: true })
         .click();
@@ -199,14 +207,72 @@ try {
         );
       }
       await page.getByRole("button", { name: /动物商店/ }).click();
+      await page.screenshot({
+        path: folder + "/" + size.width + "-catalog.png",
+        fullPage: true,
+      });
+      const actionsBeforeBrowse = resourceActions.length;
+      await page
+        .getByRole("button", { name: "查看狮子资料", exact: true })
+        .click();
+      assert(
+        await page.locator(".catalog-detail .ranch-primary").isDisabled(),
+        "Locked animal can be adopted",
+      );
+      assert(
+        await page
+          .locator(".catalog-detail")
+          .textContent()
+          .then((t) => t.includes("Lv.")),
+        "Missing unlock requirement",
+      );
+      assert.equal(
+        resourceActions.length,
+        actionsBeforeBrowse,
+        "Browsing animal spent resources",
+      );
       await page.getByLabel("搜索动物").fill("鸡");
       await page.screenshot({
         path: folder + "/" + size.width + "-shop.png",
         fullPage: true,
       });
+      const adoptionBox = await page
+        .locator(".catalog-detail .ranch-primary")
+        .boundingBox();
+      const modalBox = await page.getByRole("dialog").boundingBox();
+      assert(
+        adoptionBox.y >= modalBox.y &&
+          adoptionBox.y + adoptionBox.height <=
+            modalBox.y + modalBox.height - 4,
+        "Adoption button clipped before interaction",
+      );
+      const tileHeight = await page
+        .locator(".ranch-shop-animal")
+        .first()
+        .evaluate((e) => e.getBoundingClientRect().height);
+      assert(tileHeight >= 120, "Animal grid tiles vertically compressed");
       const cards = page.locator(".ranch-shop-animal");
       assert.equal(await cards.count(), 1);
-      await cards.getByRole("button", { name: /金币 · 认养/ }).click();
+      await cards.click();
+      await page
+        .locator(".stage-switch")
+        .getByRole("button", { name: "幼年", exact: true })
+        .click();
+      assert(
+        await page
+          .locator(".catalog-detail .detail-art image")
+          .getAttribute("href")
+          .then((h) => h.endsWith("/baby-0.png")),
+        "Shop baby preview uses adult art",
+      );
+      await page.screenshot({
+        path: folder + "/" + size.width + "-shop-selected.png",
+        fullPage: true,
+      });
+      await page
+        .locator(".catalog-detail")
+        .getByRole("button", { name: /金币 · 认养/ })
+        .click();
       await page.waitForFunction(() =>
         document
           .querySelector('[data-testid="ranch-canvas"]')
@@ -254,6 +320,45 @@ try {
       await page.getByRole("button", { name: "关闭牧场面板" }).click();
       await page.getByRole("button", { name: "查看小鸡" }).last().click();
       await page.locator("#ranch-window-title").waitFor();
+      await page.screenshot({
+        path: folder + "/" + size.width + "-animal-detail.png",
+        fullPage: true,
+      });
+      await page.getByRole("button", { name: "关闭牧场面板" }).click();
+      await page.screenshot({
+        path: folder + "/" + size.width + "-animal-detail.png",
+        fullPage: true,
+      });
+      await page.getByRole("button", { name: "动物图鉴", exact: true }).click();
+      await page.getByLabel("搜索动物").fill("");
+      assert.equal(
+        await page.locator(".ranch-shop-animal").count(),
+        36,
+        "Album lost species",
+      );
+      assert.equal(
+        await page.locator(".catalog-detail .ranch-primary").count(),
+        0,
+        "Album offers unintended spending",
+      );
+      await page
+        .getByRole("button", { name: "查看垂耳兔资料", exact: true })
+        .click();
+      await page
+        .locator(".stage-switch")
+        .getByRole("button", { name: "成年", exact: true })
+        .click();
+      assert(
+        await page
+          .locator(".catalog-detail .detail-art image")
+          .getAttribute("href")
+          .then((h) => h.endsWith("/rabbit-stages.png")),
+        "Album rabbit artwork missing",
+      );
+      await page.screenshot({
+        path: folder + "/" + size.width + "-album.png",
+        fullPage: true,
+      });
       await page.getByRole("button", { name: "关闭牧场面板" }).click();
       await page.getByRole("button", { name: "切换到夜间模式" }).click();
       await page.screenshot({
@@ -261,6 +366,15 @@ try {
         fullPage: true,
       });
       await page.getByRole("button", { name: /动物商店/ }).click();
+      assert.equal(
+        await page
+          .locator(".ranch-window")
+          .evaluate((d) =>
+            getComputedStyle(d).getPropertyValue("--paper").trim(),
+          ),
+        "#463d2b",
+        "Night panel theme not applied",
+      );
       await page.screenshot({
         path: folder + "/" + size.width + "-night-shop.png",
         fullPage: true,
@@ -375,6 +489,17 @@ try {
             ).ok(),
           );
           await page.getByRole("button", { name: /去串门/ }).click();
+          await page.getByLabel("搜索牧场主").fill("没有这个名字");
+          assert.equal(
+            await page.locator(".player-line").count(),
+            0,
+            "Neighbor filter ignored",
+          );
+          await page.getByLabel("搜索牧场主").fill("隐私验收");
+          await page.screenshot({
+            path: folder + "/neighbors.png",
+            fullPage: true,
+          });
           await page
             .locator(".player-line")
             .filter({ hasText: "隐私验收邻居" })
@@ -587,6 +712,11 @@ try {
           "harvest",
           "warehouse-sale",
           "shop-search",
+          "select-before-purchase",
+          "locked-adoption-disabled",
+          "baby-adult-catalog-preview",
+          "all-36-species-album-no-spend",
+          "wood-inventory-selection",
           "buy-animal",
           "feed",
           "detail",
@@ -606,7 +736,7 @@ try {
         controls,
       });
     } catch (e) {
-      failures.push({ size, message: e.message });
+      failures.push({ size, message: e.stack || e.message });
       await page
         .screenshot({
           path: folder + "/" + size.width + "-failure.png",
@@ -618,7 +748,7 @@ try {
     await context.close();
   }
   await writeFile(
-    "docs/test-reports/20261004-ranch-soft-realistic-ui-" + engine + ".json",
+    "docs/test-reports/20261004-ranch-game-ui-" + engine + ".json",
     JSON.stringify(
       {
         browser: engine,
