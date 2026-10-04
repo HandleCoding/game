@@ -4,7 +4,7 @@ import { spawn } from "node:child_process";
 import pg from "pg";
 import { randomBytes } from "node:crypto";
 import { once } from "node:events";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
@@ -94,6 +94,12 @@ test("真实服务器：账号、邀请、隐私、完整对局、重开与重�
   }
   try {
     await start();
+    const health = await (await fetch(url + "/healthz")).json();
+    assert.equal(
+      health.version,
+      JSON.parse(await readFile("package.json", "utf8")).version,
+    );
+    assert.equal(health.database, "postgresql");
     const a = client(),
       b = client(),
       c = client();

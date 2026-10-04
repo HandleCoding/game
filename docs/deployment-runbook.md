@@ -73,7 +73,7 @@ python3 scripts/release-postgres.py --deploy --reset-ranch
 
 python3 scripts/release-postgres.py --deploy --migrate-ranch-lifecycle
 
-此旗标禁止与--reset-ranch并用。检查活动对局→只关闭游戏域名→停止正式应用→最新PG一致性备份→编译后的migration operator一次事务校验并迁所有v1档案→启动2.7.0→核对账号/结果/档案数量与健康/目录/前端→恢复入口。操作报告仅数量，私有PG dump和服务备份仍在/var/backups/pair-play；不对外暴露连接或玩家数据。
+此旗标禁止与--reset-ranch并用。检查活动对局→只关闭游戏域名→停止正式应用→最新PG一致性备份→编译后的migration operator一次事务校验并统一v1及v2旧规则档案→启动2.7.0→核对账号/结果/档案数量与健康/目录/前端→恢复入口。操作报告仅数量，私有PG dump和服务备份仍在/var/backups/pair-play；不对外暴露连接或玩家数据。
 
 v2档案与永久动物不兼容旧版删除重插storage：迁移一旦开始，任何部署失败保持503与停写，保存报告、做兼容当前库的前向修复。禁止自动降级旧2.6代码、覆盖PG备份或清空名宠堂来“恢复”。独立恢复备份演练仍不覆盖正式库。
 

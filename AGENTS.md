@@ -39,11 +39,11 @@ GitHub origin 为 git@github.com:HandleCoding/game.git，main 为验收后的主
 
 游戏 ID animal-ranch，kind=persistent。动物配置唯一来源 packages/contracts/src/ranch-catalog.ts。先读 docs/animal-ranch.md、ranch-balance.md、ranch-assets.md。首版 36 个物种，禁止用重复幼崽或换名图凑数。普通离线成长按食槽和实例保存周期结算，不需要 worker。缺粮暂停，不死亡；生产存量按24小时保护窗且至少3轮。访客只读且不显示钱、仓库、流水。
 
-schema v4 的 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger / ranch_animal_batches / ranch_inventory_lots / ranch_animal_events 与档案、动作回执在同一行锁事务内写入；不可仅修改 JSON 而绕开钱包、仓库或流水。配置修改不能追溯改已有动物参数。有限生产当前测试以20261005报告为准。
+schema v4 的 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger / ranch_animal_batches / ranch_inventory_lots / ranch_animal_events 与档案、动作回执在同一行锁事务内写入；不可仅修改 JSON 而绕开钱包、仓库或流水。常规配置更新按实例快照处理；本次依用户明确要求，通过一次离线迁移将已有动物全部统一到新目录。有限生产当前测试以20261005报告为准。
 
 动态场景前端为 RanchScene.vue；资源计算仍在后端。手机 / 桌面 UI 验收 npm run test:ui，必须开发库与独立 schema / 3221 锁，见 testing-guide 和 ranch-scene 验收报告。不得把模拟测试说成真机测试。
 
-## 当前牧场数值与重置边界（2.6.0）
+## 历史牧场数值与重置边界（2.6.0，已由2.7.0更新）
 
 先读ranch-balance.md最新表；成长/生产单位小时，每只30分钟耗1份，初始240份。XP逐级增加、仅收获获得XP、扩建等级金币双门槛；不要再写xp/80或每分钟一份的逻辑。食槽单位feedUnitMs保存在摘要；旧摘要缺失时按旧单位读，普通改配置不追溯已购动物。schema3扩大feed_ms预算CHECK。
 
@@ -68,10 +68,6 @@ scripts/ranch-cdn-qa.mjs只在开发隔离schema运行，虚拟正式hostname拦
 变异/前缀/符文仅预留快照，不能误报已实现。本次用户明确要求已有动物一起统一新数值；仅一次离线转换，运行时不保留旧规则分支。保留阶段比例、身份、钱包/等级/库存，无重置。生产迁移必须维护停写、最新备份、校验；v2档案之后旧2.6 storage不兼容，发布失败保持维护做前向修复，禁止自动旧代码回滚。Git提交只包含本任务文件，保持其他Agent未提交的文档。
 
 
-### 2026-10-05 用户最新修订：现有动物也统一新规则
+### 本次统一规则修订（已上线）
 
-此修订覆盖此前“老动物保留旧周期”的内容。本次全部已有动物与新认养使用当前目录，既有幼年/生产比例等比例换算到新时间；不按新分钟周期追补旧离线，不瞬间生成多年产物。认养/出售计算基数有偿动物统一当前价、赠送仍0；原钱包/XP等级/库存和既有产物不清空。个体ID、名字、发现/归档记录保留，无法知道的历史日期仍未知。
-
-统一转换在维护停写下只执行一次，二次无变化；游戏运行时只支持当前存档v2和规则，没有旧周期/旧返还/旧XP分支。原v1代码已移入test-v2/ranch-v1-fixture.ts，仅用于真实旧结构夹具；旧目录仅离线迁移时给既有库存定价。普通未来版本是否统一改所有动物另以用户要求为准。
-
-启动检查首次暂停的原因是healthz仍硬编码2.6.2，服务实际能启动；现已自动读取根package版本，避免同类遗漏。第一次迁移已保留数据，保持维护后做前向更新，未回退2.6或覆盖数据库。恢复发布需--resume-caddy指向同次维护保存的原Caddyfile，仅允许/var/backups/pair-play/Caddyfile-before-*，不会将503维护配置当成要恢复的正式配置。
+用户要求已有动物也按新数值，不长期保留旧玩法。全部动物已按成长/当前轮次比例转换；周期、未来产物、终身经验、轮次与出售计算基数统一当前目录，礼物0基数。钱包、等级、库存与身份保留，不追补旧离线、不清空。运行时只有v2新规则，旧v1夹具仅在test-v2；离线转换工具只为一次迁移。实际发布/版本检查修复与恢复维护过程见handover、deployment-runbook和20261005-ranch-lifecycle报告。

@@ -1,13 +1,13 @@
 # 新架构接手状态
 
-更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户授权上线一起牧场 2.6.2。当前发布、备份与验证见 [CDN接入报告](test-reports/20261004-ranch-cdn.md)；HUD修复见 [HUD遮挡修复报告](test-reports/20261004-ranch-hud-overlap.md)；数值与已完成重置见 [数值报告](test-reports/20261004-ranch-balance.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
+更新：2026-10-05。当前正式一起牧场2.7.0，有限生产、名宠堂和所有已有动物统一新规则已上线；本次没有重置。实际验证与发布见 [2.7.0验收报告](test-reports/20261005-ranch-lifecycle.md)。旧版历史：当前发布、备份与验证见 [CDN接入报告](test-reports/20261004-ranch-cdn.md)；HUD修复见 [HUD遮挡修复报告](test-reports/20261004-ranch-hud-overlap.md)；数值与已完成重置见 [数值报告](test-reports/20261004-ranch-balance.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
 
 ## 环境
 
 | 项目 | 正式 | 开发 |
 | --- | --- | --- |
 | 主机 | 京东云 117.72.116.83 | 同一主机 |
-| 代码 | /opt/pair-play/releases/v2.6.2-20261004-213138 | /opt/pair-play-dev |
+| 代码 | /opt/pair-play/releases/v2.7.0-20261005-003621 | /opt/pair-play-dev |
 | 服务 | pair-play.service | pair-play-dev.service |
 | 用户 | pairplay | pairplaydev |
 | 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 1f9a7c71ccbf10bf5f2cf3c399df7c4e05edba95；后续验收文档提交看 git log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 ff96f06146dc58586af85b6bac9ad6bd5934c75e；后续验收文档提交看 git log。
 
 ## 已落地
 
@@ -139,14 +139,14 @@ schema3仅扩大ranch_wallets.feed_ms约束至1800000000；摘要增加feedUnitM
 
 ## 有限生产与名宠堂设计稿
 
-用户确定将动物完成生产后的收藏去向命名为“名宠堂”，与出售、放生并列；未来变异、前缀和符文围绕独立个体扩展。完整方案见 [有限生产与名宠堂技术方案](ranch-lifecycle-and-hall-plan.md)，包含36种时间/轮次首轮草案、结算、经济、数据迁移与验收。当前仅文档，未实施、未迁移、未发布；当前实际数值仍以ranch-balance.md为准。不要沿用旧无限生产、满存耗粮或整档案删除重插来保存永久个体。认养价/售价/经验须重新模拟冻结，不能把旧小时制价格直接配上新分钟制。
+用户确定将动物完成生产后的收藏去向命名为“名宠堂”，与出售、放生并列；未来变异、前缀和符文围绕独立个体扩展。完整方案见 [有限生产与名宠堂技术方案](ranch-lifecycle-and-hall-plan.md)，包含36种时间/轮次首轮草案、结算、经济、数据迁移与验收。此处保存最初设计背景；2.7.0现已实施、迁移并上线，最终规则与数值以ranch-balance.md及下方实际实现记录为准。不要沿用旧无限生产、满存耗粮或整档案删除重插来保存永久个体。认养价/售价/经验须重新模拟冻结，不能把旧小时制价格直接配上新分钟制。
 
 
-## 2026-10-05 有限生产与名宠堂2.7.0（实现与验收完成，待正式发布）
+## 2026-10-05 有限生产与名宠堂2.7.0（已上线）
 
-已在现有Vue/Node/PG架构上实现，非另建项目。新认养36种按5分钟→24小时的成长/生产梯度、6/8有限轮次、暂停停粮、生产结束等待；名宠堂/出售/放生永久保存身份和日记，昵称、可选6位公开与档案分页。未来变异/前缀/符文只预留数据，未生成或改变收入。新冻结数值见ranch-balance.md；原2.6数值移到ranch-balance-v2.6-history.md。
+已在现有Vue/Node/PG架构上实现，非另建项目。所有36种动物按5分钟→24小时的成长/生产梯度、6/8有限轮次、暂停停粮、生产结束等待；名宠堂/出售/放生永久保存身份和日记，昵称、可选6位公开与档案分页。未来变异/前缀/符文只预留数据，未生成或改变收入。新冻结数值见ranch-balance.md；原2.6数值移到ranch-balance-v2.6-history.md。
 
-25项自动化、typecheck/build、9组90天模拟、两内核原牧场/名宠堂各5尺寸均通过，关键截图实际查看。验收test-reports/20261005-ranch-lifecycle.md。新schema4与存档v2需按deployment-runbook维护停写/最新备份/一次事务无损迁移；老资产、周期、库存价格、钱包和XP保留，无重置。禁止迁后回退旧2.6删除重插storage。发布实际源提交/目录/数量校验随后更新本节与上方环境。
+25项自动化、typecheck/build、9组90天模拟、两内核原牧场/名宠堂各5尺寸均通过，关键截图实际查看。验收test-reports/20261005-ranch-lifecycle.md。新schema4与存档v2需按deployment-runbook维护停写/最新备份/一次事务无损迁移；身份、阶段进度比例、库存价值、钱包和XP保留；已有动物周期和未来收益统一新目录，无重置。禁止迁后回退旧2.6删除重插storage。正式源ff96f06，目录与备份见上方及20261005-ranch-lifecycle-release.json。两份旧牧场、8只动物均已统一新参数；2账号/5会话/5结果/10关联/2档案前后保持。开发服务3211亦迁移并重启至2.7.0。
 
 
 ### 2026-10-05 用户最新修订：现有动物也统一新规则

@@ -9,7 +9,6 @@
       },
       "passed": true,
       "checks": [
-        "legacy-notice",
         "finite-round-display",
         "harvest-before-hall",
         "exit-cancel",
@@ -33,7 +32,6 @@
       },
       "passed": true,
       "checks": [
-        "legacy-notice",
         "finite-round-display",
         "harvest-before-hall",
         "exit-cancel",
@@ -57,7 +55,6 @@
       },
       "passed": true,
       "checks": [
-        "legacy-notice",
         "finite-round-display",
         "harvest-before-hall",
         "exit-cancel",
@@ -81,7 +78,6 @@
       },
       "passed": true,
       "checks": [
-        "legacy-notice",
         "finite-round-display",
         "harvest-before-hall",
         "exit-cancel",
@@ -105,7 +101,6 @@
       },
       "passed": true,
       "checks": [
-        "legacy-notice",
         "finite-round-display",
         "harvest-before-hall",
         "exit-cancel",
