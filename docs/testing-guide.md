@@ -49,3 +49,7 @@ API / SSE 不提前公开秘密、旧结果复盘按权限拒绝、非参与者�
 Playwright 测试代码 scripts/ranch-ui-qa.mjs，npm run test:ui。来源 / 依赖 / 实际边界见 test-reports/20261004-ranch-scene.md。加载 dev.env、加 /run/lock/pair-play-dev-tests.lock，脚本强制 playroom_dev 并创建 / 删除随机 schema，端口 3221；不要对生产库运行。UI_BROWSER=chromium（默认）或 webkit，UI_BROWSER_EXECUTABLE 可指定已验证的官方引擎路径。常规环境用 npx playwright install chromium webkit；本次官方下载修复脚本 download-qa-chromium.py、download-qa-webkit.py 固定于 Playwright 1.63.0 所需版本，未来升级不能盲目复用其版本 / 校验值。脚本输出和截图均在 artifacts（忽略提交）。
 
 截图必须实际查看；模拟器不得声称为实体手机验收。测试新版本之后重新载入浏览器，localhost:3211 依赖到云端的 SSH 转发。
+
+## 图集裁切回归
+
+npm run test:portraits（scripts/ranch-portrait-qa.mjs），同样要求 dev.env / playroom_dev / 3221 flock 锁及浏览器路径。每个引擎 351 项：72 种生命周期、36 个目录格子和 9 个工具，在三种容器比例下栅格化真实组件；帧外留白必须透明，并校验图片非空。报告 20261004-ranch-portrait-{chromium,webkit}.json，截图 artifacts/ranch-portrait。旧版本可设置 PORTRAIT_BASELINE=1 复现，原版 252 项泄漏；不要把旧构建失败视为新构建通过。

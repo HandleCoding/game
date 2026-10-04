@@ -16,7 +16,7 @@
 ## 代码与素材
 
 - apps/web/src/games/animal-ranch/RanchGame.vue：全部面板与 HUD。
-- RanchIcon.vue：只用 SVG image viewBox 裁剪原始 PNG 图集，不改图像像素或透明度。
+- RanchIcon.vue：使用 SVG viewBox 定位，并对 image 添加单格 clipPath 裁剪原始 PNG 图集，不改图像像素或透明度。
 - apps/web/public/ranch/ui/ranch-tools-v1.png：内置 ImageGen 原创 3×3 透明图集。顺序：收获篮、动物小屋、食槽；仓库、邻居小屋、扩建工具；动物图鉴、金币、粮袋。
 - AnimalPortrait.vue / soft-atlas-metadata.ts：继续使用已验收的 36 种柔和写实动物与独立幼年/成年素材。
 - 后端动作、经济参数、数据库表和存档规则未变；版本健康标记更新至 2.5.0。
@@ -36,3 +36,7 @@ Windows 原件副本：E:/AIWorkSpace/codexSpace/pair-play/output/ranch-game-ui/
 执行与实际结果另见 docs/test-reports/20261004-ranch-game-ui.md。
 scripts/ranch-ui-qa.mjs 覆盖格子选中不扣费、锁定禁购、幼年/成年预览、图鉴无购买按钮、库存出售、串门搜索/隐私、主题、手机触摸、横屏与桌面。所有浏览器数据位于 playroom_dev 随机 schema，测试结束删除该测试 schema。
 微信原程序 Computer Use 能定位“QQ经典农场”窗口，但捕获画面超时，未对原程序进行点击/购买；参考依据为用户直接提供的截图。
+
+## v2.5.1 图集防渗漏
+
+SVG viewBox 只定位/缩放，并不自动限定 image 的绘制到单帧；容器比例不同产生的留白可能显示相邻帧。AnimalPortrait.vue 和 RanchIcon.vue 必须保留对 image 的明确 clipPath，每个实例用 useId。裁切测试 npm run test:portraits 检查全部动物两生命周期、目录格子与九个工具，方/宽/高三种比例。详细报告 test-reports/20261004-ranch-portrait.md。

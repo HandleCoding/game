@@ -1,6 +1,6 @@
 {
   "name": "playroom",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -15,7 +15,8 @@
     "test": "tsx --test test-v2/*.test.ts",
     "db:migrate": "tsx apps/api/src/platform/db/migrate.ts",
     "db:import": "tsx scripts/import-sqlite.ts",
-    "test:ui": "node scripts/ranch-ui-qa.mjs"
+    "test:ui": "node scripts/ranch-ui-qa.mjs",
+    "test:portraits": "node scripts/ranch-portrait-qa.mjs"
   },
   "engines": {
     "node": ">=22.13"

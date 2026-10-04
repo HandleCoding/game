@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useId } from "vue";
 defineProps<{ index: number }>();
+const clipId = "ranch-tool-" + useId();
 </script>
 <template>
   <svg
@@ -8,6 +10,11 @@ defineProps<{ index: number }>();
     aria-hidden="true"
     focusable="false"
   >
+    <defs>
+      <clipPath :id="clipId" clipPathUnits="userSpaceOnUse">
+        <rect x="0" y="0" width="100" height="100" />
+      </clipPath>
+    </defs>
     <image
       href="/ranch/ui/ranch-tools-v1.png"
       :x="-(index % 3) * 100"
@@ -15,6 +22,7 @@ defineProps<{ index: number }>();
       width="300"
       height="300"
       preserveAspectRatio="none"
+      :clip-path="'url(#' + clipId + ')'"
     />
   </svg>
 </template>
