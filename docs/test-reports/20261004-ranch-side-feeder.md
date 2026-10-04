@@ -19,4 +19,10 @@
 
 ## 发布
 
-待发布：按既有用户授权备份正式 PostgreSQL、核验账号 / 存档和有效会话后发布，不重新导入数据。源码与正式发布结果将在发布后补充。
+已按用户要求正式上线，2026-10-04T15:25:40+0800 完成。
+- 版本 2.3.1；源码提交 5e6691afeeb56b27ba6e83fe0986df56953aa008。
+- 正式目录 /opt/pair-play/releases/v2.3.1-20261004-152536；私有数据库备份 /var/backups/pair-play/postgres-prod-20261004-152538.dump。
+- 发布前 / 后账号、会话、对局结果 / 参与者、持续档案数量一致；有效会话身份经 API 核验。没有读取或输出存档内容和 token。
+- schema 仍为 2；数据和资源规则保持，未重新导入 SQLite 或重启其他服务。
+- 正式 HTTPS 健康 / 前端入口 / 游戏目录 / 36 个动物与现有场景素材验证通过；Windows 侧 healthz 确认为 2.3.1 / PostgreSQL，三个相关服务均 active。
+- 公开无敏感元信息：[release JSON](20261004-ranch-side-feeder-release.json)。
