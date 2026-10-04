@@ -1,0 +1,33 @@
+{
+  "sourceCommit": "15bcc3c717e79df3a4c05f1da528c8fb8991cd5b",
+  "release": "/opt/pair-play/releases/v2.5.0-20261004-175159",
+  "version": "2.5.0",
+  "databaseBackup": "/var/backups/pair-play/postgres-prod-20261004-175200.dump",
+  "before": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "after": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "unitBackup": "/var/backups/pair-play/pair-play-before-20261004-175201.service",
+  "caddyBackup": "/var/backups/pair-play/Caddyfile-before-20261004-175201",
+  "schemaVersion": 2,
+  "completedAt": "2026-10-04T17:52:02+0800",
+  "publicVerification": {
+    "health": {
+      "ok": true,
+      "version": "2.5.0",
+      "database": "postgresql"
+    },
+    "uiAtlasSha256": "2f256b6e8262e08f86b6e8334817738773f025989a63faf6e2a1ec6e2d79c57b",
+    "ranchJsCssMatch": true
+  }
+}

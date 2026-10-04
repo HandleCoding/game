@@ -39,3 +39,7 @@ SHA256: 2f256b6e8262e08f86b6e8334817738773f025989a63faf6e2a1ec6e2d79c57b。
 验收为云端 Chromium/WebKit 浏览器及手机模拟视口，不声称实体 iPhone/Android/微信内置浏览器测试；实体软键盘和后台行为未新增实机验证。
 Computer Use 找到用户“QQ经典农场”窗口，但两次画面捕获失败（FrameArrived / window capture timed out）；没有对微信原程序执行购买或其它游戏动作。界面参考来自用户截图。
 正式发布与保留账号/会话/数据的核对结果，发布后记录于同目录 20261004-ranch-game-ui-release.json。
+
+## 正式发布结果
+
+正式 v2.5.0 已上线 2026-10-04T17:52:02+0800。发布源提交 15bcc3c717e79df3a4c05f1da528c8fb8991cd5b；目录 /opt/pair-play/releases/v2.5.0-20261004-175159。私有 PostgreSQL 备份 /var/backups/pair-play/postgres-prod-20261004-175200.dump。原账号、有效会话及存档保留验证通过；未导入测试数据或改变 schema。公网 /healthz 确认版本 2.5.0，PNG 图集 SHA256 及 RanchGame JS/CSS 与开发构建逐字节相同，Windows 访问公网健康接口也成功。
