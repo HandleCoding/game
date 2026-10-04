@@ -155,7 +155,104 @@ test("PostgreSQL 牧场：唯一初始化、双设备收获、原子钱包仓库
     );
     const summary = (await pool.query("SELECT state FROM persistent_profiles"))
       .rows[0].state;
-    assert.deepEqual(Object.keys(summary).sort(), ["at", "version"]);
+    assert.deepEqual(Object.keys(summary).sort(), [
+      "at",
+      "feedUnitMs",
+      "version",
+    ]);
+
+    // Balance reset rehearsed against real relational data, preserving identity and other games.
+    const { captureRanch, resetRanch, restoreRanch } =
+      await import("../apps/api/src/games/animal-ranch/reset.js");
+    const { transaction } =
+      await import("../apps/api/src/platform/db/store.js");
+    const { xpForLevel } =
+      await import("../packages/contracts/src/ranch-balance.js");
+    await pool.query("UPDATE ranch_wallets SET xp=$1", [xpForLevel(20)]);
+    assert.equal(
+      (await service.list("animal-ranch", "visitor")).players[0]!.level,
+      20,
+    );
+    await pool.query(
+      "INSERT INTO action_receipts VALUES('owner','unrelated-guess','match-guess','guess-fingerprint','{}',0)",
+    );
+    await pool.query(
+      "INSERT INTO persistent_profiles VALUES('test-other','default','owner',1,7,0,'{}')",
+    );
+    const preserved = (await pool.query("SELECT * FROM users ORDER BY id"))
+      .rows;
+    const beforeReset = await service.view("animal-ranch", "owner");
+    const backup = await transaction(async (db) => {
+      const b = await captureRanch(db, 1);
+      await resetRanch(db, b, Date.now());
+      return b;
+    });
+    const reset = await service.view("animal-ranch", "owner");
+    assert.equal(reset.revision, beforeReset.revision + 1);
+    assert.equal(reset.state.level, 1);
+    assert.equal(reset.state.coins, 800);
+    assert.equal(reset.state.feed, 240);
+    assert.equal(reset.state.capacity, 4);
+    assert.equal(reset.state.animals.length, 1);
+    assert.equal(reset.state.inventory[0].count, 0);
+    assert.equal(
+      (await pool.query("SELECT count(*) FROM ranch_ledger")).rows[0].count,
+      0,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*) FROM action_receipts WHERE match_id='persistent:animal-ranch'",
+        )
+      ).rows[0].count,
+      0,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*) FROM action_receipts WHERE request_id='unrelated-guess'",
+        )
+      ).rows[0].count,
+      1,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT revision FROM persistent_profiles WHERE game_id='test-other'",
+        )
+      ).rows[0].revision,
+      7,
+    );
+    assert.deepEqual(
+      (await pool.query("SELECT * FROM users ORDER BY id")).rows,
+      preserved,
+    );
+    await assert.rejects(
+      service.action("animal-ranch", "owner", {
+        ...req,
+        requestId: "stale-before-reset",
+        expectedRevision: beforeReset.revision,
+      }),
+      /存档已变化/,
+    );
+    await assert.rejects(
+      transaction((db) => captureRanch(db, 2)),
+      /count changed/,
+    );
+    await transaction((db) => restoreRanch(db, backup));
+    const restored = await service.view("animal-ranch", "owner");
+    assert.equal(restored.state.coins, beforeReset.state.coins);
+    assert.equal(restored.state.level, 20);
+    assert.equal(restored.revision, beforeReset.revision);
+    assert.equal(restored.state.animals.length, 2);
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*) FROM action_receipts WHERE request_id='unrelated-guess'",
+        )
+      ).rows[0].count,
+      1,
+    );
   } finally {
     await pool.end();
     await admin.query("DROP SCHEMA " + schema + " CASCADE");

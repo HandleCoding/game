@@ -152,7 +152,14 @@ try {
       );
       await page.getByRole("button", { name: /添饲料/ }).click();
       await page.getByRole("dialog").waitFor();
-      await page.getByRole("button", { name: "关闭牧场面板" }).click();
+      assert((await page.locator(".ranch-feed").textContent()).includes("30 分钟"), "Incorrect feed speed");
+      assert(/天|小时/.test(await page.locator(".ranch-feed").textContent()), "Feed duration not human readable");
+      await page.screenshot({path: folder + "/" + size.width + "-balance-feed.png"});
+      await page.getByRole("button", {name: "关闭牧场面板"}).click();
+      await page.getByRole("button", {name: /扩建 \/ 日记/}).click();
+      assert(await page.locator(".ranch-expand .ranch-primary").isDisabled(), "Expansion bypasses level gate");
+      assert((await page.locator(".ranch-expand").textContent()).includes("Lv. 3"), "Missing expansion requirement");
+      await page.getByRole("button", {name: "关闭牧场面板"}).click();
       await page.getByRole("button", { name: "查看牧场全景" }).click();
       const feedBox = await page.getByTestId("side-feeder").boundingBox();
       assert(
@@ -187,6 +194,7 @@ try {
       await page.getByRole("button", { name: "播放动物动画" }).click();
       await page.getByRole("button", { name: /一键收获/ }).click();
       await page.getByRole("button", { name: /我的仓库/ }).click();
+      await page.locator(".ranch-product.selected").waitFor();
       await page.screenshot({
         path: folder + "/" + size.width + "-warehouse.png",
         fullPage: true,
@@ -246,6 +254,7 @@ try {
             modalBox.y + modalBox.height - 4,
         "Adoption button clipped before interaction",
       );
+      assert((await page.locator(".catalog-detail").textContent()).includes("8小时"), "Chick growth is not 8 hours");
       const tileHeight = await page
         .locator(".ranch-shop-animal")
         .first()
@@ -719,6 +728,10 @@ try {
           "wood-inventory-selection",
           "buy-animal",
           "feed",
+          "30-minute-feed-unit",
+          "hour-day-duration",
+          "level-gated-expansion",
+          "8-hour-chick-growth",
           "detail",
           "theme",
           "reload-save",

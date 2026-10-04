@@ -1,0 +1,166 @@
+
+> playroom@2.6.0 test
+> tsx --test test-v2/*.test.ts
+
+TAP version 13
+# Subtest: exact positions only, repeated digits and numeric bounds
+ok 1 - exact positions only, repeated digits and numeric bounds
+  ---
+  duration_ms: 1.296449
+  type: 'test'
+  ...
+# Subtest: two ready players required and immutable secret; third player rejected
+ok 2 - two ready players required and immutable secret; third player rejected
+  ---
+  duration_ms: 1.332486
+  type: 'test'
+  ...
+# Subtest: dice tie retries both rolls, then high roll starts
+ok 3 - dice tie retries both rolls, then high roll starts
+  ---
+  duration_ms: 1.297031
+  type: 'test'
+  ...
+# Subtest: turn enforcement, valid guesses and complete victory
+ok 4 - turn enforcement, valid guesses and complete victory
+  ---
+  duration_ms: 0.769946
+  type: 'test'
+  ...
+# Subtest: late guess cannot win; timeout consumes one turn
+ok 5 - late guess cannot win; timeout consumes one turn
+  ---
+  duration_ms: 0.354068
+  type: 'test'
+  ...
+# Subtest: disconnect pauses, reconnect preserves remaining time, 60s grace ends game
+ok 6 - disconnect pauses, reconnect preserves remaining time, 60s grace ends game
+  ---
+  duration_ms: 0.565199
+  type: 'test'
+  ...
+# Subtest: both offline draw, settings reset readiness, rematch resets secrets and dice
+ok 7 - both offline draw, settings reset readiness, rematch resets secrets and dice
+  ---
+  duration_ms: 0.382501
+  type: 'test'
+  ...
+# Subtest: memory mode hides history and exposes only latest opponent guess, while giving current feedback
+ok 8 - memory mode hides history and exposes only latest opponent guess, while giving current feedback
+  ---
+  duration_ms: 0.759553
+  type: 'test'
+  ...
+# Subtest: zero-prefixed secrets and memory mode expose only latest opponent guess
+ok 9 - zero-prefixed secrets and memory mode expose only latest opponent guess
+  ---
+  duration_ms: 1.319619
+  type: 'test'
+  ...
+# Subtest: finished games reveal full review to both players in either mode and clear it on rematch
+ok 10 - finished games reveal full review to both players in either mode and clear it on rematch
+  ---
+  duration_ms: 1.727238
+  type: 'test'
+  ...
+# (node:1176503) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Migration retains IDs, original passwords, sessions, results, and private room snapshots
+ok 11 - Migration retains IDs, original passwords, sessions, results, and private room snapshots
+  ---
+  duration_ms: 1011.584118
+  type: 'test'
+  ...
+# Subtest: PostgreSQL: persistent isolation, concurrent duplicate actions, and rollback
+ok 12 - PostgreSQL: persistent isolation, concurrent duplicate actions, and rollback
+  ---
+  duration_ms: 209.601531
+  type: 'test'
+  ...
+# Subtest: 平衡：逐级经验边界、邻居同一公式、极限经验速率也不能一下午解锁
+ok 13 - 平衡：逐级经验边界、邻居同一公式、极限经验速率也不能一下午解锁
+  ---
+  duration_ms: 1.707152
+  type: 'test'
+  ...
+# Subtest: 平衡：4只初始食槽30小时、16只满槽31小时、毫秒分段结算守恒
+ok 14 - 平衡：4只初始食槽30小时、16只满槽31小时、毫秒分段结算守恒
+  ---
+  duration_ms: 2.035063
+  type: 'test'
+  ...
+# Subtest: 平衡：幼崽8小时成年、成年6小时首产、离线不直接增加经验
+ok 15 - 平衡：幼崽8小时成年、成年6小时首产、离线不直接增加经验
+  ---
+  duration_ms: 0.422684
+  type: 'test'
+  ...
+# Subtest: 平衡：循环买卖、扩建不加经验，升级有等级金币双重门槛
+ok 16 - 平衡：循环买卖、扩建不加经验，升级有等级金币双重门槛
+  ---
+  duration_ms: 20.333943
+  type: 'test'
+  ...
+# Subtest: 平衡：饲料上限、未满20份空间不能购买、所有物种饲料净收益为正
+ok 17 - 平衡：饲料上限、未满20份空间不能购买、所有物种饲料净收益为正
+  ---
+  duration_ms: 0.470949
+  type: 'test'
+  ...
+# Subtest: 平衡：不足饲料时暂停可恢复、旧实例周期和旧食槽单位不追溯改写
+ok 18 - 平衡：不足饲料时暂停可恢复、旧实例周期和旧食槽单位不追溯改写
+  ---
+  duration_ms: 0.321004
+  type: 'test'
+  ...
+# Subtest: 平衡：真实引擎180天模拟，首日Lv2、全解锁需数周，日常策略无缺粮死锁
+ok 19 - 平衡：真实引擎180天模拟，首日Lv2、全解锁需数周，日常策略无缺粮死锁
+  ---
+  duration_ms: 3472.275844
+  type: 'test'
+  ...
+# Subtest: PostgreSQL 牧场：唯一初始化、双设备收获、原子钱包仓库流水、重载与事务失败回滚
+ok 20 - PostgreSQL 牧场：唯一初始化、双设备收获、原子钱包仓库流水、重载与事务失败回滚
+  ---
+  duration_ms: 357.365603
+  type: 'test'
+  ...
+# Subtest: 牧场：36 独立物种、可用资产、等级与差异化参数
+ok 21 - 牧场：36 独立物种、可用资产、等级与差异化参数
+  ---
+  duration_ms: 3.030599
+  type: 'test'
+  ...
+# Subtest: 牧场：离线、饲料耗尽、分段结算、满产物上限与时钟回拨
+ok 22 - 牧场：离线、饲料耗尽、分段结算、满产物上限与时钟回拨
+  ---
+  duration_ms: 0.75819
+  type: 'test'
+  ...
+# Subtest: 牧场：认养收获出售扩建循环、输入校验与主人访客权限
+ok 23 - 牧场：认养收获出售扩建循环、输入校验与主人访客权限
+  ---
+  duration_ms: 2.064667
+  type: 'test'
+  ...
+# Subtest: Room registry, three-player capacity, action deduplication, stale revisions, and durable reviews
+ok 24 - Room registry, three-player capacity, action deduplication, stale revisions, and durable reviews
+  ---
+  duration_ms: 207.261102
+  type: 'test'
+  ...
+# Subtest: 真实服务器：账号、邀请、隐私、完整对局、重开与重启恢复
+ok 25 - 真实服务器：账号、邀请、隐私、完整对局、重开与重启恢复
+  ---
+  duration_ms: 24820.712224
+  type: 'test'
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 26632.909232

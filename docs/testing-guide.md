@@ -12,7 +12,7 @@ set +a
 flock -n /run/lock/pair-play-dev-tests.lock env -u PUBLIC_ORIGIN -u ALLOWED_ORIGINS -u PORT -u PGSCHEMA HOST=127.0.0.1 npm test
 ```
 
-当前 18 项，正常约 25 秒；包含真实 15 秒邀请过期。exit 0 和 TAP pass 18 / fail 0 才算通过。测试迁移夹具使用 /var/backups/pair-play 私有临时 SQLite 文件，由测试自行清理；执行账号需要该路径权限。node:sqlite 的实验提示仅来自迁移测试，不是在线 PostgreSQL 后端。
+当前 25 项，正常约 25 秒；包含真实 15 秒邀请过期。exit 0 和 TAP pass 25 / fail 0 才算通过。测试迁移夹具使用 /var/backups/pair-play 私有临时 SQLite 文件，由测试自行清理；执行账号需要该路径权限。node:sqlite 的实验提示仅来自迁移测试，不是在线 PostgreSQL 后端。
 
 ## 覆盖
 
@@ -61,3 +61,11 @@ npm run test:loading，scripts/ranch-loading-qa.mjs。使用同样的playroom_de
 ## 公网慢速资源回归（v2.5.3）
 
 npm run test:loading-slow，scripts/ranch-loading-slow-qa.mjs：同一开发库/3221锁，增加仅测试的3222流代理；实际分块背景传输32秒、六图清单，27秒检查仍在下载，最终进入。两个引擎均验证峰值并发2与进度更新。不可只用route延迟响应或回环加载代替带宽测试。报告20261004-ranch-loading-slow-{chromium,webkit}.json。图集报告通过PORTRAIT_REPORT_PREFIX可独立保存，避免覆盖旧版本历史。
+
+## 2.6.0 数值与重置验证
+
+npx tsx scripts/ranch-balance-simulation.ts 通过真实引擎模拟180天，不连接数据库，比较15分钟专注经验与6/12/24小时金币策略。输出保存为 test-reports/20261004-ranch-balance-simulation.json，含实际假设和里程碑；不是玩家保证日期。
+
+新增7项 test-v2/ranch-balance.test.ts，覆盖逐级XP边界、极端上界、食槽30分钟单位和毫秒分段守恒、小时级成熟/生产、买卖不刷XP、等级/金币扩建门槛、售价净收益、旧实例不追溯、180天模拟。ranch-storage.test.ts 在隔离schema演练仅牧场重置与恢复、revision防旧请求、其他游戏/用户保持。
+
+加载dev.env后 node scripts/ranch-reset-qa.mjs：强制playroom_dev并创建/删除独立schema，真正运行 operator CLI，验证私有快照权限、用户数量变化拒绝、重置与恢复。不要在生产库运行QA。当前schema3仅扩大饲料毫秒预算上限。

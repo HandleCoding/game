@@ -55,3 +55,13 @@ Caddy 配置修改先备份、validate，再 reload，保留其他域名。Milvu
 检查对应环境的 systemctl / journalctl、healthz、数据库连接和磁盘。健康接口会实际 SELECT 1。SSE 决定在线状态；登录会话不等于在线连接。
 
 Origin / Cookie 错误检查 PUBLIC_ORIGIN、开发 ALLOWED_ORIGINS、浏览器真实 host / port。数据库凭据通过 EnvironmentFile 注入，不为排查而输出密钥。不要关闭认证或校验掩盖配置错误。
+
+## 经明确授权的牧场重置（2.6.0）
+
+普通代码发布不可重置用户进度。本次用户明确允许清空唯一线上牧场，才执行：
+
+python3 scripts/release-postgres.py --deploy --reset-ranch
+
+--reset-ranch必须同时--deploy，预期恰好1个牧场档案；打开维护且停应用后再检查、备份最新PG dump和root私有ranch-before-reset-时间.json，并在同一事务仅重置animal-ranch钱包/动物/仓库/流水/其动作回执。原档案revision+1，账号/会话/猜数字不变。schema3食槽预算CHECK扩大至1800000000毫秒。禁止把此次用户授权当成未来可任意删玩家的授权。
+
+仅 operator scripts/reset-ranch.mjs 调用后端 reset.ts，未注册公开接口。正式执行需要 RANCH_RESET_MAINTENANCE=1 且pair-play已停止，禁止对在线服务直接运行。restore只可用于入口尚未开放的发布失败，脚本自动局部恢复牧场，账号与其他游戏不回滚；维护打开后产生新进度时不能覆盖旧快照。恢复失败时保持维护和停机排查，不能贸然打开旧代码。日后玩家数大于1须先取得具体重置范围授权并修改操作工具的限定，不绕过数量守卫。

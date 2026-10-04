@@ -9,6 +9,11 @@ import {
   ranchView,
   MINUTE,
 } from "../apps/api/src/games/animal-ranch/engine.js";
+import {
+  xpForLevel,
+  FEED_UNIT_MS,
+  HOUR,
+} from "../packages/contracts/src/ranch-balance.js";
 test("牧场：36 独立物种、可用资产、等级与差异化参数", () => {
   assert.equal(species.length, 36);
   assert.equal(new Set(species.map((s) => s.id)).size, 36);
@@ -36,7 +41,7 @@ test("牧场：36 独立物种、可用资产、等级与差异化参数", () =>
         "apps/web/public/ranch/" + s.id + (svg.has(s.id) ? ".svg" : ".png"),
       ),
     );
-    assert.ok(s.sellPrice * s.yield > s.cycleMs / MINUTE);
+    assert.ok(s.sellPrice * s.yield > s.cycleMs / FEED_UNIT_MS);
   }
   assert.ok(new Set(species.map((s) => s.growthMs)).size > 20);
   const fresh = initialRanch(1000);
@@ -44,7 +49,7 @@ test("牧场：36 独立物种、可用资产、等级与差异化参数", () =>
     () => ranchAction(fresh, "buyAnimal", { species: "panda" }),
     /未解锁/,
   );
-  const unlock = { ...fresh, xp: 17 * 80, coins: 100000 };
+  const unlock = { ...fresh, xp: xpForLevel(18), coins: 100000 };
   const bought = ranchAction(unlock, "buyAnimal", { species: "panda" });
   assert.equal(bought.animals.at(-1)?.species, "panda");
   assert.equal(
@@ -55,18 +60,18 @@ test("牧场：36 独立物种、可用资产、等级与差异化参数", () =>
 test("牧场：离线、饲料耗尽、分段结算、满产物上限与时钟回拨", () => {
   const fresh = initialRanch(0);
   fresh.animals[0]!.stored = 0;
-  fresh.feedMs = 5 * MINUTE;
+  fresh.feedMs = 5 * HOUR;
   const whole = settleRanch(fresh, 0, 24 * 60 * MINUTE);
   assert.equal(whole.feedMs, 0);
-  assert.equal(whole.animals[0]!.ageMs, fresh.animals[0]!.ageMs + 5 * MINUTE);
-  assert.equal(whole.animals[0]!.stored, 3);
+  assert.equal(whole.animals[0]!.ageMs, fresh.animals[0]!.ageMs + 5 * HOUR);
+  assert.equal(whole.animals[0]!.stored, 0);
   const p = settleRanch(fresh, 0, 2 * MINUTE),
     split = settleRanch(p, 2 * MINUTE, 24 * 60 * MINUTE);
   assert.deepEqual(split, whole);
   assert.deepEqual(settleRanch(whole, whole.at, whole.at - 1000), whole);
   const full = initialRanch(0);
-  full.feedMs = 160 * MINUTE;
-  const long = settleRanch(full, 0, 80 * MINUTE);
+  full.feedMs = 240 * FEED_UNIT_MS;
+  const long = settleRanch(full, 0, 24 * HOUR);
   assert.equal(long.animals[0]!.stored, long.animals[0]!.maxStored);
   const fed = ranchAction(whole, "buyFeed", { units: 20 });
   const resumed = settleRanch(fed, fed.at, fed.at + MINUTE);
@@ -83,9 +88,11 @@ test("牧场：认养收获出售扩建循环、输入校验与主人访客权�
   s = ranchAction(s, "buyAnimal", { species: "chicken" });
   assert.equal(s.coins, 716);
   assert.equal(s.animals.length, 2);
+  assert.throws(() => ranchAction(s, "upgrade", {}), /Lv. 3/);
+  s.xp = xpForLevel(3);
   s = ranchAction(s, "upgrade", {});
   assert.equal(s.capacity, 6);
-  assert.equal(s.coins, 416);
+  assert.equal(s.coins, 116);
   assert.throws(() => ranchAction(s, "buyFeed", { units: -1 }), /有效/);
   assert.throws(
     () => ranchAction(s, "buyAnimal", { species: "chicken", quantity: "1" }),

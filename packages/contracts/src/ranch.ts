@@ -62,6 +62,7 @@ export interface RanchAnimalView {
   capacity: number;
   productName: string;
   nextAt: number | null;
+  remainingMs: number;
   hungry: boolean;
 }
 export interface RanchView {
@@ -74,7 +75,10 @@ export interface RanchView {
   feedMinutes?: number;
   coins?: number;
   xp?: number;
+  levelStartXp?: number;
   nextLevelXp?: number;
+  feedUnitMinutes?: number;
+  upgradeLevel?: number | null;
   upgradeCost?: number;
   inventory?: { id: string; name: string; count: number; price: number }[];
   log?: { id: string; at: number; message: string }[];

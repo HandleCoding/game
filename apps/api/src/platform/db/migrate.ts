@@ -47,6 +47,16 @@ CREATE TABLE IF NOT EXISTS ranch_ledger(
 CREATE INDEX IF NOT EXISTS ranch_ledger_created ON ranch_ledger(game_id,world_id,"user",created DESC);
 INSERT INTO schema_migrations(version) VALUES(2) ON CONFLICT DO NOTHING;
 `);
+    const applied = await db.query(
+      "SELECT version FROM schema_migrations WHERE version=3",
+    );
+    if (!applied.rowCount) {
+      await db.query(`
+ALTER TABLE ranch_wallets DROP CONSTRAINT ranch_wallets_feed_ms_check;
+ALTER TABLE ranch_wallets ADD CONSTRAINT ranch_wallets_feed_ms_check CHECK(feed_ms>=0 AND feed_ms<=1800000000);
+INSERT INTO schema_migrations(version) VALUES(3);
+`);
+    }
   });
 }
 if (process.argv[1]?.endsWith("/migrate.ts")) {

@@ -1,0 +1,294 @@
+{
+  "version": 2,
+  "xpTo20": 26885,
+  "maximumHourlyXpPerAnimal": 2.857142857142857,
+  "optimisticMinimumDaysTo20": 24.493619791666667,
+  "scenarios": [
+    {
+      "stepHours": 0.25,
+      "strategy": "xp",
+      "milestones": {
+        "2": 0.75,
+        "3": 1.3333333333333333,
+        "5": 3,
+        "8": 7.166666666666667,
+        "10": 10.833333333333334,
+        "15": 23.083333333333332,
+        "18": 32.791666666666664,
+        "20": 40.291666666666664
+      },
+      "snapshots": {
+        "6": {
+          "level": 1,
+          "xp": 24,
+          "coins": 512,
+          "animals": 4,
+          "capacity": 4
+        },
+        "24": {
+          "level": 2,
+          "xp": 132,
+          "coins": 796,
+          "animals": 4,
+          "capacity": 4
+        },
+        "72": {
+          "level": 5,
+          "xp": 620,
+          "coins": 434,
+          "animals": 6,
+          "capacity": 6
+        },
+        "168": {
+          "level": 7,
+          "xp": 1912,
+          "coins": 912,
+          "animals": 6,
+          "capacity": 6
+        },
+        "720": {
+          "level": 17,
+          "xp": 17324,
+          "coins": 12824,
+          "animals": 12,
+          "capacity": 12
+        },
+        "1440": {
+          "level": 24,
+          "xp": 47916,
+          "coins": 32676,
+          "animals": 16,
+          "capacity": 16
+        },
+        "2160": {
+          "level": 28,
+          "xp": 80836,
+          "coins": 95228,
+          "animals": 16,
+          "capacity": 16
+        },
+        "4320": {
+          "level": 37,
+          "xp": 179596,
+          "coins": 282884,
+          "animals": 16,
+          "capacity": 16
+        }
+      },
+      "actions": 13657,
+      "hungryVisits": 0,
+      "finalLevel": 37
+    },
+    {
+      "stepHours": 6,
+      "strategy": "income",
+      "milestones": {
+        "2": 0.75,
+        "3": 1.5,
+        "5": 3.25,
+        "8": 10.5,
+        "10": 20.5,
+        "15": 48,
+        "18": 72.25,
+        "20": 86
+      },
+      "snapshots": {
+        "6": {
+          "level": 1,
+          "xp": 24,
+          "coins": 512,
+          "animals": 4,
+          "capacity": 4
+        },
+        "24": {
+          "level": 2,
+          "xp": 132,
+          "coins": 756,
+          "animals": 4,
+          "capacity": 4
+        },
+        "72": {
+          "level": 4,
+          "xp": 600,
+          "coins": 312,
+          "animals": 6,
+          "capacity": 6
+        },
+        "168": {
+          "level": 7,
+          "xp": 1443,
+          "coins": 444,
+          "animals": 6,
+          "capacity": 6
+        },
+        "720": {
+          "level": 11,
+          "xp": 5524,
+          "coins": 964,
+          "animals": 8,
+          "capacity": 8
+        },
+        "1440": {
+          "level": 16,
+          "xp": 15183,
+          "coins": 172602,
+          "animals": 14,
+          "capacity": 14
+        },
+        "2160": {
+          "level": 20,
+          "xp": 29299,
+          "coins": 727314,
+          "animals": 16,
+          "capacity": 16
+        },
+        "4320": {
+          "level": 29,
+          "xp": 84595,
+          "coins": 3471378,
+          "animals": 16,
+          "capacity": 16
+        }
+      },
+      "actions": 3281,
+      "hungryVisits": 0,
+      "finalLevel": 29
+    },
+    {
+      "stepHours": 12,
+      "strategy": "income",
+      "milestones": {
+        "2": 1,
+        "3": 1.5,
+        "5": 5.5,
+        "8": 16,
+        "10": 26,
+        "15": 51,
+        "18": 75.5,
+        "20": 89.5
+      },
+      "snapshots": {
+        "24": {
+          "level": 2,
+          "xp": 132,
+          "coins": 696,
+          "animals": 4,
+          "capacity": 4
+        },
+        "72": {
+          "level": 4,
+          "xp": 396,
+          "coins": 134,
+          "animals": 4,
+          "capacity": 4
+        },
+        "168": {
+          "level": 5,
+          "xp": 855,
+          "coins": 186,
+          "animals": 4,
+          "capacity": 4
+        },
+        "720": {
+          "level": 10,
+          "xp": 4527,
+          "coins": 584,
+          "animals": 8,
+          "capacity": 8
+        },
+        "1440": {
+          "level": 16,
+          "xp": 14259,
+          "coins": 139546,
+          "animals": 14,
+          "capacity": 14
+        },
+        "2160": {
+          "level": 20,
+          "xp": 27209,
+          "coins": 634824,
+          "animals": 16,
+          "capacity": 16
+        },
+        "4320": {
+          "level": 29,
+          "xp": 82505,
+          "coins": 3378888,
+          "animals": 16,
+          "capacity": 16
+        }
+      },
+      "actions": 2107,
+      "hungryVisits": 0,
+      "finalLevel": 29
+    },
+    {
+      "stepHours": 24,
+      "strategy": "income",
+      "milestones": {
+        "2": 1,
+        "3": 2,
+        "5": 6,
+        "8": 17,
+        "10": 24,
+        "15": 48,
+        "18": 72,
+        "20": 85
+      },
+      "snapshots": {
+        "24": {
+          "level": 2,
+          "xp": 120,
+          "coins": 560,
+          "animals": 4,
+          "capacity": 4
+        },
+        "72": {
+          "level": 3,
+          "xp": 336,
+          "coins": 172,
+          "animals": 4,
+          "capacity": 4
+        },
+        "168": {
+          "level": 5,
+          "xp": 756,
+          "coins": 146,
+          "animals": 4,
+          "capacity": 4
+        },
+        "720": {
+          "level": 11,
+          "xp": 5379,
+          "coins": 340,
+          "animals": 10,
+          "capacity": 10
+        },
+        "1440": {
+          "level": 16,
+          "xp": 15711,
+          "coins": 198208,
+          "animals": 14,
+          "capacity": 14
+        },
+        "2160": {
+          "level": 20,
+          "xp": 30199,
+          "coins": 769852,
+          "animals": 16,
+          "capacity": 16
+        },
+        "4320": {
+          "level": 29,
+          "xp": 85495,
+          "coins": 3513916,
+          "animals": 16,
+          "capacity": 16
+        }
+      },
+      "actions": 1611,
+      "hungryVisits": 0,
+      "finalLevel": 29
+    }
+  ]
+}

@@ -1,13 +1,17 @@
+import { ranchLevel } from "../../../../../packages/contracts/src/ranch-balance.js";
 import type { PersistentStorage } from "../contracts.js";
 import type { RanchState, Animal } from "./engine.js";
 export const ranchStorage: PersistentStorage = {
   async directory(ctx) {
     return (
       await ctx.db.query(
-        `SELECT p."user" AS id,u.name,floor(w.xp/80.0)::int+1 AS level,(SELECT count(*)::int FROM ranch_animals a WHERE a.game_id=p.game_id AND a.world_id=p.world_id AND a."user"=p."user") AS animals FROM persistent_profiles p JOIN users u ON u.id=p."user" JOIN ranch_wallets w ON w.game_id=p.game_id AND w.world_id=p.world_id AND w."user"=p."user" WHERE p.game_id=$1 AND p.world_id=$2 AND p."user"<>$3 ORDER BY u.created,p."user" LIMIT 100`,
+        `SELECT p."user" AS id,u.name,w.xp AS xp,(SELECT count(*)::int FROM ranch_animals a WHERE a.game_id=p.game_id AND a.world_id=p.world_id AND a."user"=p."user") AS animals FROM persistent_profiles p JOIN users u ON u.id=p."user" JOIN ranch_wallets w ON w.game_id=p.game_id AND w.world_id=p.world_id AND w."user"=p."user" WHERE p.game_id=$1 AND p.world_id=$2 AND p."user"<>$3 ORDER BY u.created,p."user" LIMIT 100`,
         [ctx.gameId, ctx.world, ctx.owner],
       )
-    ).rows;
+    ).rows.map(({ xp, ...entry }) => ({
+      ...entry,
+      level: ranchLevel(Number(xp)),
+    }));
   },
   async load(summary, ctx) {
     const args = [ctx.gameId, ctx.world, ctx.owner];
@@ -77,6 +81,6 @@ export const ranchStorage: PersistentStorage = {
         "INSERT INTO ranch_ledger VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING",
         [...args, entry.id, entry.at, entry.message, entry.coins],
       );
-    return { version: s.version, at: s.at };
+    return { version: s.version, at: s.at, feedUnitMs: s.feedUnitMs ?? 60000 };
   },
 };

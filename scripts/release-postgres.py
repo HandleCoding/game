@@ -2,7 +2,7 @@
 Run as root: python3 scripts/release-postgres.py [--deploy]
 Only additive, backward-compatible schema changes may use automatic code rollback.
 """
-import json,os,re,shutil,subprocess,sys,time,urllib.request
+import json,os,re,shutil,subprocess,sys,time,urllib.request,shlex
 from pathlib import Path
 ROOT=Path('/opt/pair-play-dev');BACKUP=Path('/var/backups/pair-play')
 def call(args,**kw):return subprocess.run(args,check=True,**kw)
@@ -13,6 +13,9 @@ def counts():return json.loads(sql("SELECT json_build_object('users',(SELECT cou
 def health():
  with urllib.request.urlopen('http://127.0.0.1:3210/healthz',timeout=3) as r:return json.load(r)
 if health().get('database')!='postgresql':raise RuntimeError('This procedure requires an already migrated PostgreSQL service')
+reset_requested='--reset-ranch' in sys.argv
+if reset_requested and '--deploy' not in sys.argv:raise RuntimeError('Reset requires an explicit deploy')
+if reset_requested and int(sql("SELECT count(*) FROM persistent_profiles WHERE game_id='animal-ranch'"))!=1:raise RuntimeError('Expected exactly one ranch player; reset aborted')
 source=call(['git','rev-parse','HEAD'],cwd=ROOT,stdout=subprocess.PIPE,text=True).stdout.strip()
 if call(['git','status','--porcelain'],cwd=ROOT,stdout=subprocess.PIPE,text=True).stdout.strip():raise RuntimeError('Commit or isolate changes before release')
 package=json.loads((ROOT/'package.json').read_text());version=package['version']
@@ -30,8 +33,9 @@ print('Prepared PostgreSQL release:',release)
 if '--deploy' not in sys.argv:sys.exit(0)
 playing=int(sql("SELECT count(*) FROM active_rooms WHERE snapshot->'engine'->>'phase' IN ('playing','secrets','dice')"))
 if playing:raise RuntimeError('Active matches detected; release prepared, deploy when they finish')
-call(['python3',str(ROOT/'scripts/backup-postgres.py')],cwd=ROOT)
-manifest['databaseBackup']=str(sorted(BACKUP.glob('postgres-prod-*.dump'))[-1])
+if not reset_requested:
+ call(['python3',str(ROOT/'scripts/backup-postgres.py')],cwd=ROOT)
+ manifest['databaseBackup']=str(sorted(BACKUP.glob('postgres-prod-*.dump'))[-1])
 stamp=time.strftime('%Y%m%d-%H%M%S')
 unit=Path('/etc/systemd/system/pair-play.service');caddy=Path('/etc/caddy/Caddyfile')
 old_unit=BACKUP/('pair-play-before-'+stamp+'.service');old_caddy=BACKUP/('Caddyfile-before-'+stamp)
@@ -52,10 +56,21 @@ maintenance=BACKUP/('ranch-maintenance-'+stamp+'.caddy')
 maintenance.write_text(original[:start]+'''game.aicoding.ltd {
  header Retry-After "20"
  header Content-Type "text/html; charset=utf-8"
- respond "<html lang='zh-CN'><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>一起玩</title><body style='font:18px sans-serif;padding:60px 24px;text-align:center'><h1>新的动物伙伴正在入住</h1><p>稍后刷新即可继续。</p></body></html>" 503
+ respond "<html lang='zh-CN'><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>一起玩</title><body style='font:18px sans-serif;padding:60px 24px;text-align:center'><h1>牧场正在更新</h1><p>稍后刷新即可继续。</p></body></html>" 503
 }'''+original[end:]);maintenance.chmod(0o600)
 call(['caddy','validate','--config',str(maintenance),'--adapter','caddyfile'],stdout=subprocess.DEVNULL)
-maintenance_on=False;new_started=False;opened=False
+maintenance_on=False;new_started=False;opened=False;reset_done=False
+reset_backup=BACKUP/('ranch-before-reset-'+stamp+'.json')
+def ranch_operator(mode):
+ env=os.environ.copy()
+ for line in Path('/etc/pair-play/prod.env').read_text().splitlines():
+  if line.strip() and not line.lstrip().startswith('#'):
+   key,value=line.split('=',1);parsed=shlex.split(value)
+   env[key]=parsed[0] if parsed else ''
+ env['RANCH_RESET_MAINTENANCE']='1'
+ env.pop('PGSCHEMA',None)
+ call(['node',str(ROOT/'scripts/reset-ranch.mjs'),mode,str(reset_backup),'1'],cwd=ROOT,env=env)
+
 def restore_caddy():
  shutil.copy2(old_caddy,caddy);caddy.chmod(0o644);call(['systemctl','reload','caddy'])
 try:
@@ -64,6 +79,12 @@ try:
  if int(sql("SELECT count(*) FROM active_rooms WHERE snapshot->'engine'->>'phase' IN ('playing','secrets','dice')")):raise RuntimeError('A match started before maintenance; deploy deferred')
  before=counts()
  call(['systemctl','stop','pair-play'])
+ if reset_requested:
+  # Closed ingress and stopped writer: capture the latest full DB before the scoped reset.
+  call(['python3',str(ROOT/'scripts/backup-postgres.py')],cwd=ROOT)
+  manifest['databaseBackup']=str(sorted(BACKUP.glob('postgres-prod-*.dump'))[-1])
+  ranch_operator('reset');reset_done=True
+  manifest['ranchReset']={'profiles':1,'backup':str(reset_backup),'scope':'animal-ranch only','balanceVersion':2}
  shutil.copy2(candidate,unit);unit.chmod(0o644);call(['systemctl','daemon-reload']);call(['systemctl','start','pair-play']);new_started=True
  healthy=False
  for _ in range(40):
@@ -74,6 +95,11 @@ try:
   time.sleep(.25)
  if not healthy:raise RuntimeError('New release health failed')
  after=counts()
+ if reset_requested:
+  reset_check=json.loads(sql("SELECT json_build_object('wallets',(SELECT count(*) FROM ranch_wallets),'xp',(SELECT max(xp) FROM ranch_wallets),'coins',(SELECT max(coins) FROM ranch_wallets),'capacity',(SELECT max(capacity) FROM ranch_wallets),'animals',(SELECT count(*) FROM ranch_animals),'inventory',(SELECT count(*) FROM ranch_inventory),'ledger',(SELECT count(*) FROM ranch_ledger),'feedMs',(SELECT max(feed_ms) FROM ranch_wallets))"))
+  if reset_check!={'wallets':1,'xp':0,'coins':800,'capacity':4,'animals':1,'inventory':0,'ledger':0,'feedMs':432000000}:raise RuntimeError('Ranch reset verification failed')
+  manifest['ranchReset']['verified']=reset_check
+
  for name in ['users','results','result_players','persistent_profiles']:
   if before[name]!=after[name]:raise RuntimeError('Unexpected change in existing data counts: '+name)
  # Verify preserved, still-valid sessions; only IDs enter memory, never logs.
@@ -88,15 +114,19 @@ try:
  for asset in re.findall(r'(?:src|href)="(/assets/[^"]+)"',html):
   with urllib.request.urlopen('http://127.0.0.1:3210'+asset,timeout=5) as r:
    if r.status!=200:raise RuntimeError('Missing frontend build asset')
- manifest.update(before=before,after=after,unitBackup=str(old_unit),caddyBackup=str(old_caddy),schemaVersion=2,completedAt=time.strftime('%Y-%m-%dT%H:%M:%S%z'))
+ manifest.update(before=before,after=after,unitBackup=str(old_unit),caddyBackup=str(old_caddy),schemaVersion=int(sql("SELECT max(version) FROM schema_migrations")),completedAt=time.strftime('%Y-%m-%dT%H:%M:%S%z'))
  report=BACKUP/'animal-ranch-release.json';report.write_text(json.dumps(manifest));report.chmod(0o600)
  restore_caddy();maintenance_on=False;opened=True
  print('Animal ranch production release successful; existing data and valid sessions verified')
  print('Release report:',report)
 except Exception:
  if opened:raise
- if new_started:call(['systemctl','stop','pair-play'])
+ call(['systemctl','stop','pair-play'])
+ if reset_done:
+  # Ingress has not reopened: restore ONLY the affected ranch rows, never users or guesses.
+  ranch_operator('restore')
+
  shutil.copy2(old_unit,unit);unit.chmod(0o644);call(['systemctl','daemon-reload']);call(['systemctl','start','pair-play'])
  if maintenance_on:restore_caddy()
- print('Deployment stopped; previous PostgreSQL application restored. No database rollback or data deletion performed.')
+ print('Deployment stopped; previous PostgreSQL application restored. Account / guess data untouched; any pre-open ranch reset restored from its scoped backup.')
  raise

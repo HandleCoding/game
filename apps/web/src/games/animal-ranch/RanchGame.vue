@@ -159,15 +159,27 @@ function buy(id: RanchSpecies) {
   void action("buyAnimal", { species: id });
 }
 function duration(ms: number) {
-  const seconds = Math.max(0, Math.ceil(ms / 1000));
-  return seconds >= 60
-    ? Math.floor(seconds / 60) +
-        "分" +
-        (seconds % 60 ? (seconds % 60) + "秒" : "")
-    : seconds + "秒";
+  const minutes = Math.max(0, Math.ceil(ms / 60000));
+  if (minutes >= 1440)
+    return (
+      Math.floor(minutes / 1440) +
+      "天" +
+      (minutes % 1440 >= 60 ? Math.floor((minutes % 1440) / 60) + "小时" : "")
+    );
+  if (minutes >= 60)
+    return (
+      Math.floor(minutes / 60) +
+      "小时" +
+      (minutes % 60 ? (minutes % 60) + "分" : "")
+    );
+  return minutes ? minutes + "分" : "即将完成";
 }
-function countdown(at: number | null) {
-  return at ? duration(at - now.value) : "补充饲料后继续";
+function countdown(a: NonNullable<typeof selected.value>) {
+  if (a.stored >= a.capacity) return "产物已存满，收获后继续";
+  if (a.hungry) return "补粮后还需 " + duration(a.remainingMs);
+  return a.nextAt
+    ? duration(a.nextAt - now.value)
+    : duration(a.remainingMs) + " · 记得途中补粮";
 }
 function animalStatus(a: NonNullable<typeof selected.value>) {
   if (a.stored > 0) return "可收获 " + a.stored + " 份";
@@ -369,8 +381,14 @@ function productAnimal(id: string) {
             >
             <progress
               v-if="owner"
-              :value="farm.xp"
-              :max="farm.nextLevelXp"
+              :value="(farm.xp || 0) - (farm.levelStartXp || 0)"
+              :max="(farm.nextLevelXp || 1) - (farm.levelStartXp || 0)"
+              :title="
+                '本级经验 ' +
+                ((farm.xp || 0) - (farm.levelStartXp || 0)) +
+                ' / ' +
+                ((farm.nextLevelXp || 1) - (farm.levelStartXp || 0))
+              "
               aria-label="牧场经验"
             ></progress>
           </div>
@@ -788,9 +806,9 @@ function productAnimal(id: string) {
         <p>
           {{
             farm.animals.length
-              ? "当前伙伴可再吃约 " + farm.feedMinutes + " 分钟"
+              ? "当前伙伴可再吃约 " + duration((farm.feedMinutes || 0) * 60000)
               : "先认养一只小动物吧"
-          }}。每只动物每分钟吃 1 份。
+          }}。每只动物每 {{ farm.feedUnitMinutes }} 分钟吃 1 份。
         </p>
         <div class="ranch-feed-buttons">
           <button
@@ -830,7 +848,7 @@ function productAnimal(id: string) {
           </div>
           <p v-if="!selected.hungry && selected.stored < selected.capacity">
             {{ selected.baby ? "距离成年" : "下次产出" }}：{{
-              countdown(selected.nextAt)
+              countdown(selected)
             }}
           </p>
           <progress
@@ -921,13 +939,20 @@ function productAnimal(id: string) {
               busy ||
               loading ||
               !farm.upgradeCost ||
-              (farm.coins || 0) < (farm.upgradeCost || 0)
+              (farm.coins || 0) < (farm.upgradeCost || 0) ||
+              farm.level < (farm.upgradeLevel || 1)
             "
             @click="action('upgrade')"
           >
             {{
               farm.upgradeCost
-                ? "扩建牧场 · " + farm.upgradeCost + " 金币"
+                ? farm.level < (farm.upgradeLevel || 1)
+                  ? "Lv. " +
+                    farm.upgradeLevel +
+                    " 可扩建 · " +
+                    farm.upgradeCost +
+                    " 金币"
+                  : "扩建牧场 · " + farm.upgradeCost + " 金币"
                 : "已完成全部扩建"
             }}
           </button>
@@ -956,12 +981,16 @@ function productAnimal(id: string) {
           点动物或头顶状态查看详情；“可收获”表示产物已准备好。左侧围栏旁的食槽可以点击添粮，动物会过去吃。
         </p>
         <p>
-          收获 → 仓库出售 → 认养幼崽 → 喂养成长。每只动物每分钟吃 1
+          收获 → 仓库出售 → 认养幼崽 → 喂养成长。每只动物每 30 分钟吃 1
           份，缺粮暂停、不死亡，最多存 3 轮产物。
         </p>
         <p>
           36
           种伙伴按等级解锁，图鉴可以查看幼年与成年外观。拖动场景、双指缩放，右侧按钮可查看全景。
+        </p>
+        <p>
+          小鸡 8 小时成年，成年后每 6
+          小时产出；其他伙伴各有不同周期。升级经验逐级增加，仅收获获得经验，认养和扩建不加经验。
         </p>
         <p>离线时也会成长，多设备共用一份存档。串门为只读参观。</p>
       </section>

@@ -5,6 +5,14 @@ import type {
   RanchSpeciesInfo,
   RanchView,
 } from "../../../../../packages/contracts/src/ranch.js";
+import {
+  FEED_UNIT_MS,
+  FEED_CAPACITY,
+  INITIAL_FEED,
+  expansionFor,
+  ranchLevel,
+  xpForLevel,
+} from "../../../../../packages/contracts/src/ranch-balance.js";
 export const MINUTE = 60_000;
 export { ranchCatalog as species } from "../../../../../packages/contracts/src/ranch-catalog.js";
 import { ranchCatalog as species } from "../../../../../packages/contracts/src/ranch-catalog.js";
@@ -23,6 +31,7 @@ export interface Animal {
 }
 export interface RanchState extends Record<string, unknown> {
   version: 1;
+  feedUnitMs: number;
   at: number;
   coins: number;
   xp: number;
@@ -33,7 +42,8 @@ export interface RanchState extends Record<string, unknown> {
   inventory: Record<string, number>;
   log: { id: string; at: number; message: string; coins: number }[];
 }
-export const level = (xp: number) => Math.floor(xp / 80) + 1;
+export const level = ranchLevel;
+const feedUnit = (s: RanchState) => s.feedUnitMs ?? MINUTE;
 export function newAnimal(id: string, kind: RanchSpeciesInfo): Animal {
   return {
     id,
@@ -55,10 +65,11 @@ export function initialRanch(at = Date.now()): RanchState {
   first.stored = 3;
   return {
     version: 1,
+    feedUnitMs: FEED_UNIT_MS,
     at,
     coins: 800,
     xp: 0,
-    feedMs: 160 * MINUTE,
+    feedMs: INITIAL_FEED * FEED_UNIT_MS,
     capacity: 4,
     nextAnimal: 2,
     animals: [first],
@@ -126,7 +137,7 @@ export function ranchAction(
       check(s.coins >= kind.price * quantity, "金币不足");
       const cost = kind.price * quantity;
       s.coins -= cost;
-      s.xp += quantity * kind.buyXp;
+      // Buying / selling animals must never manufacture experience.
       for (let i = 0; i < quantity; i++)
         s.animals.push(newAnimal("animal-" + s.nextAnimal++, kind));
       log(s, "迎来了 " + quantity + " 只" + kind.name, -cost);
@@ -140,12 +151,12 @@ export function ranchAction(
         "请选择有效的饲料包",
       );
       check(
-        s.feedMs + units * MINUTE <= 1000 * MINUTE,
+        s.feedMs + units * feedUnit(s) <= FEED_CAPACITY * feedUnit(s),
         "食槽最多储存 1000 份饲料",
       );
       check(s.coins >= units, "金币不足");
       s.coins -= units;
-      s.feedMs += units * MINUTE;
+      s.feedMs += units * feedUnit(s);
       log(s, "食槽补充了 " + units + " 份饲料", -units);
       break;
     }
@@ -195,11 +206,17 @@ export function ranchAction(
     case "upgrade": {
       keys(p, []);
       check(s.capacity < 16, "牧场已经扩建到最大");
-      const cost = 300 + ((s.capacity - 4) / 2) * 200;
+      const expansion = expansionFor(s.capacity);
+      check(expansion, "牧场已经扩建到最大");
+      check(
+        level(s.xp) >= expansion.level,
+        "扩建需要牧场 Lv. " + expansion.level,
+      );
+      const cost = expansion.cost;
       check(s.coins >= cost, "金币不足，出售产物再来吧");
       s.coins -= cost;
       s.capacity += 2;
-      s.xp += 20;
+      // Expansion buys space, not experience.
       log(s, "牧场扩建到 " + s.capacity + " 个位置", -cost);
       break;
     }
@@ -262,6 +279,7 @@ export function ranchView(
         stored: a.stored,
         capacity: a.maxStored,
         productName: kind.productName,
+        remainingMs: needed,
         nextAt:
           !hungry && available >= needed && a.stored < a.maxStored
             ? s.at + needed
@@ -274,12 +292,15 @@ export function ranchView(
     Object.assign(view, {
       coins: s.coins,
       xp: s.xp,
-      nextLevelXp: level(s.xp) * 80,
-      feed: Math.round((s.feedMs / MINUTE) * 10) / 10,
+      levelStartXp: xpForLevel(level(s.xp)),
+      nextLevelXp: xpForLevel(level(s.xp) + 1),
+      feedUnitMinutes: feedUnit(s) / MINUTE,
+      feed: Math.round((s.feedMs / feedUnit(s)) * 10) / 10,
       feedMinutes: s.animals.length
         ? Math.floor(s.feedMs / s.animals.length / MINUTE)
         : null,
-      upgradeCost: s.capacity < 16 ? 300 + ((s.capacity - 4) / 2) * 200 : null,
+      upgradeCost: expansionFor(s.capacity)?.cost ?? null,
+      upgradeLevel: expansionFor(s.capacity)?.level ?? null,
       inventory: species.map((k) => ({
         id: k.product,
         name: k.productName,
