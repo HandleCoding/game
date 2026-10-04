@@ -63,7 +63,7 @@ app.setErrorHandler((cause, req, reply) => {
 });
 app.get("/healthz", async () => {
   await pool.query("SELECT 1");
-  return { ok: true, version: "2.1.0", database: "postgresql" };
+  return { ok: true, version: "2.2.0", database: "postgresql" };
 });
 app.get("/api/catalog", async () => ({
   games: registry.catalog(),

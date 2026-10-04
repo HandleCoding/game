@@ -1,7 +1,7 @@
 import json,urllib.request,re,sys
 base=sys.argv[1] if len(sys.argv)>1 else 'http://127.0.0.1:3211'
 with urllib.request.urlopen(base+'/healthz',timeout=5) as r:h=json.load(r)
-assert h['version']=='2.1.0'
+assert h['version']==json.load(open('/opt/pair-play-dev/package.json'))['version']
 with urllib.request.urlopen(base+'/api/catalog',timeout=5) as r:catalog=json.load(r)
 assert {g['id'] for g in catalog['games']}=={'guess-number','animal-ranch'}
 with urllib.request.urlopen(base+'/',timeout=5) as r:html=r.read().decode()

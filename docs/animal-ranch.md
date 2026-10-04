@@ -43,3 +43,7 @@ schema v2 仅添加新表和索引，不重建原 users / sessions / results / a
 18 项云端自动化测试、类型检查和构建均已通过，验收细节见 test-reports/20261004-animal-ranch.md。
 前端保留日夜主题、响应布局、最小触控按钮、减少动画设置；最终浏览器 / 手机验证结果如实记在报告，不能以构建通过代替实机验证。
 首次牧场没有重置按钮，避免误删长期进度；具体动物扩展、图鉴收集奖励、装饰、跨玩家互动待后续授权开发。
+
+## 2.2.0 动态场景更新
+
+前端新增 RanchScene.vue（独立 Canvas 视觉模拟）、AnimalPortrait.vue（共用真实帧边界）、sprites.ts 与 atlas-metadata.ts。36 种全身动物四帧走路、场景直接点击、工具栏弹窗、移动端平移 / 缩放。资料见 ranch-scene-assets.md；10 组浏览器尺寸 / 触控验收见 test-reports/20261004-ranch-scene.md。视觉计时不改变服务器资源规则。

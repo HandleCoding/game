@@ -1,6 +1,6 @@
 {
   "name": "playroom",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -14,7 +14,8 @@
     "build": "tsc && vite build --config apps/web/vite.config.ts",
     "test": "tsx --test test-v2/*.test.ts",
     "db:migrate": "tsx apps/api/src/platform/db/migrate.ts",
-    "db:import": "tsx scripts/import-sqlite.ts"
+    "db:import": "tsx scripts/import-sqlite.ts",
+    "test:ui": "node scripts/ranch-ui-qa.mjs"
   },
   "engines": {
     "node": ">=22.13"
@@ -26,6 +27,7 @@
     "vue": "^3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^22",
     "@types/pg": "^8",
     "@vitejs/plugin-vue": "^6",

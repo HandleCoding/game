@@ -43,3 +43,9 @@ API / SSE 不提前公开秘密、旧结果复盘按权限拒绝、非参与者�
 ## 牧场验收
 
 新增 4 项牧场专属测试并扩充真实 HTTP：36 个唯一物种、分类、参数与素材；离线 / 缺粮 / 分段 / 时钟回拨 / 上限；认养、收获、出售、升级和访客隐私；结构化表首次初始化、多设备重复 / 冲突、钱包仓库流水事务、写入失败回滚、重载。HTTP 覆盖目录、串门、牧场在线状态仍可邀请、篡改 owner / 负数 / 未解锁拒绝、进程重启保留。
+
+## 手机 / 桌面动态牧场验收
+
+Playwright 测试代码 scripts/ranch-ui-qa.mjs，npm run test:ui。来源 / 依赖 / 实际边界见 test-reports/20261004-ranch-scene.md。加载 dev.env、加 /run/lock/pair-play-dev-tests.lock，脚本强制 playroom_dev 并创建 / 删除随机 schema，端口 3221；不要对生产库运行。UI_BROWSER=chromium（默认）或 webkit，UI_BROWSER_EXECUTABLE 可指定已验证的官方引擎路径。常规环境用 npx playwright install chromium webkit；本次官方下载修复脚本 download-qa-chromium.py、download-qa-webkit.py 固定于 Playwright 1.63.0 所需版本，未来升级不能盲目复用其版本 / 校验值。脚本输出和截图均在 artifacts（忽略提交）。
+
+截图必须实际查看；模拟器不得声称为实体手机验收。测试新版本之后重新载入浏览器，localhost:3211 依赖到云端的 SSH 转发。

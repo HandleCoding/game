@@ -40,3 +40,5 @@ GitHub origin 为 git@github.com:HandleCoding/game.git，main 为验收后的主
 游戏 ID animal-ranch，kind=persistent。动物配置唯一来源 packages/contracts/src/ranch-catalog.ts。先读 docs/animal-ranch.md、ranch-balance.md、ranch-assets.md。首版 36 个物种，禁止用重复幼崽或换名图凑数。普通离线成长按食槽和实例保存周期结算，不需要 worker。缺粮暂停，不死亡；生产存量最多 3 轮。访客只读且不显示钱、仓库、流水。
 
 schema v2 的 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger 与档案、动作回执在同一行锁事务内写入；不可仅修改 JSON 而绕开钱包、仓库或流水。配置修改不能追溯改已有动物参数。测试当前 18 项。
+
+动态场景前端为 RanchScene.vue；资源计算仍在后端。手机 / 桌面 UI 验收 npm run test:ui，必须开发库与独立 schema / 3221 锁，见 testing-guide 和 ranch-scene 验收报告。不得把模拟测试说成真机测试。

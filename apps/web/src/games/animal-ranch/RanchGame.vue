@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import RanchScene from "./RanchScene.vue";
+import AnimalPortrait from "./AnimalPortrait.vue";
+import { computed, onMounted, onUnmounted, ref, watch, nextTick } from "vue";
 import {
   api,
   state,
@@ -16,7 +18,9 @@ import type {
 const profile = ref<RanchProfile | null>(null),
   neighbors = ref<RanchNeighbor[]>([]),
   visiting = ref<string | null>(null);
-const panel = ref<"animals" | "store" | "neighbors">("animals"),
+const panel = ref<
+    "animals" | "store" | "neighbors" | "feed" | "detail" | "journal" | null
+  >(null),
   busy = ref(false),
   loading = ref(false),
   error = ref(""),
@@ -118,6 +122,7 @@ async function action(type: string, payload: Record<string, unknown> = {}) {
       expectedRevision: profile.value.revision,
     });
     if (result.revision >= profile.value.revision) profile.value = result;
+    sceneEffect.value = { type, id: ++effectSequence };
     pop.value =
       type === "harvest"
         ? "收获成功！"
@@ -215,27 +220,46 @@ onUnmounted(() => {
   document.removeEventListener("visibilitychange", visible);
   if (!activeGame.value) void api("presence", { gameId: null }).catch(() => {});
 });
+
+const panelDialog = ref<HTMLDialogElement | null>(null);
+const sceneEffect = ref<{ type: string; id: number } | null>(null);
+let effectSequence = 0;
+const panelTitle = computed(
+  () =>
+    ({
+      animals: "动物商店",
+      store: "我的仓库",
+      neighbors: "串门看看",
+      feed: "食槽 · 自动喂养",
+      detail: selected.value?.name || "动物伙伴",
+      journal: "扩建与牧场日记",
+    })[panel.value || "animals"],
+);
+function selectAnimal(id: string) {
+  chosen.value = id;
+  panel.value = "detail";
+}
+watch(panel, async (value) => {
+  if (value !== "detail") chosen.value = null;
+  await nextTick();
+  if (value && !panelDialog.value?.open) panelDialog.value?.showModal();
+});
 </script>
 <template>
-  <main class="shell ranch-page">
-    <div class="ranch-heading">
+  <main class="shell ranch-page scene-page">
+    <div class="ranch-heading scene-heading">
       <div>
-        <button class="ranch-back quiet small" @click="closePersistent">
-          ← 游戏大厅</button
-        ><span class="eyebrow">A LITTLE PLACE TO GROW</span>
+        <button class="quiet small" @click="closePersistent">← 游戏大厅</button>
         <h1>
           {{
-            visiting
-              ? (profile?.ownerName || "玩家") + "的牧场"
-              : "我的小小牧场"
+            visiting ? (profile?.ownerName || "玩家") + "的牧场" : "一起牧场"
           }}
         </h1>
-        <p>照顾小动物，慢慢攒下属于你的好日子。</p>
+        <p>一群小伙伴，一块属于你的快乐草地。</p>
       </div>
       <div class="ranch-heading-actions">
-        <span v-if="farm" class="ranch-level">Lv. {{ farm.level }} 牧场主</span
-        ><button class="quiet small" @click="help = true">玩法说明</button
-        ><button v-if="visiting" class="primary small" @click="visit(null)">
+        <button class="quiet small" @click="help = true">怎么玩</button
+        ><button v-if="visiting" class="ranch-primary" @click="visit(null)">
           回我的牧场
         </button>
       </div>
@@ -243,350 +267,309 @@ onUnmounted(() => {
     <p v-if="error" class="error" role="alert">
       {{ error }}
       <button class="quiet small" :disabled="busy || loading" @click="load">
-        重新加载
+        重试
       </button>
     </p>
     <div v-if="!farm" class="card ranch-loading" role="status">
-      {{ loading ? "正在打开牧场…" : "牧场暂时没有加载出来" }}
+      {{ loading ? "正在打开牧场…" : "牧场暂时未加载" }}
     </div>
     <template v-else>
-      <div class="ranch-summary">
-        <div>
-          <span>牧场等级</span><strong>Lv. {{ farm.level }}</strong
-          ><small v-if="owner"
-            >{{ farm.xp }} / {{ farm.nextLevelXp }} 经验</small
-          >
-        </div>
-        <div v-if="owner">
-          <span>我的金币</span
-          ><strong><i aria-hidden="true">●</i> {{ farm.coins }}</strong
-          ><small>收获、出售，迎接新伙伴</small>
-        </div>
-        <div>
-          <span>动物伙伴</span
-          ><strong
-            >{{ farm.animals.length }} <em>/ {{ farm.capacity }}</em></strong
-          ><small>每次扩建增加 2 个位置</small>
-        </div>
-        <div>
-          <span>待收获</span><strong>{{ harvestCount }} <em>份产物</em></strong
-          ><small>收进仓库后可换成金币</small>
-        </div>
-      </div>
-      <div class="ranch-main">
-        <section class="ranch-pasture-card">
-          <div class="ranch-scene-title">
-            <div>
-              <span class="ranch-live-dot"></span
-              >{{ owner ? "我的牧场" : "正在参观" }}
-            </div>
-            <span>{{ farm.hungry ? "记得添些饲料" : "小动物们正在成长" }}</span>
-          </div>
-          <div
-            class="ranch-scene"
-            :class="{ 'ranch-large': farm.capacity > 8 }"
-          >
-            <div class="ranch-field-grid">
-              <button
-                v-for="(animal, i) in slots"
-                :key="animal?.id || 'empty-' + i"
-                class="ranch-field-animal"
-                :class="{
-                  'empty-plot': !animal,
-                  young: animal?.baby,
-                  selected: animal?.id === chosen,
-                }"
-                :aria-label="
-                  animal
-                    ? animal.name + '，' + animalStatus(animal)
-                    : '空位置，去认养动物'
-                "
-                @click="animal ? (chosen = animal.id) : (panel = 'animals')"
-              >
-                <template v-if="animal"
-                  ><span v-if="animal.stored" class="ranch-produce"
-                    >收获 {{ animal.stored }}</span
-                  ><span v-else-if="animal.hungry" class="ranch-produce hungry"
-                    >饿了</span
-                  ><span class="animal-shadow"></span
-                  ><img
-                    :src="image(animal.species, animal.baby)"
-                    alt=""
-                    :style="{ '--delay': (i % 5) * -0.7 + 's' }"
-                  /><span class="animal-caption"
-                    >{{ animal.name
-                    }}<small>{{ animal.baby ? "幼崽" : "成年" }}</small></span
-                  ></template
-                >
-                <template v-else
-                  ><span class="empty-circle">+</span
-                  ><span class="animal-caption">空位置</span></template
-                >
-              </button>
-            </div>
-          </div>
-          <div class="ranch-scene-footer">
-            <p>不用守着网页。饲料充足，就会继续成长。</p>
-            <button
-              v-if="owner"
-              class="ranch-primary"
-              :disabled="busy || loading || !harvestCount"
-              @click="action('harvest')"
-            >
-              一键收获
-              <span v-if="harvestCount">{{ harvestCount }}</span></button
-            ><span v-else class="tag">参观模式 · 只读</span>
-          </div>
-        </section>
-        <aside class="ranch-side">
-          <section v-if="owner" class="card ranch-feed">
-            <div class="section-label">
-              <h2>食槽</h2>
-              <span class="tag" :class="{ danger: farm.hungry }">{{
-                farm.hungry ? "需要喂食" : "自动喂养"
-              }}</span>
-            </div>
-            <div class="ranch-feed-amount">
-              <span aria-hidden="true">✿</span><strong>{{ farm.feed }}</strong
-              ><span>份饲料</span>
-            </div>
-            <progress
-              :value="farm.feed"
-              max="1000"
-              aria-label="食槽剩余饲料"
-            ></progress>
-            <p>
-              {{
-                farm.animals.length
-                  ? "当前伙伴可再吃约 " + farm.feedMinutes + " 分钟"
-                  : "先认养一只小动物吧"
-              }}。每只动物每分钟吃 1 份。
-            </p>
-            <div class="ranch-feed-buttons">
-              <button
-                v-for="units in [20, 100, 300]"
-                :key="units"
-                :disabled="
-                  busy ||
-                  loading ||
-                  (farm.coins || 0) < units ||
-                  (farm.feed || 0) + units > 1000
-                "
-                @click="action('buyFeed', { units })"
-              >
-                +{{ units }}<small>{{ units }} 金币</small>
-              </button>
-            </div>
-            <small>缺粮暂停成长，动物不会死亡。</small>
-          </section>
-          <section class="card ranch-animal-detail">
-            <template v-if="selected"
-              ><div class="row spread">
-                <h2>{{ selected.name }}</h2>
-                <span class="tag">{{ selected.baby ? "幼崽" : "成年" }}</span>
-              </div>
-              <div class="ranch-detail-portrait">
-                <img
-                  :src="image(selected.species, selected.baby)"
-                  :alt="selected.name"
-                />
-              </div>
-              <strong>{{ animalStatus(selected) }}</strong>
-              <p v-if="!selected.hungry && selected.stored < selected.capacity">
-                {{ selected.baby ? "距离成年" : "下次产出" }}：{{
-                  countdown(selected.nextAt)
-                }}
-              </p>
-              <progress
-                :value="selected.progress"
-                max="1"
-                :aria-label="selected.baby ? '成长进度' : '产出进度'"
-              ></progress>
-              <p>
-                {{ selected.productName }} {{ selected.stored }} /
-                {{ selected.capacity }}，最多保留 3 轮。
-              </p>
-              <div v-if="owner" class="actions">
-                <button
-                  class="ranch-primary"
-                  :disabled="busy || loading || !selected.stored"
-                  @click="action('harvest', { animalId: selected.id })"
-                >
-                  收获这只</button
-                ><button
-                  class="quiet small"
-                  :disabled="busy || loading || !!selected.stored"
-                  @click="sellAnimal"
-                >
-                  出售动物
-                </button>
-              </div>
-            </template>
-            <template v-else
-              ><span class="eyebrow">LITTLE COMPANIONS</span>
-              <h2>点一下你的伙伴</h2>
-              <p>查看成长进度、下次产出和已经准备好的礼物。</p>
-              <div class="ranch-mini-animals">
-                <img
-                  v-for="kind in ['chick', 'rabbit', 'cow']"
-                  :key="kind"
-                  :src="image(kind)"
-                  alt=""
-                /></div
-            ></template>
-          </section>
-        </aside>
-      </div>
-      <section class="card ranch-workshop">
-        <div class="ranch-tabs" role="tablist" aria-label="牧场功能">
-          <button
-            :class="{ active: panel === 'animals' }"
-            role="tab"
-            :aria-selected="panel === 'animals'"
-            @click="panel = 'animals'"
-          >
-            动物商店</button
-          ><button
+      <div class="ranch-hud">
+        <div class="hud-level">
+          <span>Lv. {{ farm.level }} 牧场主</span
+          ><progress
             v-if="owner"
-            :class="{ active: panel === 'store' }"
-            role="tab"
-            :aria-selected="panel === 'store'"
-            @click="panel = 'store'"
+            :value="farm.xp"
+            :max="farm.nextLevelXp"
+            aria-label="牧场经验"
+          ></progress>
+        </div>
+        <span v-if="owner" class="hud-coin">● {{ farm.coins }} 金币</span
+        ><button
+          v-if="owner"
+          :class="{ hungry: farm.hungry }"
+          @click="panel = 'feed'"
+        >
+          食槽 {{ farm.feed }} 份</button
+        ><span>{{ farm.animals.length }} / {{ farm.capacity }} 伙伴</span>
+      </div>
+      <RanchScene
+        :animals="farm.animals"
+        :chosen="chosen"
+        :owner="owner"
+        :effect="sceneEffect"
+        @select="selectAnimal"
+        @feed="panel = 'feed'"
+        @shop="panel = 'animals'"
+      />
+      <nav class="ranch-toolbelt" aria-label="牧场工具栏">
+        <button
+          v-if="owner"
+          :disabled="busy || loading || !harvestCount"
+          @click="action('harvest')"
+        >
+          <span>🧺</span>一键收获 <small>{{ harvestCount }} 份</small>
+        </button>
+        <button @click="panel = 'animals'">
+          <span>🐣</span>动物商店<small>36 种伙伴</small>
+        </button>
+        <button v-if="owner" @click="panel = 'feed'">
+          <span>🌾</span>添饲料<small>{{
+            farm.hungry ? "伙伴饿了" : "自动喂养"
+          }}</small>
+        </button>
+        <button v-if="owner" @click="panel = 'store'">
+          <span>📦</span>我的仓库<small>{{ stockValue }} 金币估值</small>
+        </button>
+        <button @click="panel = 'neighbors'">
+          <span>🏡</span>去串门<small>看看其他牧场</small>
+        </button>
+        <button v-if="owner" @click="panel = 'journal'">
+          <span>🔨</span>扩建 / 日记<small>{{ farm.capacity }} 个位置</small>
+        </button>
+      </nav>
+      <p class="ranch-footnote">
+        {{
+          owner
+            ? "饲料充足，关掉网页也会继续成长。"
+            : "参观模式 · 可以看动物，不能操作他人的资源。"
+        }}
+      </p>
+    </template>
+  </main>
+  <Teleport to="body">
+    <dialog
+      v-if="panel && farm"
+      ref="panelDialog"
+      class="card ranch-window"
+      aria-labelledby="ranch-window-title"
+      @cancel.prevent="panel = null"
+      @click="
+        (e) => {
+          if (e.target === panelDialog) panel = null;
+        }
+      "
+    >
+      <div class="ranch-window-heading">
+        <h2 id="ranch-window-title">{{ panelTitle }}</h2>
+        <button
+          class="quiet small"
+          aria-label="关闭牧场面板"
+          @click="panel = null"
+        >
+          关闭 ✕
+        </button>
+      </div>
+      <p v-if="error" role="alert" class="error">{{ error }}</p>
+      <section v-if="panel === 'feed' && owner" class="card ranch-feed">
+        <div class="section-label">
+          <h2>食槽</h2>
+          <span class="tag" :class="{ danger: farm.hungry }">{{
+            farm.hungry ? "需要喂食" : "自动喂养"
+          }}</span>
+        </div>
+        <div class="ranch-feed-amount">
+          <span aria-hidden="true">✿</span><strong>{{ farm.feed }}</strong
+          ><span>份饲料</span>
+        </div>
+        <progress
+          :value="farm.feed"
+          max="1000"
+          aria-label="食槽剩余饲料"
+        ></progress>
+        <p>
+          {{
+            farm.animals.length
+              ? "当前伙伴可再吃约 " + farm.feedMinutes + " 分钟"
+              : "先认养一只小动物吧"
+          }}。每只动物每分钟吃 1 份。
+        </p>
+        <div class="ranch-feed-buttons">
+          <button
+            v-for="units in [20, 100, 300]"
+            :key="units"
+            :disabled="
+              busy ||
+              loading ||
+              (farm.coins || 0) < units ||
+              (farm.feed || 0) + units > 1000
+            "
+            @click="action('buyFeed', { units })"
           >
-            我的仓库</button
-          ><button
-            :class="{ active: panel === 'neighbors' }"
-            role="tab"
-            :aria-selected="panel === 'neighbors'"
-            @click="panel = 'neighbors'"
-          >
-            串门看看
+            +{{ units }}<small>{{ units }} 金币</small>
           </button>
         </div>
-        <div v-if="panel === 'animals'" class="ranch-shop-filters">
-          <div>
-            <button
-              v-for="c in [
-                { id: 'all', name: '全部 36 种' },
-                { id: 'farm', name: '家禽家畜' },
-                { id: 'pets', name: '可爱萌宠' },
-                { id: 'zoo', name: '动物园' },
-              ]"
-              :key="c.id"
-              class="quiet small"
-              :class="{ active: shopCategory === c.id }"
-              @click="shopCategory = c.id"
-            >
-              {{ c.name }}
-            </button>
-          </div>
-          <input
-            v-model="search"
-            type="search"
-            aria-label="搜索动物"
-            placeholder="搜索动物名字"
-          /><label
-            ><input v-model="unlockedOnly" type="checkbox" />仅看已解锁</label
-          ><span class="muted">{{ filteredSpecies.length }} 种伙伴</span>
-        </div>
-        <div v-if="panel === 'animals'" class="ranch-shop-grid">
-          <article
-            v-for="kind in filteredSpecies"
-            :key="kind.id"
-            class="ranch-shop-animal"
-            :class="{ locked: farm.level < kind.unlockLevel }"
-          >
-            <span class="ranch-shop-lock">{{
-              farm.level < kind.unlockLevel
-                ? "Lv. " + kind.unlockLevel + " 解锁"
-                : "Lv. " + kind.unlockLevel + " 起可养"
-            }}</span>
-            <img :src="image(kind.id)" :alt="kind.name" />
-            <h3>{{ kind.name }}</h3>
-            <p class="ranch-animal-description">{{ kind.description }}</p>
-            <p>{{ kind.productName }} · 每轮 {{ kind.yield }} 份</p>
-            <div class="ranch-shop-meta">
-              <span>成长 {{ duration(kind.growthMs) }}</span
-              ><span>产出 {{ duration(kind.cycleMs) }}</span>
-            </div>
-            <button
-              v-if="owner"
-              class="ranch-primary"
-              :disabled="
-                busy ||
-                loading ||
-                farm.level < kind.unlockLevel ||
-                (farm.coins || 0) < kind.price ||
-                farm.animals.length >= farm.capacity
-              "
-              @click="buy(kind.id)"
-            >
-              {{
-                farm.level < kind.unlockLevel
-                  ? "尚未解锁"
-                  : kind.price + " 金币 · 认养"
-              }}
-            </button>
-          </article>
-        </div>
-        <div v-else-if="panel === 'store' && owner" class="ranch-inventory">
-          <div
-            v-for="product in farm.inventory?.filter((p) => p.count > 0)"
-            :key="product.id"
-            class="ranch-product"
-          >
-            <span>{{ product.name }}</span
-            ><strong>{{ product.count }} <small>份</small></strong>
-            <p>{{ product.price }} 金币 / 份</p>
-            <button
-              class="quiet small"
-              :disabled="busy || loading || !product.count"
-              @click="action('sellProducts', { product: product.id })"
-            >
-              出售
-            </button>
-          </div>
-          <p v-if="!stockValue" class="empty" style="grid-column: 1/-1">
-            仓库还是空的，先去收获动物的产物吧。
-          </p>
-          <div class="ranch-sell-all">
-            <p>
-              仓库估值 <strong>{{ stockValue }} 金币</strong>
-            </p>
-            <button
-              class="ranch-primary"
-              :disabled="busy || loading || !stockValue"
-              @click="action('sellProducts')"
-            >
-              出售全部产物
-            </button>
-          </div>
-        </div>
-        <div v-else-if="panel === 'neighbors'" class="ranch-neighbors">
-          <p class="muted">已经开过牧场的玩家都在这里，离线也可以参观。</p>
-          <div v-for="player in neighbors" :key="player.id" class="player-line">
-            <div class="avatar">{{ player.name.slice(0, 1) }}</div>
-            <div class="details">
-              <strong>{{ player.name }}</strong
-              ><small
-                >Lv. {{ player.level }} · {{ player.animals }} 只动物</small
-              >
-            </div>
-            <button
-              class="quiet small"
-              :disabled="busy || loading"
-              @click="visit(player.id)"
-            >
-              参观牧场
-            </button>
-          </div>
-          <p v-if="!neighbors.length" class="empty">
-            还没有其他牧场主，叫朋友来认养第一只小动物吧。
-          </p>
-          <button class="quiet small" @click="list">刷新玩家</button>
-        </div>
+        <small>缺粮暂停成长，动物不会死亡。</small>
       </section>
-      <div v-if="owner" class="ranch-bottom">
+      <section v-if="panel === 'detail'" class="card ranch-animal-detail">
+        <template v-if="selected"
+          ><div class="row spread">
+            <h2>{{ selected.name }}</h2>
+            <span class="tag">{{ selected.baby ? "幼崽" : "成年" }}</span>
+          </div>
+          <div class="ranch-detail-portrait">
+            <AnimalPortrait :species="selected.species" :name="selected.name" />
+          </div>
+          <strong>{{ animalStatus(selected) }}</strong>
+          <p v-if="!selected.hungry && selected.stored < selected.capacity">
+            {{ selected.baby ? "距离成年" : "下次产出" }}：{{
+              countdown(selected.nextAt)
+            }}
+          </p>
+          <progress
+            :value="selected.progress"
+            max="1"
+            :aria-label="selected.baby ? '成长进度' : '产出进度'"
+          ></progress>
+          <p>
+            {{ selected.productName }} {{ selected.stored }} /
+            {{ selected.capacity }}，最多保留 3 轮。
+          </p>
+          <div v-if="owner" class="actions">
+            <button
+              class="ranch-primary"
+              :disabled="busy || loading || !selected.stored"
+              @click="action('harvest', { animalId: selected.id })"
+            >
+              收获这只</button
+            ><button
+              class="quiet small"
+              :disabled="busy || loading || !!selected.stored"
+              @click="sellAnimal"
+            >
+              出售动物
+            </button>
+          </div>
+        </template>
+        <template v-else
+          ><span class="eyebrow">LITTLE COMPANIONS</span>
+          <h2>点一下你的伙伴</h2>
+          <p>查看成长进度、下次产出和已经准备好的礼物。</p>
+        </template>
+      </section>
+      <div v-if="panel === 'animals'" class="ranch-shop-filters">
+        <div>
+          <button
+            v-for="c in [
+              { id: 'all', name: '全部 36 种' },
+              { id: 'farm', name: '家禽家畜' },
+              { id: 'pets', name: '可爱萌宠' },
+              { id: 'zoo', name: '动物园' },
+            ]"
+            :key="c.id"
+            class="quiet small"
+            :class="{ active: shopCategory === c.id }"
+            @click="shopCategory = c.id"
+          >
+            {{ c.name }}
+          </button>
+        </div>
+        <input
+          v-model="search"
+          type="search"
+          aria-label="搜索动物"
+          placeholder="搜索动物名字"
+        /><label
+          ><input v-model="unlockedOnly" type="checkbox" />仅看已解锁</label
+        ><span class="muted">{{ filteredSpecies.length }} 种伙伴</span>
+      </div>
+      <div v-if="panel === 'animals'" class="ranch-shop-grid">
+        <article
+          v-for="kind in filteredSpecies"
+          :key="kind.id"
+          class="ranch-shop-animal"
+          :class="{ locked: farm.level < kind.unlockLevel }"
+        >
+          <span class="ranch-shop-lock">{{
+            farm.level < kind.unlockLevel
+              ? "Lv. " + kind.unlockLevel + " 解锁"
+              : "Lv. " + kind.unlockLevel + " 起可养"
+          }}</span>
+          <div class="shop-fullbody">
+            <AnimalPortrait :species="kind.id" :name="kind.name" />
+          </div>
+          <h3>{{ kind.name }}</h3>
+          <p class="ranch-animal-description">{{ kind.description }}</p>
+          <p>{{ kind.productName }} · 每轮 {{ kind.yield }} 份</p>
+          <div class="ranch-shop-meta">
+            <span>成长 {{ duration(kind.growthMs) }}</span
+            ><span>产出 {{ duration(kind.cycleMs) }}</span>
+          </div>
+          <button
+            v-if="owner"
+            class="ranch-primary"
+            :disabled="
+              busy ||
+              loading ||
+              farm.level < kind.unlockLevel ||
+              (farm.coins || 0) < kind.price ||
+              farm.animals.length >= farm.capacity
+            "
+            @click="buy(kind.id)"
+          >
+            {{
+              farm.level < kind.unlockLevel
+                ? "尚未解锁"
+                : kind.price + " 金币 · 认养"
+            }}
+          </button>
+        </article>
+      </div>
+      <div v-else-if="panel === 'store' && owner" class="ranch-inventory">
+        <div
+          v-for="product in farm.inventory?.filter((p) => p.count > 0)"
+          :key="product.id"
+          class="ranch-product"
+        >
+          <span>{{ product.name }}</span
+          ><strong>{{ product.count }} <small>份</small></strong>
+          <p>{{ product.price }} 金币 / 份</p>
+          <button
+            class="quiet small"
+            :disabled="busy || loading || !product.count"
+            @click="action('sellProducts', { product: product.id })"
+          >
+            出售
+          </button>
+        </div>
+        <p v-if="!stockValue" class="empty" style="grid-column: 1/-1">
+          仓库还是空的，先去收获动物的产物吧。
+        </p>
+        <div class="ranch-sell-all">
+          <p>
+            仓库估值 <strong>{{ stockValue }} 金币</strong>
+          </p>
+          <button
+            class="ranch-primary"
+            :disabled="busy || loading || !stockValue"
+            @click="action('sellProducts')"
+          >
+            出售全部产物
+          </button>
+        </div>
+      </div>
+      <div v-else-if="panel === 'neighbors'" class="ranch-neighbors">
+        <p class="muted">已经开过牧场的玩家都在这里，离线也可以参观。</p>
+        <div v-for="player in neighbors" :key="player.id" class="player-line">
+          <div class="avatar">{{ player.name.slice(0, 1) }}</div>
+          <div class="details">
+            <strong>{{ player.name }}</strong
+            ><small>Lv. {{ player.level }} · {{ player.animals }} 只动物</small>
+          </div>
+          <button
+            class="quiet small"
+            :disabled="busy || loading"
+            @click="visit(player.id)"
+          >
+            参观牧场
+          </button>
+        </div>
+        <p v-if="!neighbors.length" class="empty">
+          还没有其他牧场主，叫朋友来认养第一只小动物吧。
+        </p>
+        <button class="quiet small" @click="list">刷新玩家</button>
+      </div>
+      <div v-if="panel === 'journal' && owner" class="ranch-bottom">
         <section class="card ranch-expand">
           <span class="eyebrow">MAKE ROOM FOR MORE</span>
           <h2>给新伙伴一个位置</h2>
@@ -630,35 +613,28 @@ onUnmounted(() => {
           </p>
         </section>
       </div>
-      <footer class="footer">
-        一起牧场 · 成长由服务器时间决定 · 动物图标 Kenney（CC0）
-      </footer>
-    </template>
-  </main>
-  <div v-if="help" class="modal-backdrop" @click.self="help = false">
-    <section
-      class="card modal-card"
-      role="dialog"
-      aria-modal="true"
-      aria-label="牧场玩法说明"
-    >
-      <h2>欢迎来到一起牧场</h2>
-      <p>先收获成年小鸡的鸡蛋，在仓库出售，再认养新伙伴。</p>
-      <p>
-        每只动物每分钟吃 1
-        份饲料，幼崽长大后持续产出。缺粮会暂停，补粮继续，动物不会死亡。
-      </p>
-      <p>
-        等级每 80 经验提升一级；认养、收获和扩建都能获得经验。36
-        种伙伴覆盖家禽家畜、萌宠和动物园，商店里会标明每种的解锁等级。
-      </p>
-      <p>
-        最多积攒 3
-        轮产物，及时收获。关掉网页后继续按饲料结算，所有设备共用一个牧场。
-      </p>
-      <button class="ranch-primary" @click="help = false">开始照顾伙伴</button>
-    </section>
-  </div>
+    </dialog>
+    <div v-if="help" class="modal-backdrop" @click.self="help = false">
+      <section
+        class="card modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-label="牧场玩法说明"
+      >
+        <h2>欢迎来到一起牧场</h2>
+        <p>点小动物查看成长和收获；点食槽添饲料，点畜舍打开商店。</p>
+        <p>
+          收获 → 在仓库出售 → 认养幼崽 → 喂养成长。每只每分钟吃 1
+          份，缺粮暂停、不死亡，最多存 3 轮产物。
+        </p>
+        <p>
+          36
+          种伙伴分等级解锁，所有设备共用同一份存档。手机可以拖动场景、双指缩放；“全景”回到整个牧场。
+        </p>
+        <button class="ranch-primary" @click="help = false">知道啦</button>
+      </section>
+    </div>
+  </Teleport>
 </template>
 <style scoped>
 .ranch-page {
@@ -1346,4 +1322,399 @@ progress::-moz-progress-bar {
     animation: none;
   }
 }
+
+.scene-page {
+  --ranch-ink: #544328;
+  --ranch-green: #447432;
+  --ranch-button: #d6e58f;
+  color: #574b30;
+  padding-top: 18px;
+  max-width: 1320px;
+}
+.scene-heading {
+  margin-bottom: 16px;
+  align-items: center;
+  flex-direction: row;
+  display: flex;
+}
+.scene-heading h1 {
+  font-size: 2rem;
+  letter-spacing: 0;
+  margin: 8px 0 3px;
+  color: #567036;
+  text-shadow: 1px 2px #e9e5c7;
+}
+.scene-heading p {
+  font-size: 13px;
+}
+.ranch-hud {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  background: #fff3d4;
+  border: 2px solid #c7aa74;
+  border-radius: 14px;
+  padding: 9px 16px;
+  color: #695132;
+  font-size: 14px;
+  font-weight: 700;
+}
+.ranch-hud button {
+  background: #e2edbb;
+  border: 1px solid #b1c47a;
+  border-radius: 10px;
+  min-height: 44px;
+  color: #4f652f;
+  padding: 7px 13px;
+}
+.ranch-hud .hungry {
+  background: #ffe4aa;
+  color: #925c2f;
+}
+.hud-level {
+  min-width: 130px;
+}
+.hud-level progress {
+  display: block;
+  height: 6px;
+  width: 130px;
+  margin-top: 4px;
+  accent-color: #6a9e42;
+}
+.hud-coin {
+  color: #a36d19;
+}
+.ranch-toolbelt {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  background: linear-gradient(#d5b88a, #bd986b);
+  padding: 10px;
+  border: 2px solid #92704b;
+  border-radius: 16px;
+  margin-top: 10px;
+  box-shadow: 0 5px 0 #8f6d49;
+}
+.ranch-toolbelt button {
+  min-height: 80px;
+  background: linear-gradient(#fff6dd, #efddaa);
+  border: 2px solid #e4c590;
+  border-radius: 12px;
+  color: #5e492b;
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 14px;
+  box-shadow: 0 2px 0 #a58253;
+  cursor: pointer;
+}
+.ranch-toolbelt button:hover {
+  background: #fff8e5;
+  transform: translateY(-2px);
+}
+.ranch-toolbelt button:active {
+  transform: translateY(1px);
+}
+.ranch-toolbelt button:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+.ranch-toolbelt button > span {
+  font-size: 28px;
+}
+.ranch-toolbelt small {
+  font-size: 11px;
+  font-weight: 500;
+  color: #907650;
+}
+.ranch-footnote {
+  color: var(--muted);
+  text-align: center;
+  font-size: 12px;
+  margin: 20px 0;
+}
+:global(dialog.ranch-window) {
+  width: min(900px, calc(100% - 24px));
+  max-height: 84dvh;
+  padding: 20px;
+  border: 3px solid #b19161;
+  border-radius: 18px;
+  background: #fff5dc;
+  color: #5d4b30;
+  box-sizing: border-box;
+  overflow: auto;
+}
+:global(dialog.ranch-window::backdrop) {
+  background: #253a24a3;
+}
+.ranch-window-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  position: sticky;
+  top: -20px;
+  background: #fff5dc;
+  z-index: 2;
+  padding: 10px 0;
+  border-bottom: 1px solid #dec9a1;
+  margin-bottom: 15px;
+}
+.ranch-window-heading h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #556e34;
+}
+.ranch-window .card {
+  background: transparent;
+  border: none;
+  padding: 10px;
+  box-shadow: none;
+  color: inherit;
+}
+.ranch-window button.quiet,
+.ranch-window button {
+  color: #5d4b30;
+}
+.ranch-window .ranch-primary {
+  background: #d4e393;
+  border-color: #a9be66;
+  color: #465f29;
+  min-height: 44px;
+}
+.ranch-window .muted,
+.ranch-window p,
+.ranch-window small {
+  color: #806e4e;
+}
+.ranch-window input {
+  background: #fffdf1;
+  color: #604d32;
+  border-color: #cdb688;
+  max-width: 100%;
+}
+.ranch-window .ranch-tabs {
+  display: none;
+}
+.ranch-window .ranch-shop-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.ranch-window .ranch-shop-animal {
+  background: #fffaf0;
+  border-color: #e1cba1;
+  color: #58482f;
+  padding: 12px;
+  min-width: 0;
+}
+.shop-fullbody {
+  width: 120px;
+  height: 120px;
+  margin: 5px auto;
+}
+.ranch-window .ranch-detail-portrait {
+  width: 190px;
+  height: 190px;
+  margin: 0 auto;
+}
+.ranch-window .ranch-shop-lock {
+  position: static;
+  display: block;
+  background: #f4e5bd;
+  color: #846a42;
+}
+.ranch-window .ranch-shop-filters > div {
+  flex-wrap: wrap;
+}
+.ranch-window .ranch-shop-filters {
+  gap: 8px;
+}
+.ranch-window .ranch-shop-filters input[type="search"] {
+  flex-basis: 100%;
+  min-width: 0;
+}
+.ranch-window .ranch-shop-animal h3 {
+  color: #56713d;
+}
+.ranch-window .ranch-animal-description {
+  font-size: 12px;
+  min-height: 36px;
+}
+.ranch-window .ranch-shop-meta {
+  font-size: 11px;
+}
+.ranch-window .ranch-bottom {
+  display: block;
+  margin: 0;
+}
+.ranch-window .ranch-product {
+  background: #fff8e9;
+  border-color: #d4bd90;
+}
+.ranch-window .ranch-feed-buttons button {
+  background: #fff9e8;
+  border-color: #d4bd90;
+  min-height: 60px;
+}
+.ranch-window .player-line {
+  border-color: #dbc7a1;
+}
+.ranch-window .avatar {
+  background: #e2d5ac;
+  color: #7b6842;
+}
+.ranch-window .tag {
+  background: #ecdfb8;
+  border-color: #cdb889;
+  color: #7c6946;
+}
+:global([data-theme="dark"]) .scene-page {
+  color: #e8dbbd;
+}
+:global([data-theme="dark"]) .scene-heading h1 {
+  color: #d9dea6;
+  text-shadow: none;
+}
+:global([data-theme="dark"] dialog.ranch-window) {
+  background: #352f26;
+  color: #f1dfb6;
+  border-color: #8d724c;
+}
+:global([data-theme="dark"]) .ranch-window-heading {
+  background: #352f26;
+}
+:global([data-theme="dark"]) .ranch-window-heading h2 {
+  color: #d5df9b;
+}
+:global([data-theme="dark"]) .ranch-window .ranch-shop-animal,
+:global([data-theme="dark"]) .ranch-window .ranch-product,
+:global([data-theme="dark"]) .ranch-window input {
+  background: #433b2e;
+  color: #f1dfb6;
+  border-color: #756047;
+}
+:global([data-theme="dark"]) .ranch-window p,
+:global([data-theme="dark"]) .ranch-window small,
+:global([data-theme="dark"]) .ranch-window button.quiet {
+  color: #dac9aa;
+}
+:global([data-theme="dark"]) .ranch-window .ranch-shop-animal h3 {
+  color: #d5df9b;
+}
+@media (max-width: 900px) {
+  .ranch-window .ranch-shop-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .scene-page {
+    padding-top: 12px;
+  }
+  .scene-heading h1 {
+    font-size: 1.65rem;
+  }
+  .scene-heading p {
+    max-width: 230px;
+    line-height: 1.5;
+  }
+  .scene-heading {
+    align-items: start;
+  }
+  .ranch-hud {
+    gap: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+    justify-content: space-between;
+  }
+  .hud-level {
+    min-width: 100px;
+  }
+  .hud-level progress {
+    width: 100px;
+  }
+  .ranch-hud button {
+    padding: 4px 8px;
+  }
+  .ranch-toolbelt {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+    padding: 7px;
+  }
+  .ranch-toolbelt button {
+    min-height: 70px;
+    font-size: 12px;
+  }
+  .ranch-toolbelt button > span {
+    font-size: 24px;
+  }
+  .ranch-toolbelt small {
+    font-size: 10px;
+  }
+  .ranch-window .ranch-shop-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .ranch-window .ranch-shop-animal {
+    padding: 8px;
+  }
+  .shop-fullbody {
+    width: 100px;
+    height: 100px;
+  }
+  .ranch-window .ranch-shop-animal .ranch-primary {
+    font-size: 11px;
+    padding: 7px 3px;
+  }
+  .ranch-window .ranch-shop-meta {
+    display: block;
+  }
+  .ranch-window .ranch-shop-meta span {
+    display: block;
+  }
+  .ranch-window .ranch-neighbors .player-line {
+    flex-wrap: wrap;
+  }
+  .ranch-window .details {
+    min-width: 100px;
+  }
+  :global(dialog.ranch-window) {
+    padding: 12px;
+    max-height: 88dvh;
+  }
+  .ranch-window-heading {
+    top: -12px;
+  }
+  .ranch-window .ranch-shop-filters > div {
+    display: flex;
+    gap: 4px;
+  }
+  .ranch-window .ranch-shop-filters > div button {
+    font-size: 11px;
+    padding: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ranch-toolbelt button:hover {
+    transform: none;
+  }
+}
+
+.ranch-window button{min-height:44px}
+.ranch-window .ranch-shop-filters label{display:flex;align-items:center;min-height:44px;gap:8px}
+:global([data-theme="dark"] .ranch-window .ranch-window-heading){background:#352f26}
+:global([data-theme="dark"] .ranch-window .ranch-window-heading h2){color:#d9e2a8}
+:global([data-theme="dark"] .ranch-window .ranch-shop-animal),
+:global([data-theme="dark"] .ranch-window .ranch-product){background:#473e30;border-color:#8c7653;color:#f6e8c7}
+:global([data-theme="dark"] .ranch-window input){background:#473e30;color:#f6e8c7;border-color:#8c7653}
+:global([data-theme="dark"] .ranch-window p),
+:global([data-theme="dark"] .ranch-window small),
+:global([data-theme="dark"] .ranch-window .muted){color:#dccba9}
+:global([data-theme="dark"] .ranch-window button.quiet){color:#f6e8c7}
+:global([data-theme="dark"] .ranch-window .ranch-shop-animal h3){color:#d9e2a8}
+:global([data-theme="dark"] .ranch-window .ranch-shop-lock){background:#5d5038;color:#f0ddae}
+:global([data-theme="dark"] .ranch-window .ranch-shop-filters button){background:#574931;color:#f0ddae;border-color:#8c7653}
 </style>

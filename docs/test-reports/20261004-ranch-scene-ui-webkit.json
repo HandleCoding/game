@@ -1,0 +1,436 @@
+{
+  "browser": "webkit",
+  "isolatedDevelopmentSchema": true,
+  "results": [
+    {
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-tap-pointer-pan"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 53.40625,
+          "height": 49.59375
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 72.015625,
+          "height": 49.59375
+        },
+        {
+          "label": "放大牧场",
+          "width": 56.015625,
+          "height": 49.59375
+        },
+        {
+          "label": "播放动物动画",
+          "width": 52.3125,
+          "height": 49.59375
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "🧺一键收获 0 份",
+          "width": 108.65625,
+          "height": 103.578125
+        },
+        {
+          "label": "🐣动物商店36 种伙伴",
+          "width": 108.671875,
+          "height": 103.578125
+        },
+        {
+          "label": "🌾添饲料自动喂养",
+          "width": 108.671875,
+          "height": 103.578125
+        },
+        {
+          "label": "📦我的仓库0 金币估值",
+          "width": 108.65625,
+          "height": 103.578125
+        },
+        {
+          "label": "🏡去串门看看其他牧场",
+          "width": 108.671875,
+          "height": 103.578125
+        },
+        {
+          "label": "🔨扩建 / 日记4 个位置",
+          "width": 108.671875,
+          "height": 103.578125
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 320,
+        "height": 740
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-tap-pointer-pan"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 53.40625,
+          "height": 49.59375
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 72.015625,
+          "height": 49.59375
+        },
+        {
+          "label": "放大牧场",
+          "width": 56.015625,
+          "height": 49.59375
+        },
+        {
+          "label": "暂停动物动画",
+          "width": 50.546875,
+          "height": 49.59375
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "🧺一键收获 0 份",
+          "width": 85.328125,
+          "height": 138.765625
+        },
+        {
+          "label": "🐣动物商店36 种伙伴",
+          "width": 85.328125,
+          "height": 138.765625
+        },
+        {
+          "label": "🌾添饲料自动喂养",
+          "width": 85.328125,
+          "height": 138.765625
+        },
+        {
+          "label": "📦我的仓库0 金币估值",
+          "width": 85.328125,
+          "height": 138.765625
+        },
+        {
+          "label": "🏡去串门看看其他牧场",
+          "width": 85.328125,
+          "height": 138.765625
+        },
+        {
+          "label": "🔨扩建 / 日记4 个位置",
+          "width": 85.328125,
+          "height": 138.765625
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 430,
+        "height": 932
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-tap-pointer-pan"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 53.40625,
+          "height": 49.59375
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 72.015625,
+          "height": 49.59375
+        },
+        {
+          "label": "放大牧场",
+          "width": 56.015625,
+          "height": 49.59375
+        },
+        {
+          "label": "暂停动物动画",
+          "width": 50.546875,
+          "height": 49.59375
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "🧺一键收获 0 份",
+          "width": 122,
+          "height": 103.578125
+        },
+        {
+          "label": "🐣动物商店36 种伙伴",
+          "width": 122,
+          "height": 103.578125
+        },
+        {
+          "label": "🌾添饲料自动喂养",
+          "width": 122,
+          "height": 103.578125
+        },
+        {
+          "label": "📦我的仓库0 金币估值",
+          "width": 122,
+          "height": 103.578125
+        },
+        {
+          "label": "🏡去串门看看其他牧场",
+          "width": 122,
+          "height": 103.578125
+        },
+        {
+          "label": "🔨扩建 / 日记4 个位置",
+          "width": 122,
+          "height": 103.578125
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 844,
+        "height": 390
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion",
+        "touch-tap-pointer-pan"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 53.40625,
+          "height": 49.59375
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 72.015625,
+          "height": 49.59375
+        },
+        {
+          "label": "放大牧场",
+          "width": 56.015625,
+          "height": 49.59375
+        },
+        {
+          "label": "播放动物动画",
+          "width": 52.3125,
+          "height": 49.59375
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "🧺一键收获 0 份",
+          "width": 121,
+          "height": 114.78125
+        },
+        {
+          "label": "🐣动物商店36 种伙伴",
+          "width": 121,
+          "height": 114.78125
+        },
+        {
+          "label": "🌾添饲料自动喂养",
+          "width": 121,
+          "height": 114.78125
+        },
+        {
+          "label": "📦我的仓库0 金币估值",
+          "width": 121,
+          "height": 114.78125
+        },
+        {
+          "label": "🏡去串门看看其他牧场",
+          "width": 121,
+          "height": 114.78125
+        },
+        {
+          "label": "🔨扩建 / 日记4 个位置",
+          "width": 121,
+          "height": 114.78125
+        }
+      ]
+    },
+    {
+      "size": {
+        "width": 1440,
+        "height": 1000
+      },
+      "passed": true,
+      "checked": [
+        "registration",
+        "animation",
+        "pause",
+        "harvest",
+        "warehouse-sale",
+        "shop-search",
+        "buy-animal",
+        "feed",
+        "detail",
+        "theme",
+        "reload-save",
+        "no-overflow",
+        "44px-touch",
+        "reduced-motion"
+      ],
+      "controls": [
+        {
+          "label": "缩小牧场",
+          "width": 53.40625,
+          "height": 49.59375
+        },
+        {
+          "label": "查看牧场全景",
+          "width": 72.015625,
+          "height": 49.59375
+        },
+        {
+          "label": "放大牧场",
+          "width": 56.015625,
+          "height": 49.59375
+        },
+        {
+          "label": "播放动物动画",
+          "width": 52.3125,
+          "height": 49.59375
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "查看小鸡",
+          "width": 50.015625,
+          "height": 44
+        },
+        {
+          "label": "🧺一键收获 0 份",
+          "width": 197,
+          "height": 114.78125
+        },
+        {
+          "label": "🐣动物商店36 种伙伴",
+          "width": 197,
+          "height": 114.78125
+        },
+        {
+          "label": "🌾添饲料自动喂养",
+          "width": 197,
+          "height": 114.78125
+        },
+        {
+          "label": "📦我的仓库0 金币估值",
+          "width": 197,
+          "height": 114.78125
+        },
+        {
+          "label": "🏡去串门看看其他牧场",
+          "width": 197,
+          "height": 114.78125
+        },
+        {
+          "label": "🔨扩建 / 日记4 个位置",
+          "width": 197,
+          "height": 114.78125
+        }
+      ]
+    }
+  ],
+  "failures": []
+}
