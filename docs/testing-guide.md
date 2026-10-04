@@ -12,7 +12,7 @@ set +a
 flock -n /run/lock/pair-play-dev-tests.lock env -u PUBLIC_ORIGIN -u ALLOWED_ORIGINS -u PORT -u PGSCHEMA HOST=127.0.0.1 npm test
 ```
 
-当前 14 项，正常约 25 秒；包含真实 15 秒邀请过期。exit 0 和 TAP pass 14 / fail 0 才算通过。测试迁移夹具使用 /var/backups/pair-play 私有临时 SQLite 文件，由测试自行清理；执行账号需要该路径权限。node:sqlite 的实验提示仅来自迁移测试，不是在线 PostgreSQL 后端。
+当前 18 项，正常约 25 秒；包含真实 15 秒邀请过期。exit 0 和 TAP pass 18 / fail 0 才算通过。测试迁移夹具使用 /var/backups/pair-play 私有临时 SQLite 文件，由测试自行清理；执行账号需要该路径权限。node:sqlite 的实验提示仅来自迁移测试，不是在线 PostgreSQL 后端。
 
 ## 覆盖
 
@@ -39,3 +39,7 @@ API / SSE 不提前公开秘密、旧结果复盘按权限拒绝、非参与者�
 ## 报告
 
 每次写 docs/test-reports/日期-任务.md 和必要日志，列命令 / 退出码 / 提交 / 设备 / 已验收 / 未执行项。禁止写真实凭据或玩家秘密。当前迁移日志见 20261004-architecture-migration.tap.log，完整报告见同名 md。
+
+## 牧场验收
+
+新增 4 项牧场专属测试并扩充真实 HTTP：36 个唯一物种、分类、参数与素材；离线 / 缺粮 / 分段 / 时钟回拨 / 上限；认养、收获、出售、升级和访客隐私；结构化表首次初始化、多设备重复 / 冲突、钱包仓库流水事务、写入失败回滚、重载。HTTP 覆盖目录、串门、牧场在线状态仍可邀请、篡改 owner / 负数 / 未解锁拒绝、进程重启保留。

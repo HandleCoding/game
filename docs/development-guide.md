@@ -25,7 +25,7 @@ set +a
 npm run db:migrate
 ```
 
-DB migration 针对明确的开发库。当前 version=1；新增结构须提交可审查的版本迁移并先在开发演练，不能直接操作正式库。
+DB migration 针对明确的开发库。当前 version=2；新增结构须提交可审查的版本迁移并先在开发演练，不能直接操作正式库。
 
 服务通常使用构建产物；调试时停止开发服务后，以相同 HOST / PORT / WEB_ROOT 和开发连接执行 npm run dev，避免与既有 3211 冲突。正式 3210 不作为调试端口。
 

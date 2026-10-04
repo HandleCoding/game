@@ -2,6 +2,24 @@ import { transaction } from "./db/store.js";
 import { registry } from "../games/registry.js";
 import { check } from "./errors.js";
 export class PersistentService {
+  async list(gameId: string, actor: string) {
+    const def = registry.persistent(gameId);
+    return transaction(async (db) => ({
+      players: def.storage?.directory
+        ? await def.storage.directory({
+            db,
+            gameId,
+            world: "default",
+            owner: actor,
+          })
+        : (
+            await db.query(
+              'SELECT p."user" AS id,u.name FROM persistent_profiles p JOIN users u ON u.id=p."user" WHERE p.game_id=$1 AND p.world_id=$2 AND p."user"<>$3 ORDER BY u.created LIMIT 100',
+              [gameId, "default", actor],
+            )
+          ).rows,
+    }));
+  }
   async view(gameId: string, actor: string, owner = actor, world = "default") {
     const def = registry.persistent(gameId);
     return transaction(async (db) => {
@@ -26,14 +44,22 @@ export class PersistentService {
       check(row, "存档不存在");
       check(row.version === def.metadata.version, "存档版本不支持");
       const now = Date.now(),
-        state = def.settle(row.state, row.last_settled_at, now);
+        ctx = { db, gameId, world, owner },
+        loaded = def.storage
+          ? await def.storage.load(row.state, ctx)
+          : row.state,
+        state = def.settle(loaded, row.last_settled_at, now),
+        saved = def.storage ? await def.storage.save(state, ctx) : state;
       await db.query(
         'UPDATE persistent_profiles SET state=$4,last_settled_at=$5 WHERE game_id=$1 AND world_id=$2 AND "user"=$3',
-        [gameId, world, owner, JSON.stringify(state), now],
+        [gameId, world, owner, JSON.stringify(saved), now],
       );
       return {
         gameId,
         owner,
+        ownerName:
+          (await db.query("SELECT name FROM users WHERE id=$1", [owner]))
+            .rows[0]?.name || "玩家",
         world,
         revision: row.revision,
         serverNow: now,
@@ -82,14 +108,24 @@ export class PersistentService {
       check(row.revision === b.expectedRevision, "存档已变化", 409);
       check(row.version === def.metadata.version, "存档版本不支持");
       const now = Date.now(),
-        settled = def.settle(row.state, row.last_settled_at, now),
-        state = def.action(settled, b.type, b.payload, actor);
+        ctx = { db, gameId, world: "default", owner: actor },
+        loaded = def.storage
+          ? await def.storage.load(row.state, ctx)
+          : row.state,
+        settled = def.settle(loaded, row.last_settled_at, now),
+        state = def.action(settled, b.type, b.payload, actor),
+        saved = def.storage ? await def.storage.save(state, ctx) : state;
       await db.query(
         'UPDATE persistent_profiles SET state=$4,revision=revision+1,last_settled_at=$5 WHERE game_id=$1 AND world_id=$2 AND "user"=$3',
-        [gameId, "default", actor, JSON.stringify(state), now],
+        [gameId, "default", actor, JSON.stringify(saved), now],
       );
       const response = {
         gameId,
+        owner: actor,
+        world: "default",
+        ownerName:
+          (await db.query("SELECT name FROM users WHERE id=$1", [actor]))
+            .rows[0]?.name || "玩家",
         revision: row.revision + 1,
         serverNow: now,
         state: def.view(state, true),

@@ -69,6 +69,13 @@ export function connect() {
   events.addEventListener("state", (e) => accept(JSON.parse(e.data)));
   events.addEventListener("notice", (e) => notify(JSON.parse(e.data).message));
   events.addEventListener("logout", signOut);
+  events.addEventListener("persistent-change", (e) =>
+    window.dispatchEvent(
+      new CustomEvent("playroom-persistent-change", {
+        detail: JSON.parse(e.data),
+      }),
+    ),
+  );
 }
 export async function perform(
   path: string,
@@ -165,4 +172,18 @@ export async function leave() {
   )
     return;
   await perform("room/leave");
+}
+
+export const activeGame = ref<string | null>(
+  new URLSearchParams(location.search).get("game"),
+);
+export function openPersistent(id: string) {
+  activeGame.value = id;
+  history.replaceState({}, "", "/?game=" + encodeURIComponent(id));
+  if (!state.value) authOpen.value = true;
+}
+export function closePersistent() {
+  activeGame.value = null;
+  history.replaceState({}, "", "/");
+  void api("presence", { gameId: null }).catch(() => {});
 }

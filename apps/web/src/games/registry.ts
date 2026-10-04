@@ -7,3 +7,12 @@ export const gameViews: Record<
     () => import("./guess-number/GuessNumber.vue"),
   ),
 };
+
+export const persistentViews: Record<
+  string,
+  ReturnType<typeof defineAsyncComponent>
+> = {
+  "animal-ranch": defineAsyncComponent(
+    () => import("./animal-ranch/RanchGame.vue"),
+  ),
+};

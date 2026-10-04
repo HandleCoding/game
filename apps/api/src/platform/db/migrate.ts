@@ -16,6 +16,37 @@ CREATE TABLE IF NOT EXISTS persistent_profiles(game_id text NOT NULL,world_id te
 CREATE TABLE IF NOT EXISTS world_jobs(id text PRIMARY KEY,game_id text NOT NULL,event_key text UNIQUE NOT NULL,due_at bigint NOT NULL,payload jsonb NOT NULL,status text NOT NULL DEFAULT 'pending');
 CREATE TABLE IF NOT EXISTS import_runs(source_sha256 text PRIMARY KEY,imported_at timestamptz NOT NULL DEFAULT now(),counts jsonb NOT NULL);
 INSERT INTO schema_migrations(version) VALUES(1) ON CONFLICT DO NOTHING;`);
+    await db.query(`
+CREATE TABLE IF NOT EXISTS ranch_wallets(
+ game_id text NOT NULL CHECK(game_id='animal-ranch'),world_id text NOT NULL,"user" text NOT NULL,
+ coins bigint NOT NULL CHECK(coins>=0),xp bigint NOT NULL CHECK(xp>=0),
+ feed_ms bigint NOT NULL CHECK(feed_ms>=0 AND feed_ms<=60000000),
+ capacity integer NOT NULL CHECK(capacity>=4 AND capacity<=16 AND capacity%2=0),
+ next_animal integer NOT NULL CHECK(next_animal>=2),
+ PRIMARY KEY(game_id,world_id,"user"),
+ FOREIGN KEY(game_id,world_id,"user") REFERENCES persistent_profiles(game_id,world_id,"user"));
+CREATE TABLE IF NOT EXISTS ranch_animals(
+ game_id text NOT NULL,world_id text NOT NULL,"user" text NOT NULL,id text NOT NULL,
+ data jsonb NOT NULL CHECK(
+ jsonb_typeof(data->'species')='string' AND data->>'species' ~ '^[a-z][a-z0-9-]*$' AND
+ (data->>'ageMs')::bigint>=0 AND (data->>'stored')::integer>=0 AND
+ (data->>'stored')::integer<=(data->>'maxStored')::integer AND
+ (data->>'cycleMs')::bigint>0 AND (data->>'growthMs')::bigint>0),
+ PRIMARY KEY(game_id,world_id,"user",id),
+ FOREIGN KEY(game_id,world_id,"user") REFERENCES ranch_wallets(game_id,world_id,"user"));
+CREATE TABLE IF NOT EXISTS ranch_inventory(
+ game_id text NOT NULL,world_id text NOT NULL,"user" text NOT NULL,product text NOT NULL
+ CHECK(product ~ '^[a-z][a-z0-9-]*$'),
+ quantity bigint NOT NULL CHECK(quantity>=0),PRIMARY KEY(game_id,world_id,"user",product),
+ FOREIGN KEY(game_id,world_id,"user") REFERENCES ranch_wallets(game_id,world_id,"user"));
+CREATE TABLE IF NOT EXISTS ranch_ledger(
+ game_id text NOT NULL,world_id text NOT NULL,"user" text NOT NULL,id text NOT NULL,
+ created bigint NOT NULL,message text NOT NULL,coins_delta bigint NOT NULL,
+ PRIMARY KEY(game_id,world_id,"user",id),
+ FOREIGN KEY(game_id,world_id,"user") REFERENCES ranch_wallets(game_id,world_id,"user"));
+CREATE INDEX IF NOT EXISTS ranch_ledger_created ON ranch_ledger(game_id,world_id,"user",created DESC);
+INSERT INTO schema_migrations(version) VALUES(2) ON CONFLICT DO NOTHING;
+`);
   });
 }
 if (process.argv[1]?.endsWith("/migrate.ts")) {

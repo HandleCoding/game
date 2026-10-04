@@ -52,6 +52,13 @@ export function snapshot(r: Room): Snapshot {
 export class RoomHub {
   rooms = new Map<string, Room>();
   streams = new Map<string, Set<ServerResponse>>();
+  browsing = new Map<string, { id: string; until: number }>();
+  browse(id: string, gameId: string | null) {
+    if (gameId) {
+      registry.persistent(gameId);
+      this.browsing.set(id, { id: gameId, until: Date.now() + 60000 });
+    } else this.browsing.delete(id);
+  }
   invites = new Map<
     string,
     Omit<Invite, "name" | "gameName" | "seconds" | "disableHistory">
@@ -118,7 +125,8 @@ export class RoomHub {
       games: registry.catalog(),
       players: [...this.streams.keys()].filter(this.online).map((p) => {
         const room = this.roomFor(p),
-          meta = room ? registry.match(room.gameId).metadata : null;
+          meta = room ? registry.match(room.gameId).metadata : null,
+          browsing = this.browsing.get(p);
         return {
           id: p,
           name: name(p),
@@ -130,7 +138,14 @@ export class RoomHub {
                 phase: room.engine.phase,
                 startedAt: room.engine.startedAt,
               }
-            : null,
+            : browsing && browsing.until > Date.now()
+              ? {
+                  id: browsing.id,
+                  name: registry.persistent(browsing.id).metadata.name,
+                  phase: "browsing",
+                  startedAt: null,
+                }
+              : null,
         };
       }),
       room: r
@@ -491,6 +506,7 @@ export class RoomHub {
         this.streams.get(id)?.delete(res);
         if (!this.online(id)) {
           this.streams.delete(id);
+          this.browsing.delete(id);
           if (!this.stopping)
             await this.change(async () => {
               this.roomFor(id)?.engine.disconnect(id);
@@ -507,6 +523,11 @@ export class RoomHub {
       await this.change(async () => {
         for (const r of this.rooms.values())
           if (r.engine.tick()) changed = true;
+        for (const [id, b] of this.browsing)
+          if (b.until <= Date.now()) {
+            this.browsing.delete(id);
+            changed = true;
+          }
         for (const [key, i] of this.invites)
           if (i.expires <= Date.now()) {
             this.invites.delete(key);

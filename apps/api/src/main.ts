@@ -63,7 +63,7 @@ app.setErrorHandler((cause, req, reply) => {
 });
 app.get("/healthz", async () => {
   await pool.query("SELECT 1");
-  return { ok: true, version: "2.0.0", database: "postgresql" };
+  return { ok: true, version: "2.1.0", database: "postgresql" };
 });
 app.get("/api/catalog", async () => ({
   games: registry.catalog(),
@@ -234,8 +234,32 @@ app.get<{ Params: { id: string } }>("/api/results/:id", async (req) => {
     available: r.review_json !== null,
   };
 });
-app.get<{ Params: { gameId: string } }>("/api/games/:gameId/me", async (req) =>
-  persistent.view(req.params.gameId, (await identity(req)).user),
+app.post<{ Body: { gameId: string | null } }>(
+  "/api/presence",
+  { schema: schema({ gameId: { type: ["string", "null"] } }, ["gameId"]) },
+  async (req) => {
+    const id = (await identity(req)).user;
+    await hub.run(async () => {
+      hub.browse(id, req.body.gameId);
+      await hub.broadcast();
+    });
+    return { ok: true };
+  },
+);
+app.get<{ Params: { gameId: string } }>(
+  "/api/games/:gameId/players",
+  async (req) => persistent.list(req.params.gameId, (await identity(req)).user),
+);
+app.get<{ Params: { gameId: string } }>(
+  "/api/games/:gameId/me",
+  async (req) => {
+    const id = (await identity(req)).user;
+    const result = await persistent.view(req.params.gameId, id);
+    await hub.run(async () => {
+      hub.browse(id, req.params.gameId);
+    });
+    return result;
+  },
 );
 app.get<{ Params: { gameId: string; owner: string } }>(
   "/api/games/:gameId/players/:owner",
@@ -264,8 +288,17 @@ app.post<{
       "expectedRevision",
     ]),
   },
-  async (req) =>
-    persistent.action(req.params.gameId, (await identity(req)).user, req.body),
+  async (req) => {
+    const id = (await identity(req)).user;
+    const result = await persistent.action(req.params.gameId, id, req.body);
+    for (const res of hub.streams.get(id) || [])
+      res.write(
+        "event: persistent-change\ndata: " +
+          JSON.stringify({ gameId: req.params.gameId }) +
+          "\n\n",
+      );
+    return result;
+  },
 );
 const webRoot = process.env.WEB_ROOT || process.cwd() + "/web-dist";
 await app.register(staticFiles, {

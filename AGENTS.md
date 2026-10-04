@@ -6,7 +6,7 @@
 
 ## 实际技术栈
 
-Vue 3 + TypeScript + Vite；Node.js + Fastify + TypeScript；PostgreSQL 18；HTTP + SSE；Caddy HTTPS。猜数字通过游戏注册表接入。短局与长期型有独立引擎 / 存档契约。长期游戏的具体玩法、经济表和 worker 尚未上线。
+Vue 3 + TypeScript + Vite；Node.js + Fastify + TypeScript；PostgreSQL 18；HTTP + SSE；Caddy HTTPS。猜数字通过游戏注册表接入。短局与长期型有独立引擎 / 存档契约。一起牧场是首个长期游戏，36 种动物，结构化钱包 / 仓库 / 动物 / 流水表已实现。作物种植、偷取、赠送和 world_jobs worker 尚未实现。
 
 - 开发源码 `/opt/pair-play-dev`，服务 `pair-play-dev.service`，回环端口 3211，数据库 `playroom_dev`。
 - 正式发布目录在 `/opt/pair-play/releases/`，真实版本以 `systemctl show pair-play -p WorkingDirectory` 为准，端口 3210，数据库 `playroom_prod`。
@@ -34,3 +34,9 @@ GitHub origin 为 git@github.com:HandleCoding/game.git，main 为验收后的主
 修改后记录实际验证、未完成项、源提交和正式版本，更新 handover。用户授权的发布按 runbook 完成，数据库迁移必须备份和验证。正式新版本已经接受写入后，不能自动退回旧 SQLite 丢失新用户。
 
 不要在文档、提交、日志、工具输出或前端产物暴露密码、会话、连接密钥、私钥或真实玩家秘密。
+
+## 一起牧场
+
+游戏 ID animal-ranch，kind=persistent。动物配置唯一来源 packages/contracts/src/ranch-catalog.ts。先读 docs/animal-ranch.md、ranch-balance.md、ranch-assets.md。首版 36 个物种，禁止用重复幼崽或换名图凑数。普通离线成长按食槽和实例保存周期结算，不需要 worker。缺粮暂停，不死亡；生产存量最多 3 轮。访客只读且不显示钱、仓库、流水。
+
+schema v2 的 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger 与档案、动作回执在同一行锁事务内写入；不可仅修改 JSON 而绕开钱包、仓库或流水。配置修改不能追溯改已有动物参数。测试当前 18 项。

@@ -59,7 +59,7 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 - `GET /api/games/:gameId/me`、`GET /api/games/:gameId/players/:owner`。
 - `POST /api/games/:gameId/actions`：长期型动作，版本和请求去重。
 
-当前只注册 guess-number，长期 API 不会凭空开放一个农场。默认世界 default；具体长期游戏需要实现定义和资源规则。
+已注册 guess-number 和 animal-ranch（一起牧场，36 个独立物种）。一起牧场为每个账号自动创建独立档案，支持喂养 / 成长 / 收获 / 出售 / 扩建 / 等级解锁 / 只读参观。默认世界 default；具体长期游戏需要实现定义和资源规则。
 
 ## 当前限制与后续
 
@@ -69,8 +69,12 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 
 旧结果没有完整猜测历史，不能补造。新结果有权限控制的持久复盘 API，当前大厅尚未提供点击往届复盘的 UI（本局结束复盘已保留）。
 
-尚未加入实际农场 / 牧场、仓库 / 经济表、作业执行器、交易或偷菜规则。长期存档基础并不等于这些玩法已完成。
+已经实现动物牧场与 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger；作物种植、交易、偷取、赠送和后台事件 worker 尚未实现。普通动物成长在访问或操作时结算，不依赖浏览器和后台逐秒写入。
 
 浏览器已验证桌面和 390px 手机视口、日夜主题、双账号完整记忆模式对局、草稿 / 最新提示、结束复盘 / 刷新 / 筛选。真实手机键盘与后台行为仍需要用户实际设备验收。
 
 下一游戏先实现后端定义和 Vue 模块，补专属测试，再注册。持续游戏要完成资源事务 / 时间 / 权限规则，不能将档案塞进 active_rooms。
+
+## 2026-10-04 动物牧场扩展
+
+版本 2.1.0，schema v2。游戏 ID animal-ranch，36 种动物覆盖家禽家畜、宠物、动物园。源码 games/animal-ranch 与共享 ranch-catalog.ts；前端 RanchGame.vue。资料、数值、素材、规则见 animal-ranch.md、ranch-balance.md、ranch-assets.md。正式发布目录和源提交以 test-reports/20261004-animal-ranch.md 的发布结果为准，环境表在发布后更新。

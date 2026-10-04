@@ -24,11 +24,13 @@ const others = computed(
         ><small v-else
           >{{ p.game.name }} ·
           {{
-            p.game.phase === "waiting"
-              ? "等待开局"
-              : p.game.phase === "finished"
-                ? "对局结束"
-                : "游戏中"
+            p.game.phase === "browsing"
+              ? "正在游玩 · 可邀请"
+              : p.game.phase === "waiting"
+                ? "等待开局"
+                : p.game.phase === "finished"
+                  ? "对局结束"
+                  : "游戏中"
           }}<br /><span v-if="p.game.startedAt && p.game.phase !== 'finished'"
             >开局 {{ elapsed(p.game.startedAt) }}</span
           ></small

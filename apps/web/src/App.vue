@@ -2,9 +2,11 @@
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from "vue";
 import LobbyView from "./platform/LobbyView.vue";
 import Dice from "./games/guess-number/Dice.vue";
-import { gameViews } from "./games/registry";
+import { gameViews, persistentViews } from "./games/registry";
 import {
   state,
+  activeGame,
+  closePersistent,
   connected,
   pending,
   toast,
@@ -119,7 +121,11 @@ const messages = [
       ></span>
       <div>一起玩<small>PLAYROOM</small></div>
     </div>
-    <nav aria-label="主导航"><span class="nav-active">游戏大厅</span></nav>
+    <nav aria-label="主导航">
+      <button class="quiet small nav-active" @click="closePersistent">
+        游戏大厅
+      </button>
+    </nav>
     <div class="header-actions">
       <button
         class="quiet theme-toggle"
@@ -174,6 +180,10 @@ const messages = [
     v-if="state?.room && gameViews[state.room.gameId]"
     :is="gameViews[state.room.gameId]"
     :key="state.room.code"
+  /><component
+    v-else-if="state && activeGame && persistentViews[activeGame]"
+    :is="persistentViews[activeGame]"
+    :key="state.me.id + activeGame"
   /><LobbyView v-else />
   <Teleport to="body"
     ><dialog
@@ -195,7 +205,7 @@ const messages = [
           关闭
         </button>
       </div>
-      <p class="muted">登录后，可以邀请好友和加入房间。</p>
+      <p class="muted">登录后，可以继续牧场进度或邀请好友开一局。</p>
       <div class="tabs">
         <button
           :class="{ active: mode === 'login' }"

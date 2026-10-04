@@ -9,12 +9,17 @@ import {
   perform,
   copy,
   pending,
+  openPersistent,
 } from "./lobby";
 import type { GameMeta } from "../../../../packages/contracts/src/index";
 const lobbyUrl = location.origin + "/",
   code = ref(""),
   rules = ref<GameMeta | null>(null);
 async function create(gameId: string) {
+  if (games.value.find((g) => g.id === gameId)?.kind === "persistent") {
+    openPersistent(gameId);
+    return;
+  }
   if (!state.value) {
     authOpen.value = true;
     return;
@@ -41,7 +46,7 @@ async function join() {
       <p>
         {{
           state
-            ? state.me.name + "，选个游戏，叫上好友开一局。"
+            ? state.me.name + "，选个游戏，开一局或照顾你的动物伙伴。"
             : "选个游戏，和好友一起玩。"
         }}
       </p>
@@ -53,7 +58,7 @@ async function join() {
             <h2>
               所有游戏 <span class="list-count">{{ games.length }}</span>
             </h2>
-            <span class="muted">与好友开房游玩</span>
+            <span class="muted">随时开局 · 随时回来</span>
           </div>
           <div class="game-grid">
             <article
@@ -61,8 +66,25 @@ async function join() {
               :key="game.id"
               class="card game-card"
             >
-              <div class="game-cover">
-                <div class="number-art" aria-hidden="true">
+              <div
+                class="game-cover"
+                :class="{ 'ranch-game-cover': game.kind === 'persistent' }"
+              >
+                <div
+                  v-if="game.kind === 'persistent'"
+                  class="ranch-cover-art"
+                  aria-hidden="true"
+                >
+                  <img src="/ranch/chick.png" alt="" /><img
+                    src="/ranch/rabbit.png"
+                    alt=""
+                  /><img src="/ranch/panda.png" alt="" />
+                </div>
+                <div
+                  v-if="game.kind === 'match'"
+                  class="number-art"
+                  aria-hidden="true"
+                >
                   <span>?</span><span>2</span><span>?</span><span>4</span>
                 </div>
                 <span class="cover-label">{{ game.name }}</span>
@@ -73,7 +95,7 @@ async function join() {
                   <span class="tag">{{ game.category }}</span>
                 </div>
                 <p>{{ game.description }}</p>
-                <div class="meta">
+                <div v-if="game.kind === 'match'" class="meta">
                   <span
                     >{{
                       game.minPlayers === game.maxPlayers
@@ -83,13 +105,18 @@ async function join() {
                     位玩家</span
                   ><span>{{ game.defaultSeconds }} 秒 / 回合</span>
                 </div>
+                <div v-if="game.kind === 'persistent'" class="meta">
+                  <span>36 种动物 · 独立存档</span><span>离线也会成长</span>
+                </div>
                 <div class="game-actions">
                   <button
                     class="primary"
                     :disabled="pending"
                     @click="create(game.id)"
                   >
-                    创建房间</button
+                    {{
+                      game.kind === "persistent" ? "进入我的牧场" : "创建房间"
+                    }}</button
                   ><button class="quiet" @click="rules = game">玩法说明</button>
                 </div>
               </div>
@@ -170,3 +197,34 @@ async function join() {
     </section>
   </div>
 </template>
+
+<style scoped>
+.ranch-game-cover {
+  background: #cfdfb1 url("/ranch/pasture.svg") center/cover;
+  overflow: hidden;
+}
+.ranch-cover-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  min-height: 160px;
+}
+.ranch-cover-art img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 4px #365d3520);
+}
+.ranch-cover-art img:nth-child(2) {
+  transform: translateY(-14px);
+}
+.ranch-game-cover .cover-label {
+  color: #335235;
+  background: #f3f8e0d9;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  letter-spacing: 0.07em;
+}
+</style>

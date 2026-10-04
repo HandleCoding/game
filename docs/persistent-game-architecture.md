@@ -1,9 +1,9 @@
 # 长期养成游戏：农场与牧场架构
 
-> 2026-10-04 实施状态：Vue / TypeScript / Vite、Fastify / TypeScript、PostgreSQL、游戏注册、v2 快照、事务和动作去重已落地；开发及正式环境见 [handover](handover.md)，最终数据切换见 [迁移报告](test-reports/20261004-architecture-migration.md)。本文保留原设计和扩展说明，旧的“尚未迁移”表述属于迁移前状态。尚未完成具体农场 / 牧场、经济表、worker 和多实例协调，不能视为全部未来玩法已实现。
+> 2026-10-04 实施状态：Vue / TypeScript / Vite、Fastify / TypeScript、PostgreSQL、游戏注册、v2 快照、事务和动作去重已落地；开发及正式环境见 [handover](handover.md)，最终数据切换见 [迁移报告](test-reports/20261004-architecture-migration.md)。本文保留原设计和扩展说明，旧的“尚未迁移”表述属于迁移前状态。一起牧场与结构化钱包 / 仓库 / 动物 / 流水已落地，36 种动物和离线时间结算已接入；作物、跨玩家资源互动、world_jobs worker 和多实例仍未实现。
 
 
-更新：2026-10-04。本文件是新增游戏的目标设计，当前线上仍只有猜数字，以下存档、接口和任务表尚未实现。
+更新：2026-10-04。本文件保留扩展目标设计；当前实际实现以 handover 和 animal-ranch 为准，不能把所有未来子系统视为已完成。
 
 ## 两种生命周期，共用一个大厅
 
@@ -36,7 +36,7 @@
 
 ## 长期存档与数据库边界
 
-当前线上使用 SQLite，结合多游戏和长期养成目标，推荐在首个正式长期游戏接入前统一迁移至 PostgreSQL，具体原因与迁移步骤见 [技术选型](technology-decisions.md)。使用有约束的结构化表管理货币、物品和可互动资源，游戏特有的非关键展示数据可用版本化 JSON。
+当前线上已经迁移 PostgreSQL；结合多游戏和长期养成目标，使用结构化资源表与事务，具体原因与迁移步骤见 [技术选型](technology-decisions.md)。使用有约束的结构化表管理货币、物品和可互动资源，游戏特有的非关键展示数据可用版本化 JSON。
 
 建议按 `(game_id, world_id, user_id)` 区分档案；初期只有一个默认 world，提前保留世界标识避免以后合服或新增世界时混淆。所有子表外键带上对应档案范围。
 

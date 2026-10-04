@@ -5,6 +5,7 @@ import type {
 } from "./contracts.js";
 import { guessNumber } from "./guess-number/definition.js";
 import { check } from "../platform/errors.js";
+import { animalRanch } from "./animal-ranch/definition.js";
 export class GameRegistry {
   private games = new Map<string, GameDefinition>();
   register(def: GameDefinition) {
@@ -31,3 +32,5 @@ export class GameRegistry {
 }
 export const registry = new GameRegistry();
 registry.register(guessNumber);
+
+registry.register(animalRanch);

@@ -119,6 +119,75 @@ test("真实服务器：账号、邀请、隐私、完整对局、重开与重�
     );
     await a.stream();
     await b.stream();
+    const ranch = await a.call("games/animal-ranch/me");
+    assert.equal(ranch.state.species.length, 36);
+    await b.call("games/animal-ranch/me");
+    const visit = await b.call("games/animal-ranch/players/" + a.id);
+    assert.equal(visit.state.coins, undefined);
+    assert.equal(visit.state.inventory, undefined);
+    await a.call("presence", { gameId: "animal-ranch" });
+    const browse = (await b.call("state")).players.find((p) => p.id === a.id);
+    assert.equal(browse.busy, false);
+    assert.equal(browse.game.phase, "browsing");
+    const request = {
+      requestId: "http-ranch-harvest",
+      expectedRevision: ranch.revision,
+      type: "harvest",
+      payload: {},
+    };
+    const [harvest1, harvest2] = await Promise.all([
+      a.call("games/animal-ranch/actions", request),
+      a.call("games/animal-ranch/actions", request),
+    ]);
+    assert.deepEqual(harvest1, harvest2);
+    let ranchSaved = await a.call("games/animal-ranch/actions", {
+      ...request,
+      requestId: "http-ranch-sell",
+      expectedRevision: harvest1.revision,
+      type: "sellProducts",
+    });
+    ranchSaved = await a.call("games/animal-ranch/actions", {
+      ...request,
+      requestId: "http-ranch-buy",
+      expectedRevision: ranchSaved.revision,
+      type: "buyAnimal",
+      payload: { species: "chicken" },
+    });
+    assert.equal(ranchSaved.state.coins, 716);
+    await a.call(
+      "games/animal-ranch/actions",
+      {
+        ...request,
+        requestId: "http-ranch-private",
+        expectedRevision: ranchSaved.revision,
+        payload: { owner: b.id },
+      },
+      400,
+    );
+    await a.call("room/create", { gameId: "animal-ranch" }, 400);
+    await a.call(
+      "games/animal-ranch/actions",
+      {
+        ...request,
+        requestId: "http-ranch-locked",
+        expectedRevision: ranchSaved.revision,
+        type: "buyAnimal",
+        payload: { species: "panda" },
+      },
+      400,
+    );
+    await a.call(
+      "games/animal-ranch/actions",
+      {
+        ...request,
+        requestId: "http-ranch-negative",
+        expectedRevision: ranchSaved.revision,
+        type: "buyFeed",
+        payload: { units: -1 },
+      },
+      400,
+    );
+
     let s = await a.call("room/create", {
       gameId: "guess-number",
       seconds: 30,
@@ -213,6 +282,10 @@ test("真实服务器：账号、邀请、隐私、完整对局、重开与重�
     await stop();
     await start();
     assert.equal((await a.call("state")).room.paused, true);
+    const ranchRestored = await a.call("games/animal-ranch/me");
+    assert.equal(ranchRestored.state.coins, 716);
+    assert.equal(ranchRestored.state.animals.length, 2);
+    assert.equal(ranchRestored.revision, ranchSaved.revision);
     await a.stream();
     await b.stream();
     s = await a.call("state");

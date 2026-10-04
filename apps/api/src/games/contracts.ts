@@ -1,3 +1,4 @@
+import type { PoolClient } from "pg";
 import type {
   GameMeta,
   Result,
@@ -40,7 +41,25 @@ export interface MatchDefinition {
   create(code: string, host: string, seconds: number): MatchEngine;
   restore(data: Record<string, unknown>): MatchEngine;
 }
+export interface PersistentStorageContext {
+  db: PoolClient;
+  gameId: string;
+  world: string;
+  owner: string;
+}
+export interface PersistentStorage {
+  directory?(ctx: PersistentStorageContext): Promise<Record<string, unknown>[]>;
+  load(
+    summary: Record<string, unknown>,
+    ctx: PersistentStorageContext,
+  ): Promise<Record<string, unknown>>;
+  save(
+    state: Record<string, unknown>,
+    ctx: PersistentStorageContext,
+  ): Promise<Record<string, unknown>>;
+}
 export interface PersistentDefinition {
+  storage?: PersistentStorage;
   metadata: GameMeta & { kind: "persistent" };
   initialState(): Record<string, unknown>;
   settle(
