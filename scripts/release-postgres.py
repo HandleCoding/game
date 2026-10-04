@@ -13,11 +13,17 @@ def counts():return json.loads(sql("SELECT json_build_object('users',(SELECT cou
 def health():
  with urllib.request.urlopen('http://127.0.0.1:3210/healthz',timeout=3) as r:return json.load(r)
 if health().get('database')!='postgresql':raise RuntimeError('This procedure requires an already migrated PostgreSQL service')
+lifecycle_requested='--migrate-ranch-lifecycle' in sys.argv
 reset_requested='--reset-ranch' in sys.argv
+if lifecycle_requested and reset_requested:raise RuntimeError('Lifecycle migration must preserve progress; reset flag forbidden')
+if lifecycle_requested and '--deploy' not in sys.argv:raise RuntimeError('Lifecycle migration requires deploy')
+if version_guard:=int(sql("SELECT count(*) FROM persistent_profiles WHERE game_id='animal-ranch' AND version=1")):
+ if '--deploy' in sys.argv and json.loads((ROOT/'package.json').read_text())['version'].startswith('2.7.') and not lifecycle_requested:raise RuntimeError('Use explicit lifecycle migration flag for v1 ranch profiles')
 if reset_requested and '--deploy' not in sys.argv:raise RuntimeError('Reset requires an explicit deploy')
 if reset_requested and int(sql("SELECT count(*) FROM persistent_profiles WHERE game_id='animal-ranch'"))!=1:raise RuntimeError('Expected exactly one ranch player; reset aborted')
 source=call(['git','rev-parse','HEAD'],cwd=ROOT,stdout=subprocess.PIPE,text=True).stdout.strip()
-if call(['git','status','--porcelain'],cwd=ROOT,stdout=subprocess.PIPE,text=True).stdout.strip():raise RuntimeError('Commit or isolate changes before release')
+if call(['git','status','--porcelain','--untracked-files=no'],cwd=ROOT,stdout=subprocess.PIPE,text=True).stdout.strip():raise RuntimeError('Commit or isolate changes before release')
+if call(['git','ls-files','--others','--exclude-standard','apps','packages','scripts'],cwd=ROOT,stdout=subprocess.PIPE,text=True).stdout.strip():raise RuntimeError('Untracked runtime source must be committed before release')
 package=json.loads((ROOT/'package.json').read_text());version=package['version']
 if not (ROOT/'dist/apps/api/src/main.js').exists() or not (ROOT/'web-dist/index.html').exists():raise RuntimeError('Build first')
 release=Path('/opt/pair-play/releases')/('v'+version+'-'+time.strftime('%Y%m%d-%H%M%S'))
@@ -33,7 +39,7 @@ print('Prepared PostgreSQL release:',release)
 if '--deploy' not in sys.argv:sys.exit(0)
 playing=int(sql("SELECT count(*) FROM active_rooms WHERE snapshot->'engine'->>'phase' IN ('playing','secrets','dice')"))
 if playing:raise RuntimeError('Active matches detected; release prepared, deploy when they finish')
-if not reset_requested:
+if not reset_requested and not lifecycle_requested:
  call(['python3',str(ROOT/'scripts/backup-postgres.py')],cwd=ROOT)
  manifest['databaseBackup']=str(sorted(BACKUP.glob('postgres-prod-*.dump'))[-1])
 stamp=time.strftime('%Y%m%d-%H%M%S')
@@ -59,7 +65,7 @@ maintenance.write_text(original[:start]+'''game.aicoding.ltd {
  respond "<html lang='zh-CN'><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>一起玩</title><body style='font:18px sans-serif;padding:60px 24px;text-align:center'><h1>牧场正在更新</h1><p>稍后刷新即可继续。</p></body></html>" 503
 }'''+original[end:]);maintenance.chmod(0o600)
 call(['caddy','validate','--config',str(maintenance),'--adapter','caddyfile'],stdout=subprocess.DEVNULL)
-maintenance_on=False;new_started=False;opened=False;reset_done=False
+maintenance_on=False;new_started=False;opened=False;reset_done=False;lifecycle_started=False
 reset_backup=BACKUP/('ranch-before-reset-'+stamp+'.json')
 def ranch_operator(mode):
  env=os.environ.copy()
@@ -71,6 +77,16 @@ def ranch_operator(mode):
  env.pop('PGSCHEMA',None)
  call(['node',str(ROOT/'scripts/reset-ranch.mjs'),mode,str(reset_backup),'1'],cwd=ROOT,env=env)
 
+def lifecycle_operator():
+ env=os.environ.copy()
+ for line in Path('/etc/pair-play/prod.env').read_text().splitlines():
+  if line.strip() and not line.lstrip().startswith('#'):
+   key,value=line.split('=',1);parsed=shlex.split(value);env[key]=parsed[0] if parsed else ''
+ env['RANCH_LIFECYCLE_MAINTENANCE']='1';env.pop('PGSCHEMA',None)
+ report=BACKUP/('ranch-lifecycle-'+stamp+'.json')
+ call(['node',str(ROOT/'scripts/migrate-ranch-lifecycle.mjs'),str(report)],cwd=ROOT,env=env)
+ manifest['ranchLifecycle']=json.loads(report.read_text());manifest['ranchLifecycleReport']=str(report)
+
 def restore_caddy():
  shutil.copy2(old_caddy,caddy);caddy.chmod(0o644);call(['systemctl','reload','caddy'])
 try:
@@ -79,6 +95,12 @@ try:
  if int(sql("SELECT count(*) FROM active_rooms WHERE snapshot->'engine'->>'phase' IN ('playing','secrets','dice')")):raise RuntimeError('A match started before maintenance; deploy deferred')
  before=counts()
  call(['systemctl','stop','pair-play'])
+ if lifecycle_requested:
+  # Latest consistent backup after closing ingress and stopping all application writes.
+  call(['python3',str(ROOT/'scripts/backup-postgres.py')],cwd=ROOT)
+  manifest['databaseBackup']=str(sorted(BACKUP.glob('postgres-prod-*.dump'))[-1])
+  lifecycle_started=True
+  lifecycle_operator()
  if reset_requested:
   # Closed ingress and stopped writer: capture the latest full DB before the scoped reset.
   call(['python3',str(ROOT/'scripts/backup-postgres.py')],cwd=ROOT)
@@ -95,6 +117,8 @@ try:
   time.sleep(.25)
  if not healthy:raise RuntimeError('New release health failed')
  after=counts()
+ if lifecycle_requested:
+  if int(sql("SELECT count(*) FROM persistent_profiles WHERE game_id='animal-ranch' AND version<>2")) or int(sql("SELECT count(*) FROM ranch_animals WHERE status='legacy'")):raise RuntimeError('Lifecycle migration left legacy profiles')
  if reset_requested:
   reset_check=json.loads(sql("SELECT json_build_object('wallets',(SELECT count(*) FROM ranch_wallets),'xp',(SELECT max(xp) FROM ranch_wallets),'coins',(SELECT max(coins) FROM ranch_wallets),'capacity',(SELECT max(capacity) FROM ranch_wallets),'animals',(SELECT count(*) FROM ranch_animals),'inventory',(SELECT count(*) FROM ranch_inventory),'ledger',(SELECT count(*) FROM ranch_ledger),'feedMs',(SELECT max(feed_ms) FROM ranch_wallets))"))
   if reset_check!={'wallets':1,'xp':0,'coins':800,'capacity':4,'animals':1,'inventory':0,'ledger':0,'feedMs':432000000}:raise RuntimeError('Ranch reset verification failed')
@@ -122,6 +146,13 @@ try:
 except Exception:
  if opened:raise
  call(['systemctl','stop','pair-play'])
+ if lifecycle_started:
+  # v1 storage deletes/reinserts animals and cannot safely read the new lifecycle state.
+  # Preserve new relational state and maintenance; do not downgrade or restore a DB snapshot.
+  report=BACKUP/('ranch-lifecycle-failed-'+stamp+'.json')
+  report.write_text(json.dumps(manifest));report.chmod(0o600)
+  print('Lifecycle release halted. Ingress stays in maintenance and writer stopped; forward repair required. Data retained. Report:',report)
+  raise
  if reset_done:
   # Ingress has not reopened: restore ONLY the affected ranch rows, never users or guesses.
   ranch_operator('restore')

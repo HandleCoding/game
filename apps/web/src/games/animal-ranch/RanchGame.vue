@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import RanchScene from "./RanchScene.vue";
+import RanchHall from "./RanchHall.vue";
 import RanchLoading from "./RanchLoading.vue";
 import AnimalPortrait from "./AnimalPortrait.vue";
 import RanchIcon from "./RanchIcon.vue";
@@ -29,6 +30,7 @@ const panel = ref<
     | "detail"
     | "journal"
     | "help"
+    | "hall"
     | "album"
     | null
   >(null),
@@ -58,8 +60,7 @@ const harvestCount = computed(
   () => farm.value?.animals.reduce((sum, a) => sum + a.stored, 0) || 0,
 );
 const stockValue = computed(
-  () =>
-    farm.value?.inventory?.reduce((sum, p) => sum + p.count * p.price, 0) || 0,
+  () => farm.value?.inventory?.reduce((sum, p) => sum + p.value, 0) || 0,
 );
 const slots = computed(() =>
   Array.from(
@@ -122,8 +123,13 @@ async function visit(id: string | null) {
   await load();
   if (refreshAgain) void load();
 }
-async function action(type: string, payload: Record<string, unknown> = {}) {
-  if (!owner.value || !profile.value || busy.value || loading.value) return;
+async function action(
+  type: string,
+  payload: Record<string, unknown> = {},
+): Promise<boolean> {
+  let succeeded = false;
+  if (!owner.value || !profile.value || busy.value || loading.value)
+    return false;
   busy.value = true;
   error.value = "";
   try {
@@ -134,6 +140,7 @@ async function action(type: string, payload: Record<string, unknown> = {}) {
       expectedRevision: profile.value.revision,
     });
     if (result.revision >= profile.value.revision) profile.value = result;
+    succeeded = true;
     sceneEffect.value = { type, id: ++effectSequence };
     pop.value =
       type === "harvest"
@@ -154,6 +161,7 @@ async function action(type: string, payload: Record<string, unknown> = {}) {
     busy.value = false;
     await load();
   }
+  return succeeded;
 }
 function buy(id: RanchSpecies) {
   void action("buyAnimal", { species: id });
@@ -175,6 +183,7 @@ function duration(ms: number) {
   return minutes ? minutes + "分" : "即将完成";
 }
 function countdown(a: NonNullable<typeof selected.value>) {
+  if (a.status === "completed") return "生产已完成 · 可以选择去向";
   if (a.stored >= a.capacity) return "产物已存满，收获后继续";
   if (a.hungry) return "补粮后还需 " + duration(a.remainingMs);
   return a.nextAt
@@ -182,23 +191,36 @@ function countdown(a: NonNullable<typeof selected.value>) {
     : duration(a.remainingMs) + " · 记得途中补粮";
 }
 function animalStatus(a: NonNullable<typeof selected.value>) {
-  if (a.stored > 0) return "可收获 " + a.stored + " 份";
+  if (a.stored > 0)
+    return (
+      (a.status === "completed" ? "最后一批 · " : "") +
+      "可收获 " +
+      a.stored +
+      " 份"
+    );
+  if (a.status === "completed") return "生产已完成 · 选择去向";
   if (a.hungry) return "肚子饿了";
   if (a.nextAt && a.nextAt <= now.value) return "正在确认产出…";
   return a.baby ? "幼崽成长中" : "悠闲产出中";
 }
-async function sellAnimal() {
-  const a = selected.value;
-  if (!a) return;
-  if (
-    confirm(
-      "确定送别这只" + a.name + "吗？幼崽返还购入价的 30%，成年动物返还 60%。",
-    )
-  ) {
-    await action("sellAnimal", { animalId: a.id });
+const exitChoice = ref<"enterHall" | "sellAnimal" | "releaseAnimal" | null>(
+  null,
+);
+const nicknameDraft = ref("");
+async function confirmExit() {
+  const a = selected.value,
+    type = exitChoice.value;
+  if (!a || !type) return;
+  if (await action(type, { animalId: a.id })) {
+    exitChoice.value = null;
     chosen.value = null;
+    panel.value = null;
   }
 }
+watch(chosen, () => {
+  nicknameDraft.value = selected.value?.nickname || "";
+  exitChoice.value = null;
+});
 function changed(e: Event) {
   if ((e as CustomEvent).detail?.gameId === "animal-ranch") void load();
 }
@@ -269,6 +291,7 @@ const panelTitle = computed(
       detail: selected.value?.name || "动物伙伴",
       journal: "扩建与牧场日记",
       album: "动物图鉴",
+      hall: "名宠堂",
     })[panel.value || "animals"],
 );
 function selectAnimal(id: string) {
@@ -392,7 +415,7 @@ function productAnimal(id: string) {
               aria-label="牧场经验"
             ></progress>
             <span class="game-offline-note">{{
-              owner ? "离线成长 · 缺粮暂停" : "只读参观 · 状态实时刷新"
+              owner ? "离线成长 · 缺粮/满存暂停" : "只读参观 · 状态实时刷新"
             }}</span>
           </div>
         </header>
@@ -436,8 +459,12 @@ function productAnimal(id: string) {
           <button aria-label="牧场玩法说明" @click="panel = 'help'">
             <span>?</span><small>玩法</small>
           </button>
+          <button aria-label="名宠堂" @click="panel = 'hall'">
+            <RanchIcon :index="4" /><small>名宠堂</small>
+          </button>
           <button
             v-if="canFullscreen"
+            class="desktop-fullscreen"
             aria-label="切换游戏全屏"
             @click="toggleFullscreen"
           >
@@ -529,7 +556,14 @@ function productAnimal(id: string) {
         </button>
       </div>
       <p v-if="error" role="alert" class="error panel-error">{{ error }}</p>
-      <template v-if="panel === 'animals' || panel === 'album'">
+      <RanchHall
+        v-if="panel === 'hall'"
+        :owner-id="profile!.owner"
+        :is-owner="owner"
+        :busy="busy || loading"
+        :run="action"
+      />
+      <template v-else-if="panel === 'animals' || panel === 'album'">
         <div class="ranch-shop-filters">
           <div class="wood-tabs" aria-label="动物分类">
             <button
@@ -671,7 +705,7 @@ function productAnimal(id: string) {
                     duration(shopChoice.growthMs)
                   }}</strong></span
                 ><span
-                  >产出周期<strong>{{
+                  >产出周期 · 共 {{ shopChoice.maxRounds }} 轮<strong>{{
                     duration(shopChoice.cycleMs)
                   }}</strong></span
                 ><span
@@ -753,14 +787,16 @@ function productAnimal(id: string) {
               </div>
               <div class="detail-facts">
                 <span
-                  >出售单价<strong>{{ productChoice.price }} 金币</strong></span
-                ><span
-                  >本项总值<strong
+                  >出售单价<strong
                     >{{
-                      productChoice.count * productChoice.price
+                      productChoice.minPrice === productChoice.maxPrice
+                        ? productChoice.minPrice
+                        : productChoice.minPrice + "–" + productChoice.maxPrice
                     }}
                     金币</strong
                   ></span
+                ><span
+                  >本项总值<strong>{{ productChoice.value }} 金币</strong></span
                 >
               </div>
               <button
@@ -805,9 +841,12 @@ function productAnimal(id: string) {
         ></progress>
         <p>
           {{
-            farm.animals.length
-              ? "当前伙伴可再吃约 " + duration((farm.feedMinutes || 0) * 60000)
-              : "先认养一只小动物吧"
+            farm.feedingAnimals
+              ? "按当前 " +
+                farm.feedingAnimals +
+                " 位活跃伙伴，至少可支持 " +
+                duration((farm.feedMinutes || 0) * 60000)
+              : "当前伙伴都已完成或存满，不消耗饲料"
           }}。每只动物每 {{ farm.feedUnitMinutes }} 分钟吃 1 份。
         </p>
         <div class="ranch-feed-buttons">
@@ -826,7 +865,10 @@ function productAnimal(id: string) {
             ><small>{{ units }} 金币</small>
           </button>
         </div>
-        <small>食槽最多容纳 1000 份；缺粮暂停成长，动物不会死亡。</small>
+        <small
+          >食槽最多容纳 1000
+          份；缺粮、满存暂停。生产完成和名宠堂伙伴不吃粮，动物不会死亡。</small
+        >
       </section>
       <section
         v-else-if="panel === 'detail'"
@@ -835,7 +877,11 @@ function productAnimal(id: string) {
         <template v-if="selected"
           ><div class="animal-detail-stage">
             <span class="tag">{{
-              selected.baby ? "幼崽成长中" : "成年伙伴"
+              selected.status === "completed"
+                ? "生产已完成"
+                : selected.baby
+                  ? "幼崽成长中"
+                  : "成年伙伴"
             }}</span>
             <div class="ranch-detail-portrait">
               <AnimalPortrait
@@ -846,7 +892,13 @@ function productAnimal(id: string) {
             </div>
             <strong class="animal-state">{{ animalStatus(selected) }}</strong>
           </div>
-          <p v-if="!selected.hungry && selected.stored < selected.capacity">
+          <p
+            v-if="
+              selected.status !== 'completed' &&
+              !selected.hungry &&
+              selected.stored < selected.capacity
+            "
+          >
             {{ selected.baby ? "距离成年" : "下次产出" }}：{{
               countdown(selected)
             }}
@@ -858,7 +910,11 @@ function productAnimal(id: string) {
           ></progress>
           <p>
             {{ selected.productName }} {{ selected.stored }} /
-            {{ selected.capacity }}，最多保留 3 轮。
+            {{ selected.capacity }}，最多保留
+            {{ selected.storageRounds }} 轮。<br />已生产
+            {{ selected.completedRounds }} / {{ selected.maxRounds }} 轮{{
+              selected.legacy ? " · 旧版周期保留" : ""
+            }}。
           </p>
           <div v-if="owner" class="actions">
             <button
@@ -870,9 +926,98 @@ function productAnimal(id: string) {
             ><button
               class="ranch-secondary"
               :disabled="busy || loading || !!selected.stored"
-              @click="sellAnimal"
+              @click="exitChoice = 'sellAnimal'"
             >
-              出售动物
+              出售 · {{ selected.saleCoins }} 金币
+            </button>
+            <button
+              class="ranch-primary"
+              :disabled="
+                busy ||
+                loading ||
+                selected.status !== 'completed' ||
+                !!selected.stored
+              "
+              @click="exitChoice = 'enterHall'"
+            >
+              进入名宠堂
+            </button>
+            <button
+              class="ranch-secondary"
+              :disabled="busy || loading || !!selected.stored"
+              @click="exitChoice = 'releaseAnimal'"
+            >
+              放生
+            </button>
+          </div>
+          <p v-if="owner && selected.status === 'completed'">
+            生产已结束，不再耗粮。收完最后产物后，为它选择去向。
+          </p>
+          <p v-if="selected.legacy" class="panel-hint">
+            旧版伙伴保留原周期和产物价值；有限生产轮次从本次升级起计算。
+          </p>
+          <form
+            v-if="owner"
+            class="animal-naming"
+            @submit.prevent="
+              action('renameAnimal', {
+                animalId: selected!.id,
+                nickname: nicknameDraft,
+              })
+            "
+          >
+            <input
+              v-model="nicknameDraft"
+              maxlength="24"
+              aria-label="伙伴昵称"
+              placeholder="给它取个名字（最多12字）"
+            /><button class="ranch-secondary" :disabled="busy || loading">
+              保存名字
+            </button>
+          </form>
+          <div
+            v-if="exitChoice"
+            class="animal-exit-confirm"
+            role="alertdialog"
+            aria-label="确认伙伴去向"
+          >
+            <strong>{{
+              exitChoice === "enterHall"
+                ? "让它进入名宠堂？"
+                : exitChoice === "sellAnimal"
+                  ? "确认出售这位伙伴？"
+                  : "确认放生这位伙伴？"
+            }}</strong>
+            <p>
+              {{
+                exitChoice === "enterHall"
+                  ? "永久收藏，不吃粮、不占生产位置，不能恢复生产。"
+                  : exitChoice === "sellAnimal"
+                    ? "获得 " +
+                      selected.saleCoins +
+                      " 金币，纪念记录保留，不能重新认领。"
+                    : "不获得出售金币，保留放生记录，不能重新认领。"
+              }}
+            </p>
+            <button
+              class="ranch-primary"
+              :disabled="busy || loading"
+              @click="confirmExit"
+            >
+              确认{{
+                exitChoice === "enterHall"
+                  ? "进入名宠堂"
+                  : exitChoice === "sellAnimal"
+                    ? "出售"
+                    : "放生"
+              }}
+            </button>
+            <button
+              class="ranch-secondary"
+              :disabled="busy"
+              @click="exitChoice = null"
+            >
+              取消
             </button>
           </div>
         </template>
@@ -2762,6 +2907,42 @@ progress::-moz-progress-bar {
 @media (max-width: 350px) {
   .ranch-window .tile-lock {
     font-size: 9px;
+  }
+}
+
+.animal-naming {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.animal-naming input {
+  flex: 1;
+  min-width: 120px;
+  min-height: 44px;
+  border: 2px solid #d6b986;
+  border-radius: 12px;
+  background: #fff8e4;
+  color: #6c4b2e;
+  padding: 8px 12px;
+  font: inherit;
+}
+.animal-exit-confirm {
+  border: 2px solid #cf9b6d;
+  border-radius: 14px;
+  background: #f8e6c6;
+  padding: 14px;
+  margin-top: 16px;
+}
+.animal-exit-confirm button {
+  margin: 4px;
+}
+.animal-exit-confirm p {
+  line-height: 1.6;
+}
+@media (max-width: 900px) {
+  .desktop-fullscreen {
+    display: none !important;
   }
 }
 </style>

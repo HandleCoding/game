@@ -1,115 +1,178 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
 import {
   species,
   initialRanch,
+  newAnimal,
   settleRanch,
   ranchAction,
   ranchView,
   MINUTE,
 } from "../apps/api/src/games/animal-ranch/engine.js";
-import {
-  xpForLevel,
-  FEED_UNIT_MS,
-  HOUR,
-} from "../packages/contracts/src/ranch-balance.js";
-test("牧场：36 独立物种、可用资产、等级与差异化参数", () => {
+import { HOUR, FEED_UNIT_MS } from "../packages/contracts/src/ranch-balance.js";
+function fresh() {
+  const s = initialRanch(0);
+  s.animals = [newAnimal("test", species[0]!, 0)];
+  s.batches = [];
+  s.events = [];
+  return s;
+}
+test("牧场目录：36个独立物种、分钟至24小时、有限轮次与完整生涯收益", () => {
   assert.equal(species.length, 36);
-  assert.equal(new Set(species.map((s) => s.id)).size, 36);
-  assert.deepEqual(
-    new Set(species.map((s) => s.category)),
-    new Set(["farm", "pets", "zoo"]),
-  );
-  const svg = new Set([
-    "cat",
-    "sheep",
-    "goose",
-    "fox",
-    "deer",
-    "alpaca",
-    "peacock",
-    "hedgehog",
-    "turtle",
-    "lion",
-  ]);
-  for (const s of species) {
-    assert.ok(s.description.length > 8);
-    assert.ok(s.growthMs > 0 && s.cycleMs > 0 && s.price > 0 && s.yield > 0);
+  assert.equal(new Set(species.map((k) => k.id)).size, 36);
+  assert.equal(species[0]!.growthMs, 5 * MINUTE);
+  for (const k of species) {
+    assert.ok(k.growthMs > 0 && k.growthMs <= 24 * HOUR);
+    assert.ok(k.cycleMs > 0 && k.cycleMs <= 24 * HOUR);
+    assert.ok(k.maxRounds >= 4 && k.maxRounds <= 8);
+    assert.ok(k.price > 0 && k.lifetimeXp > 0);
     assert.ok(
-      existsSync(
-        "apps/web/public/ranch/" + s.id + (svg.has(s.id) ? ".svg" : ".png"),
-      ),
+      k.sellPrice * k.yield * k.maxRounds >
+        k.price + (k.growthMs + k.cycleMs * k.maxRounds) / FEED_UNIT_MS,
+      k.id,
     );
-    assert.ok(s.sellPrice * s.yield > s.cycleMs / FEED_UNIT_MS);
   }
-  assert.ok(new Set(species.map((s) => s.growthMs)).size > 20);
-  const fresh = initialRanch(1000);
+});
+test("牧场结算：成年、首产、最后一轮边界及无限离线不会超产", () => {
+  const s = fresh(),
+    k = species[0]!;
+  const pre = settleRanch(s, 0, k.growthMs - 1);
+  assert.equal(pre.animals[0]!.status, "juvenile");
+  const adult = settleRanch(pre, pre.at, k.growthMs);
+  assert.equal(adult.animals[0]!.status, "producing");
+  assert.equal(adult.animals[0]!.stored, 0);
+  const first = settleRanch(adult, adult.at, k.growthMs + k.cycleMs);
+  assert.equal(first.animals[0]!.stored, k.yield);
+  const done = settleRanch(first, first.at, 100 * HOUR);
+  assert.equal(done.animals[0]!.status, "completed");
+  assert.equal(done.animals[0]!.completedRounds, k.maxRounds);
+  assert.equal(done.animals[0]!.stored, k.yield * k.maxRounds);
+  assert.equal(done.feedMs, s.feedMs - k.growthMs - k.maxRounds * k.cycleMs);
+  assert.equal(done.xp, 0);
+  assert.equal(settleRanch(done, done.at, 1000 * HOUR).feedMs, done.feedMs);
+});
+test("牧场暂停：缺粮、满存、恢复、时钟倒退与分段时间守恒", () => {
+  const s = fresh();
+  s.feedMs = 6 * MINUTE;
+  const idle = settleRanch(s, 0, HOUR);
+  assert.equal(idle.feedMs, 0);
+  assert.equal(idle.animals[0]!.cycleProgressMs, MINUTE);
+  const fed = ranchAction(idle, "buyFeed", { units: 20 });
+  assert.equal(
+    settleRanch(fed, fed.at, fed.at + 4 * MINUTE).animals[0]!.stored,
+    3,
+  );
+  const full = fresh();
+  full.animals = [
+    newAnimal(
+      "cow",
+      species.find((k) => k.id === "cow")!,
+    ),
+  ];
+  full.feedMs = 1000 * FEED_UNIT_MS;
+  const whole = settleRanch(full, 0, 100 * HOUR);
+  let split = full;
+  for (const t of [1, 999, 60_123, 3 * HOUR, 19 * HOUR, 100 * HOUR])
+    split = settleRanch(split, split.at, t);
+  assert.deepEqual(split, whole);
+  assert.deepEqual(settleRanch(whole, whole.at, 1), whole);
+  const long = fresh();
+  long.animals = [
+    newAnimal(
+      "slow",
+      species.find((k) => k.id === "elephant")!,
+    ),
+  ];
+  long.feedMs = 1000 * FEED_UNIT_MS;
+  const paused = settleRanch(long, 0, 300 * HOUR);
+  assert.equal(paused.animals[0]!.completedRounds, 3);
+  assert.equal(paused.animals[0]!.status, "producing");
+  const got = ranchAction(paused, "harvest", {});
+  assert.equal(
+    settleRanch(got, got.at, got.at + 24 * HOUR).animals[0]!.completedRounds,
+    4,
+  );
+});
+test("牧场动作：名宠堂/出售/放生保留身份、礼物零返还与昵称校验", () => {
+  const done = settleRanch(fresh(), 0, HOUR);
   assert.throws(
-    () => ranchAction(fresh, "buyAnimal", { species: "panda" }),
+    () => ranchAction(done, "enterHall", { animalId: "test" }),
+    /先收获/,
+  );
+  const got = ranchAction(done, "harvest", {});
+  assert.equal(got.xp, species[0]!.lifetimeXp);
+  const hall = ranchAction(got, "enterHall", { animalId: "test" });
+  assert.equal(hall.animals[0]!.status, "hall");
+  assert.equal(ranchView(hall, true).animals.length, 0);
+  assert.equal(settleRanch(hall, hall.at, 100 * HOUR).feedMs, hall.feedMs);
+  assert.throws(
+    () => ranchAction(hall, "enterHall", { animalId: "test" }),
+    /完成全部/,
+  );
+  const named = ranchAction(hall, "renameAnimal", {
+    animalId: "test",
+    nickname: "团团",
+  });
+  assert.equal(named.animals[0]!.nickname, "团团");
+  assert.throws(
+    () =>
+      ranchAction(hall, "renameAnimal", {
+        animalId: "test",
+        nickname: "<script>",
+      }),
+    /最多12/,
+  );
+  const sold = ranchAction(named, "sellAnimal", { animalId: "test" });
+  assert.equal(sold.animals[0]!.status, "sold");
+  assert.throws(
+    () => ranchAction(sold, "releaseAnimal", { animalId: "test" }),
+    /已经离开/,
+  );
+  assert.equal(
+    ranchAction(named, "releaseAnimal", { animalId: "test" }).coins,
+    named.coins,
+  );
+  let gift = initialRanch(0);
+  gift = ranchAction(gift, "harvest", {});
+  const coins = gift.coins;
+  gift = ranchAction(gift, "sellAnimal", { animalId: gift.animals[0]!.id });
+  assert.equal(gift.coins, coins);
+  const view = ranchView(got, false);
+  for (const k of ["coins", "xp", "inventory", "log", "feed"])
+    assert.equal((view as any)[k], undefined);
+  assert.equal(view.animals[0]!.saleCoins, undefined);
+  assert.throws(
+    () => ranchAction(got, "harvest", { owner: "someone" }),
+    /参数/,
+  );
+  assert.throws(
+    () => ranchAction(got, "buyAnimal", { species: "panda" }),
     /未解锁/,
   );
-  const unlock = { ...fresh, xp: xpForLevel(18), coins: 100000 };
-  const bought = ranchAction(unlock, "buyAnimal", { species: "panda" });
-  assert.equal(bought.animals.at(-1)?.species, "panda");
+});
+
+test("旧版迁移：先按原规则结算离线，再保留周期、饲料预算与价格快照", async () => {
+  const old = await import("../apps/api/src/games/animal-ranch/legacy-v1.js");
+  const legacy = old.initialRanch(0);
+  legacy.coins = 3456;
+  legacy.xp = 321;
+  legacy.inventory = { egg: 12 };
+  legacy.animals[0]!.stored = 0;
+  legacy.animals[0]!.ageMs = legacy.animals[0]!.growthMs;
+  const end = 72 * HOUR,
+    expected = old.settleRanch(legacy, 0, end),
+    actual = settleRanch(legacy, 0, end);
+  assert.equal(actual.coins, expected.coins);
+  assert.equal(actual.xp, expected.xp);
+  assert.equal(actual.feedMs, expected.feedMs);
+  assert.equal(actual.animals[0]!.stored, expected.animals[0]!.stored);
+  assert.equal(actual.animals[0]!.growthMs, expected.animals[0]!.growthMs);
+  assert.equal(actual.animals[0]!.cycleMs, expected.animals[0]!.cycleMs);
+  assert.equal(actual.animals[0]!.completedRounds, 0);
   assert.equal(
-    bought.animals.at(-1)?.growthMs,
-    species.find((s) => s.id === "panda")!.growthMs,
+    actual.batches.reduce((n, b) => n + b.quantity, 0),
+    expected.animals[0]!.stored,
   );
-});
-test("牧场：离线、饲料耗尽、分段结算、满产物上限与时钟回拨", () => {
-  const fresh = initialRanch(0);
-  fresh.animals[0]!.stored = 0;
-  fresh.feedMs = 5 * HOUR;
-  const whole = settleRanch(fresh, 0, 24 * 60 * MINUTE);
-  assert.equal(whole.feedMs, 0);
-  assert.equal(whole.animals[0]!.ageMs, fresh.animals[0]!.ageMs + 5 * HOUR);
-  assert.equal(whole.animals[0]!.stored, 0);
-  const p = settleRanch(fresh, 0, 2 * MINUTE),
-    split = settleRanch(p, 2 * MINUTE, 24 * 60 * MINUTE);
-  assert.deepEqual(split, whole);
-  assert.deepEqual(settleRanch(whole, whole.at, whole.at - 1000), whole);
-  const full = initialRanch(0);
-  full.feedMs = 240 * FEED_UNIT_MS;
-  const long = settleRanch(full, 0, 24 * HOUR);
-  assert.equal(long.animals[0]!.stored, long.animals[0]!.maxStored);
-  const fed = ranchAction(whole, "buyFeed", { units: 20 });
-  const resumed = settleRanch(fed, fed.at, fed.at + MINUTE);
-  assert.equal(resumed.animals[0]!.ageMs, whole.animals[0]!.ageMs + MINUTE);
-});
-test("牧场：认养收获出售扩建循环、输入校验与主人访客权限", () => {
-  let s = initialRanch(0);
-  s = ranchAction(s, "harvest", {});
-  assert.equal(s.inventory.egg, 3);
-  assert.equal(s.animals[0]!.stored, 0);
-  assert.equal(s.xp, 12);
-  s = ranchAction(s, "sellProducts", {});
-  assert.equal(s.coins, 836);
-  s = ranchAction(s, "buyAnimal", { species: "chicken" });
-  assert.equal(s.coins, 716);
-  assert.equal(s.animals.length, 2);
-  assert.throws(() => ranchAction(s, "upgrade", {}), /Lv. 3/);
-  s.xp = xpForLevel(3);
-  s = ranchAction(s, "upgrade", {});
-  assert.equal(s.capacity, 6);
-  assert.equal(s.coins, 116);
-  assert.throws(() => ranchAction(s, "buyFeed", { units: -1 }), /有效/);
-  assert.throws(
-    () => ranchAction(s, "buyAnimal", { species: "chicken", quantity: "1" }),
-    /1–5/,
-  );
-  assert.throws(
-    () => ranchAction(s, "buyAnimal", { species: "__proto__" }),
-    /有效/,
-  );
-  assert.throws(() => ranchAction(s, "harvest", { owner: "other" }), /参数/);
-  assert.throws(
-    () => ranchAction(s, "sellProducts", { product: "fake" }),
-    /不存在/,
-  );
-  const view = ranchView(s, false);
-  for (const name of ["coins", "xp", "inventory", "log", "feed", "feedMs"])
-    assert.equal((view as unknown as Record<string, unknown>)[name], undefined);
-  assert.equal(view.animals.length, 2);
-  assert.equal(view.species.length, 36);
+  assert.equal(actual.lots[0]!.quantity, 12);
+  assert.deepEqual(settleRanch(legacy, 0, end), actual);
 });

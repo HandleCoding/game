@@ -38,6 +38,8 @@ export type RanchSpecies =
 export interface RanchSpeciesInfo {
   category: "farm" | "pets" | "zoo";
   description: string;
+  maxRounds: number;
+  lifetimeXp: number;
   harvestXp: number;
   buyXp: number;
   id: RanchSpecies;
@@ -56,6 +58,20 @@ export interface RanchAnimalView {
   id: string;
   species: RanchSpecies;
   name: string;
+  nickname: string;
+  status: RanchAnimalStatus;
+  completedRounds: number;
+  maxRounds: number;
+  storageRounds: number;
+  saleCoins?: number;
+  variantId: string;
+  rarityId: string;
+  affixes: RanchAffix[];
+  createdAt: number | null;
+  completedAt: number | null;
+  legacy: boolean;
+  display: boolean;
+  totalProduced: number | null;
   baby: boolean;
   progress: number;
   stored: number;
@@ -70,17 +86,30 @@ export interface RanchView {
   capacity: number;
   animals: RanchAnimalView[];
   hungry: boolean;
+  feedingAnimals: number;
+  hallCount: number;
+  collection: Partial<
+    Record<RanchSpecies, { owned: number; completed: number; hall: number }>
+  >;
   species: RanchSpeciesInfo[];
   feed?: number;
-  feedMinutes?: number;
+  feedMinutes?: number | null;
   coins?: number;
   xp?: number;
   levelStartXp?: number;
   nextLevelXp?: number;
   feedUnitMinutes?: number;
   upgradeLevel?: number | null;
-  upgradeCost?: number;
-  inventory?: { id: string; name: string; count: number; price: number }[];
+  upgradeCost?: number | null;
+  inventory?: {
+    id: string;
+    name: string;
+    count: number;
+    price: number;
+    value: number;
+    minPrice: number;
+    maxPrice: number;
+  }[];
   log?: { id: string; at: number; message: string }[];
 }
 export interface RanchProfile {
@@ -97,4 +126,30 @@ export interface RanchNeighbor {
   name: string;
   level: number;
   animals: number;
+}
+
+export type RanchAnimalStatus =
+  "juvenile" | "producing" | "completed" | "hall" | "sold" | "released";
+export interface RanchAffix {
+  definitionId: string;
+  definitionVersion: number;
+  roll: number;
+  eventId: string;
+  label: string;
+}
+export interface RanchAnimalEvent {
+  id: string;
+  animalId: string;
+  at: number;
+  type: string;
+  message: string;
+}
+export interface RanchCollectionPage {
+  animals: RanchAnimalView[];
+  next: string | null;
+  total: number;
+}
+export interface RanchAnimalRecord {
+  animal: RanchAnimalView;
+  events: RanchAnimalEvent[];
 }

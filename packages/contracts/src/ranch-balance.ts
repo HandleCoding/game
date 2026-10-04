@@ -1,5 +1,5 @@
 /** Public balance constants. Resource settlement and permissions remain on the server. */
-export const RANCH_BALANCE_VERSION = 2;
+export const RANCH_BALANCE_VERSION = 3;
 export const HOUR = 3_600_000;
 export const FEED_UNIT_MS = HOUR / 2;
 export const FEED_CAPACITY = 1000;

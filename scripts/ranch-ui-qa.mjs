@@ -288,7 +288,7 @@ try {
             modalBox.y + modalBox.height - 4,
         "Adoption button clipped before interaction",
       );
-      assert((await page.locator(".catalog-detail").textContent()).includes("8小时"), "Chick growth is not 8 hours");
+      assert((await page.locator(".catalog-detail").textContent()).includes("5分"), "Chick growth is not 5 minutes");
       const tileHeight = await page
         .locator(".ranch-shop-animal")
         .first()
@@ -774,7 +774,7 @@ try {
           "30-minute-feed-unit",
           "hour-day-duration",
           "level-gated-expansion",
-          "8-hour-chick-growth",
+          "5-minute-chick-growth",
           "detail",
           "theme",
           "reload-save",

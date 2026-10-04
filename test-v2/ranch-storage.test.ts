@@ -92,7 +92,7 @@ test("PostgreSQL 牧场：唯一初始化、双设备收获、原子钱包仓库
       expectedRevision: 1,
       type: "sellProducts",
     });
-    assert.equal(sold.state.coins, 836);
+    assert.equal(sold.state.coins, 803);
     await pool.query(
       "ALTER TABLE ranch_wallets ADD CONSTRAINT test_fail_write CHECK(coins>=800)",
     );
@@ -107,7 +107,7 @@ test("PostgreSQL 牧场：唯一初始化、双设备收获、原子钱包仓库
     );
     assert.equal(
       (await service.view("animal-ranch", "owner")).state.coins,
-      836,
+      803,
     );
     assert.equal(
       Number(
@@ -151,7 +151,7 @@ test("PostgreSQL 牧场：唯一初始化、双设备收获、原子钱包仓库
     assert.equal(results.filter((r) => r.status === "fulfilled").length, 1);
     assert.equal(
       (await service.view("animal-ranch", "owner")).state.coins,
-      716,
+      790,
     );
     const summary = (await pool.query("SELECT state FROM persistent_profiles"))
       .rows[0].state;

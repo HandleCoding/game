@@ -2,6 +2,38 @@ import { transaction } from "./db/store.js";
 import { registry } from "../games/registry.js";
 import { check } from "./errors.js";
 export class PersistentService {
+  constructor(
+    private readonly onChange?: (gameId: string, owner: string) => void,
+  ) {}
+  async collection(
+    gameId: string,
+    actor: string,
+    owner: string,
+    query: { mode?: string; after?: string; search?: string },
+  ) {
+    const def = registry.persistent(gameId);
+    check(def.storage?.collection, "游戏不支持收藏");
+    await this.view(gameId, actor, owner);
+    return transaction((db) =>
+      def.storage!.collection!(
+        { db, gameId, world: "default", owner },
+        query,
+        actor === owner,
+      ),
+    );
+  }
+  async record(gameId: string, actor: string, owner: string, id: string) {
+    const def = registry.persistent(gameId);
+    check(def.storage?.record, "游戏不支持成长记录");
+    await this.view(gameId, actor, owner);
+    return transaction((db) =>
+      def.storage!.record!(
+        { db, gameId, world: "default", owner },
+        id,
+        actor === owner,
+      ),
+    );
+  }
   async list(gameId: string, actor: string) {
     const def = registry.persistent(gameId);
     return transaction(async (db) => ({
@@ -22,7 +54,8 @@ export class PersistentService {
   }
   async view(gameId: string, actor: string, owner = actor, world = "default") {
     const def = registry.persistent(gameId);
-    return transaction(async (db) => {
+    let notify = false;
+    const result = await transaction(async (db) => {
       if (actor === owner)
         await db.query(
           "INSERT INTO persistent_profiles VALUES($1,$2,$3,$4,0,$5,$6) ON CONFLICT DO NOTHING",
@@ -42,7 +75,11 @@ export class PersistentService {
         )
       ).rows[0];
       check(row, "存档不存在");
-      check(row.version === def.metadata.version, "存档版本不支持");
+      check(
+        row.version === def.metadata.version ||
+          def.previousVersions?.includes(row.version),
+        "存档版本不支持",
+      );
       const now = Date.now(),
         ctx = { db, gameId, world, owner },
         loaded = def.storage
@@ -50,9 +87,23 @@ export class PersistentService {
           : row.state,
         state = def.settle(loaded, row.last_settled_at, now),
         saved = def.storage ? await def.storage.save(state, ctx) : state;
+      const changed =
+        row.version !== def.metadata.version ||
+        (def.changeKey
+          ? def.changeKey(loaded) !== def.changeKey(state)
+          : false);
+      notify = changed;
       await db.query(
-        'UPDATE persistent_profiles SET state=$4,last_settled_at=$5 WHERE game_id=$1 AND world_id=$2 AND "user"=$3',
-        [gameId, world, owner, JSON.stringify(saved), now],
+        'UPDATE persistent_profiles SET state=$4,last_settled_at=$5,version=$6,revision=revision+$7 WHERE game_id=$1 AND world_id=$2 AND "user"=$3',
+        [
+          gameId,
+          world,
+          owner,
+          JSON.stringify(saved),
+          now,
+          def.metadata.version,
+          changed ? 1 : 0,
+        ],
       );
       return {
         gameId,
@@ -61,11 +112,13 @@ export class PersistentService {
           (await db.query("SELECT name FROM users WHERE id=$1", [owner]))
             .rows[0]?.name || "玩家",
         world,
-        revision: row.revision,
+        revision: row.revision + (changed ? 1 : 0),
         serverNow: now,
         state: def.view(state, actor === owner),
       };
     });
+    if (notify) this.onChange?.(gameId, owner);
+    return result;
   }
   async action(
     gameId: string,
@@ -106,9 +159,22 @@ export class PersistentService {
       ).rows[0];
       check(row, "请先进入游戏");
       check(row.revision === b.expectedRevision, "存档已变化", 409);
-      check(row.version === def.metadata.version, "存档版本不支持");
+      check(
+        row.version === def.metadata.version ||
+          def.previousVersions?.includes(row.version),
+        "存档版本不支持",
+      );
       const now = Date.now(),
-        ctx = { db, gameId, world: "default", owner: actor },
+        ctx = {
+          db,
+          gameId,
+          world: "default",
+          owner: actor,
+          animalId:
+            typeof b.payload.animalId === "string"
+              ? b.payload.animalId
+              : undefined,
+        },
         loaded = def.storage
           ? await def.storage.load(row.state, ctx)
           : row.state,
@@ -116,8 +182,15 @@ export class PersistentService {
         state = def.action(settled, b.type, b.payload, actor),
         saved = def.storage ? await def.storage.save(state, ctx) : state;
       await db.query(
-        'UPDATE persistent_profiles SET state=$4,revision=revision+1,last_settled_at=$5 WHERE game_id=$1 AND world_id=$2 AND "user"=$3',
-        [gameId, "default", actor, JSON.stringify(saved), now],
+        'UPDATE persistent_profiles SET state=$4,revision=revision+1,last_settled_at=$5,version=$6 WHERE game_id=$1 AND world_id=$2 AND "user"=$3',
+        [
+          gameId,
+          "default",
+          actor,
+          JSON.stringify(saved),
+          now,
+          def.metadata.version,
+        ],
       );
       const response = {
         gameId,

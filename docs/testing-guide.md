@@ -69,3 +69,10 @@ npx tsx scripts/ranch-balance-simulation.ts 通过真实引擎模拟180天，不
 新增7项 test-v2/ranch-balance.test.ts，覆盖逐级XP边界、极端上界、食槽30分钟单位和毫秒分段守恒、小时级成熟/生产、买卖不刷XP、等级/金币扩建门槛、售价净收益、旧实例不追溯、180天模拟。ranch-storage.test.ts 在隔离schema演练仅牧场重置与恢复、revision防旧请求、其他游戏/用户保持。
 
 加载dev.env后 node scripts/ranch-reset-qa.mjs：强制playroom_dev并创建/删除独立schema，真正运行 operator CLI，验证私有快照权限、用户数量变化拒绝、重置与恢复。不要在生产库运行QA。当前schema3仅扩大饲料毫秒预算上限。
+
+
+## 有限生产与名宠堂2.7.0
+
+先npm run typecheck、npm run build，再在dev.env与3221 flock锁下运行npm test；HTTP测试启动dist，不能与build并发使用旧产物。生命周期PG专项创建独立schema，测试无损v1迁移、实际operator CLI/600报告文件、二次执行幂等、批次售价、档案保留、6位公开限额、访客裁剪、20条游标分页与双设备退出。脚本清理自身schema，绝不连playroom_prod。
+
+npm run test:ui原牧场五尺寸回归已更新到5分钟成长；新node scripts/ranch-hall-ui-qa.mjs在同样锁/隔离schema下跑生产结束/入堂/12字命名/展示/取消退出/出售/放生/历史/中文搜索/主题/重载。UI_BROWSER与UI_BROWSER_EXECUTABLE沿用上方官方引擎路径，两种引擎分别跑。数值模拟npx tsx scripts/ranch-balance-simulation.ts，9种90天策略；必须实际查看关键手机/桌面/横屏/夜间截图，浏览器模拟不冒充真机。

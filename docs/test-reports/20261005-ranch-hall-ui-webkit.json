@@ -1,0 +1,127 @@
+{
+  "browser": "webkit",
+  "isolatedDevelopmentSchema": true,
+  "results": [
+    {
+      "size": {
+        "width": 320,
+        "height": 740
+      },
+      "passed": true,
+      "checks": [
+        "legacy-notice",
+        "finite-round-display",
+        "harvest-before-hall",
+        "exit-cancel",
+        "hall-no-active-slot",
+        "12-character-name",
+        "public-toggle",
+        "archived-reload",
+        "sale-confirm",
+        "release-confirm",
+        "history-retained",
+        "Chinese-species-search",
+        "light-dark",
+        "dialog-in-viewport",
+        "no-horizontal-overflow"
+      ]
+    },
+    {
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "passed": true,
+      "checks": [
+        "legacy-notice",
+        "finite-round-display",
+        "harvest-before-hall",
+        "exit-cancel",
+        "hall-no-active-slot",
+        "12-character-name",
+        "public-toggle",
+        "archived-reload",
+        "sale-confirm",
+        "release-confirm",
+        "history-retained",
+        "Chinese-species-search",
+        "light-dark",
+        "dialog-in-viewport",
+        "no-horizontal-overflow"
+      ]
+    },
+    {
+      "size": {
+        "width": 430,
+        "height": 932
+      },
+      "passed": true,
+      "checks": [
+        "legacy-notice",
+        "finite-round-display",
+        "harvest-before-hall",
+        "exit-cancel",
+        "hall-no-active-slot",
+        "12-character-name",
+        "public-toggle",
+        "archived-reload",
+        "sale-confirm",
+        "release-confirm",
+        "history-retained",
+        "Chinese-species-search",
+        "light-dark",
+        "dialog-in-viewport",
+        "no-horizontal-overflow"
+      ]
+    },
+    {
+      "size": {
+        "width": 844,
+        "height": 390
+      },
+      "passed": true,
+      "checks": [
+        "legacy-notice",
+        "finite-round-display",
+        "harvest-before-hall",
+        "exit-cancel",
+        "hall-no-active-slot",
+        "12-character-name",
+        "public-toggle",
+        "archived-reload",
+        "sale-confirm",
+        "release-confirm",
+        "history-retained",
+        "Chinese-species-search",
+        "light-dark",
+        "dialog-in-viewport",
+        "no-horizontal-overflow"
+      ]
+    },
+    {
+      "size": {
+        "width": 1440,
+        "height": 1000
+      },
+      "passed": true,
+      "checks": [
+        "legacy-notice",
+        "finite-round-display",
+        "harvest-before-hall",
+        "exit-cancel",
+        "hall-no-active-slot",
+        "12-character-name",
+        "public-toggle",
+        "archived-reload",
+        "sale-confirm",
+        "release-confirm",
+        "history-retained",
+        "Chinese-species-search",
+        "light-dark",
+        "dialog-in-viewport",
+        "no-horizontal-overflow"
+      ]
+    }
+  ],
+  "failures": []
+}

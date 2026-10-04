@@ -46,8 +46,19 @@ export interface PersistentStorageContext {
   gameId: string;
   world: string;
   owner: string;
+  animalId?: string;
 }
 export interface PersistentStorage {
+  collection?(
+    ctx: PersistentStorageContext,
+    query: { mode?: string; after?: string; search?: string },
+    isOwner: boolean,
+  ): Promise<Record<string, unknown>>;
+  record?(
+    ctx: PersistentStorageContext,
+    id: string,
+    isOwner: boolean,
+  ): Promise<Record<string, unknown>>;
   directory?(ctx: PersistentStorageContext): Promise<Record<string, unknown>[]>;
   load(
     summary: Record<string, unknown>,
@@ -59,6 +70,8 @@ export interface PersistentStorage {
   ): Promise<Record<string, unknown>>;
 }
 export interface PersistentDefinition {
+  previousVersions?: number[];
+  changeKey?(state: Record<string, unknown>): string;
   storage?: PersistentStorage;
   metadata: GameMeta & { kind: "persistent" };
   initialState(): Record<string, unknown>;

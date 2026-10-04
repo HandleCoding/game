@@ -37,9 +37,9 @@ GitHub origin 为 git@github.com:HandleCoding/game.git，main 为验收后的主
 
 ## 一起牧场
 
-游戏 ID animal-ranch，kind=persistent。动物配置唯一来源 packages/contracts/src/ranch-catalog.ts。先读 docs/animal-ranch.md、ranch-balance.md、ranch-assets.md。首版 36 个物种，禁止用重复幼崽或换名图凑数。普通离线成长按食槽和实例保存周期结算，不需要 worker。缺粮暂停，不死亡；生产存量最多 3 轮。访客只读且不显示钱、仓库、流水。
+游戏 ID animal-ranch，kind=persistent。动物配置唯一来源 packages/contracts/src/ranch-catalog.ts。先读 docs/animal-ranch.md、ranch-balance.md、ranch-assets.md。首版 36 个物种，禁止用重复幼崽或换名图凑数。普通离线成长按食槽和实例保存周期结算，不需要 worker。缺粮暂停，不死亡；生产存量按24小时保护窗且至少3轮。访客只读且不显示钱、仓库、流水。
 
-schema v3 的 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger 与档案、动作回执在同一行锁事务内写入；不可仅修改 JSON 而绕开钱包、仓库或流水。配置修改不能追溯改已有动物参数。测试当前 25 项。
+schema v4 的 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger / ranch_animal_batches / ranch_inventory_lots / ranch_animal_events 与档案、动作回执在同一行锁事务内写入；不可仅修改 JSON 而绕开钱包、仓库或流水。配置修改不能追溯改已有动物参数。有限生产当前测试以20261005报告为准。
 
 动态场景前端为 RanchScene.vue；资源计算仍在后端。手机 / 桌面 UI 验收 npm run test:ui，必须开发库与独立 schema / 3221 锁，见 testing-guide 和 ranch-scene 验收报告。不得把模拟测试说成真机测试。
 
@@ -61,3 +61,8 @@ animal-ranch.md末尾为3个子Agent综合玩法调研草案，尚未实施。�
 先读docs/ranch-cdn.md。正式hostname game.aicoding.ltd的公开牧场图片走static.aicoding.ltd，开发同源；API/登录/SSE仍走主站。assets.ts集中路径和回退，CSP只明确允许该CDN的图片/连接。
 SVG外部图片请求200不代表已绘制；必须使用已解码data URL并复用场景缓存，商店其余图集两路排队。不要恢复直接远程SVG href；保留单帧clipPath。CDN网络/CORS/解码/45秒闲置异常回源；退出场景不额外发起回退。
 scripts/ranch-cdn-qa.mjs只在开发隔离schema运行，虚拟正式hostname拦截到3221，成功图集走真实CDN，主站API绝不落到正式库。两种浏览器、实际像素检查和截图审阅必需，CDN_IDLE=1验证45秒无响应回退。控制台证书/免费额度以当前账户和官方说明为准，不承诺永久免费。
+
+
+## 有限生产与名宠堂（2.7.0）
+先读docs/ranch-balance.md（已替换为rulesVersion3）、animal-ranch.md本次实现段、test-reports/20261005-ranch-lifecycle.md；旧2.6节奏为历史记录。6/8有限轮次，生产完成与满存均停粮；名宠堂/出售/放生保留同一永久个体。storage禁止DELETE重插动物，批次与价格来源持久化；收藏分页仅加载活跃/目标个体，不让归档数量进入每次离线计算。新动物UUID，昵称≤12 Unicode字；公开最多6位，私有日记只给主人。
+变异/前缀/符文仅预留快照，不能误报已实现。新数值只对新认养生效，旧存档先旧规则结算再保留原资产/周期，无重置。生产迁移必须维护停写、最新备份、校验；v2档案之后旧2.6 storage不兼容，发布失败保持维护做前向修复，禁止自动旧代码回滚。Git提交只包含本任务文件，保持其他Agent未提交的文档。

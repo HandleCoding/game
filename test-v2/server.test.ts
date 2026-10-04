@@ -153,7 +153,7 @@ test("真实服务器：账号、邀请、隐私、完整对局、重开与重�
       type: "buyAnimal",
       payload: { species: "chicken" },
     });
-    assert.equal(ranchSaved.state.coins, 716);
+    assert.equal(ranchSaved.state.coins, 790);
     await a.call(
       "games/animal-ranch/actions",
       {
@@ -283,7 +283,7 @@ test("真实服务器：账号、邀请、隐私、完整对局、重开与重�
     await start();
     assert.equal((await a.call("state")).room.paused, true);
     const ranchRestored = await a.call("games/animal-ranch/me");
-    assert.equal(ranchRestored.state.coins, 716);
+    assert.equal(ranchRestored.state.coins, 790);
     assert.equal(ranchRestored.state.animals.length, 2);
     assert.equal(ranchRestored.revision, ranchSaved.revision);
     await a.stream();

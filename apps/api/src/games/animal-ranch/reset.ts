@@ -6,6 +6,9 @@ const tables = [
   "persistent_profiles",
   "ranch_wallets",
   "ranch_animals",
+  "ranch_animal_batches",
+  "ranch_inventory_lots",
+  "ranch_animal_events",
   "ranch_inventory",
   "ranch_ledger",
   "action_receipts",
@@ -44,6 +47,9 @@ export async function captureRanch(
 }
 async function clearChildren(db: PoolClient, owners: unknown[]) {
   for (const table of [
+    "ranch_animal_events",
+    "ranch_inventory_lots",
+    "ranch_animal_batches",
     "ranch_ledger",
     "ranch_inventory",
     "ranch_animals",
@@ -88,7 +94,7 @@ export async function resetRanch(
       owner: row.user as string,
     });
     await db.query(
-      'UPDATE persistent_profiles SET revision=revision+1,last_settled_at=$4,state=$5 WHERE game_id=$1 AND world_id=$2 AND "user"=$3',
+      'UPDATE persistent_profiles SET version=2,revision=revision+1,last_settled_at=$4,state=$5 WHERE game_id=$1 AND world_id=$2 AND "user"=$3',
       [GAME, row.world_id, row.user, at, JSON.stringify(saved)],
     );
   }

@@ -11,6 +11,7 @@ const props = defineProps<{
   owner: boolean;
   feed?: number;
   hungry: boolean;
+  status?: string;
   effect: { type: string; id: number } | null;
 }>();
 const emit = defineEmits<{
@@ -541,6 +542,8 @@ function draw(now: number) {
         -body.ground - 13,
         "#458443",
       );
+    else if (a.status === "completed")
+      tag(ctx, "生产完成 · 选择去向", 0, -body.ground - 13, "#7c963b");
     else if (a.hungry) tag(ctx, "需要喂食", 0, -body.ground - 13, "#c97735");
     if (a.id === props.chosen) {
       ctx.font = "bold 16px system-ui";
@@ -810,6 +813,7 @@ onUnmounted(() => {
         @click="emit('select', a.id)"
       >
         {{ a.name }}<span v-if="a.stored"> · 可收获 {{ a.stored }}</span
+        ><span v-else-if="a.status === 'completed'"> · 生产完成</span
         ><span v-else-if="a.hungry"> · 缺粮</span>
       </button>
     </div>

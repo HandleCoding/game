@@ -11,7 +11,15 @@ import { PersistentService } from "./platform/persistent.js";
 await migrate();
 const hub = new RoomHub();
 await hub.load();
-const persistent = new PersistentService();
+const persistent = new PersistentService((gameId, owner) => {
+  for (const res of hub.streams.get(owner) || [])
+    if (!res.destroyed)
+      res.write(
+        "event: persistent-change\ndata: " +
+          JSON.stringify({ gameId }) +
+          "\n\n",
+      );
+});
 const app = Fastify({
   bodyLimit: 8192,
   logger: false,
@@ -268,6 +276,41 @@ app.get<{ Params: { gameId: string; owner: string } }>(
       req.params.gameId,
       (await identity(req)).user,
       req.params.owner,
+    ),
+);
+app.get<{
+  Params: { gameId: string };
+  Querystring: { mode?: string; after?: string; search?: string };
+}>("/api/games/:gameId/me/collection", async (req) => {
+  const id = (await identity(req)).user;
+  return persistent.collection(req.params.gameId, id, id, req.query);
+});
+app.get<{
+  Params: { gameId: string; owner: string };
+  Querystring: { mode?: string; after?: string; search?: string };
+}>("/api/games/:gameId/players/:owner/collection", async (req) =>
+  persistent.collection(
+    req.params.gameId,
+    (await identity(req)).user,
+    req.params.owner,
+    req.query,
+  ),
+);
+app.get<{ Params: { gameId: string; animal: string } }>(
+  "/api/games/:gameId/me/animals/:animal",
+  async (req) => {
+    const id = (await identity(req)).user;
+    return persistent.record(req.params.gameId, id, id, req.params.animal);
+  },
+);
+app.get<{ Params: { gameId: string; owner: string; animal: string } }>(
+  "/api/games/:gameId/players/:owner/animals/:animal",
+  async (req) =>
+    persistent.record(
+      req.params.gameId,
+      (await identity(req)).user,
+      req.params.owner,
+      req.params.animal,
     ),
 );
 app.post<{

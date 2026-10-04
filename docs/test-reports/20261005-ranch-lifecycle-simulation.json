@@ -1,0 +1,980 @@
+{
+  "version": 3,
+  "xpTo20": 26885,
+  "parameters": [
+    {
+      "id": "chicken",
+      "name": "小鸡",
+      "level": 1,
+      "growthMinutes": 5,
+      "cycleMinutes": 5,
+      "rounds": 6,
+      "price": 13,
+      "yield": 3,
+      "sellPrice": 1,
+      "lifetimeXp": 2,
+      "lifetimeHours": 0.5833333333333334,
+      "hallProfit": 3.833333333333333,
+      "xpPerHour": 3.4285714285714284
+    },
+    {
+      "id": "rabbit",
+      "name": "垂耳兔",
+      "level": 2,
+      "growthMinutes": 10,
+      "cycleMinutes": 10,
+      "rounds": 6,
+      "price": 37,
+      "yield": 2,
+      "sellPrice": 4,
+      "lifetimeXp": 6,
+      "lifetimeHours": 1.1666666666666667,
+      "hallProfit": 8.666666666666666,
+      "xpPerHour": 5.142857142857142
+    },
+    {
+      "id": "dog",
+      "name": "小狗",
+      "level": 2,
+      "growthMinutes": 10,
+      "cycleMinutes": 30,
+      "rounds": 6,
+      "price": 91,
+      "yield": 2,
+      "sellPrice": 10,
+      "lifetimeXp": 16,
+      "lifetimeHours": 3.1666666666666665,
+      "hallProfit": 22.666666666666668,
+      "xpPerHour": 5.052631578947369
+    },
+    {
+      "id": "duck",
+      "name": "小鸭",
+      "level": 3,
+      "growthMinutes": 30,
+      "cycleMinutes": 30,
+      "rounds": 6,
+      "price": 141,
+      "yield": 3,
+      "sellPrice": 10,
+      "lifetimeXp": 20,
+      "lifetimeHours": 3.5,
+      "hallProfit": 32,
+      "xpPerHour": 5.714285714285714
+    },
+    {
+      "id": "sheep",
+      "name": "绵羊",
+      "level": 3,
+      "growthMinutes": 30,
+      "cycleMinutes": 60,
+      "rounds": 6,
+      "price": 234,
+      "yield": 3,
+      "sellPrice": 17,
+      "lifetimeXp": 36,
+      "lifetimeHours": 6.5,
+      "hallProfit": 59,
+      "xpPerHour": 5.538461538461538
+    },
+    {
+      "id": "goose",
+      "name": "白鹅",
+      "level": 4,
+      "growthMinutes": 60,
+      "cycleMinutes": 60,
+      "rounds": 6,
+      "price": 317,
+      "yield": 4,
+      "sellPrice": 17,
+      "lifetimeXp": 44,
+      "lifetimeHours": 7,
+      "hallProfit": 77,
+      "xpPerHour": 6.285714285714286
+    },
+    {
+      "id": "goat",
+      "name": "山羊",
+      "level": 4,
+      "growthMinutes": 60,
+      "cycleMinutes": 120,
+      "rounds": 6,
+      "price": 587,
+      "yield": 3,
+      "sellPrice": 42,
+      "lifetimeXp": 82,
+      "lifetimeHours": 13,
+      "hallProfit": 143,
+      "xpPerHour": 6.3076923076923075
+    },
+    {
+      "id": "cow",
+      "name": "奶牛",
+      "level": 5,
+      "growthMinutes": 120,
+      "cycleMinutes": 120,
+      "rounds": 8,
+      "price": 954,
+      "yield": 3,
+      "sellPrice": 51,
+      "lifetimeXp": 126,
+      "lifetimeHours": 18,
+      "hallProfit": 234,
+      "xpPerHour": 7
+    },
+    {
+      "id": "cat",
+      "name": "橘猫",
+      "level": 5,
+      "growthMinutes": 120,
+      "cycleMinutes": 180,
+      "rounds": 6,
+      "price": 1050,
+      "yield": 3,
+      "sellPrice": 75,
+      "lifetimeXp": 140,
+      "lifetimeHours": 20,
+      "hallProfit": 260,
+      "xpPerHour": 7
+    },
+    {
+      "id": "pig",
+      "name": "小猪",
+      "level": 6,
+      "growthMinutes": 180,
+      "cycleMinutes": 180,
+      "rounds": 8,
+      "price": 1629,
+      "yield": 3,
+      "sellPrice": 87,
+      "lifetimeXp": 208,
+      "lifetimeHours": 27,
+      "hallProfit": 405,
+      "xpPerHour": 7.703703703703703
+    },
+    {
+      "id": "parrot",
+      "name": "鹦鹉",
+      "level": 6,
+      "growthMinutes": 120,
+      "cycleMinutes": 120,
+      "rounds": 8,
+      "price": 1086,
+      "yield": 2,
+      "sellPrice": 87,
+      "lifetimeXp": 139,
+      "lifetimeHours": 18,
+      "hallProfit": 270,
+      "xpPerHour": 7.722222222222222
+    },
+    {
+      "id": "turtle",
+      "name": "小乌龟",
+      "level": 6,
+      "growthMinutes": 180,
+      "cycleMinutes": 240,
+      "rounds": 6,
+      "price": 1629,
+      "yield": 3,
+      "sellPrice": 116,
+      "lifetimeXp": 208,
+      "lifetimeHours": 27,
+      "hallProfit": 405,
+      "xpPerHour": 7.703703703703703
+    },
+    {
+      "id": "horse",
+      "name": "小马",
+      "level": 7,
+      "growthMinutes": 240,
+      "cycleMinutes": 240,
+      "rounds": 8,
+      "price": 2460,
+      "yield": 3,
+      "sellPrice": 131,
+      "lifetimeXp": 302,
+      "lifetimeHours": 36,
+      "hallProfit": 612,
+      "xpPerHour": 8.38888888888889
+    },
+    {
+      "id": "frog",
+      "name": "青蛙",
+      "level": 7,
+      "growthMinutes": 120,
+      "cycleMinutes": 180,
+      "rounds": 8,
+      "price": 1786,
+      "yield": 3,
+      "sellPrice": 95,
+      "lifetimeXp": 218,
+      "lifetimeHours": 26,
+      "hallProfit": 442,
+      "xpPerHour": 8.384615384615385
+    },
+    {
+      "id": "peacock",
+      "name": "孔雀",
+      "level": 8,
+      "growthMinutes": 240,
+      "cycleMinutes": 240,
+      "rounds": 8,
+      "price": 2764,
+      "yield": 4,
+      "sellPrice": 110,
+      "lifetimeXp": 328,
+      "lifetimeHours": 36,
+      "hallProfit": 684,
+      "xpPerHour": 9.11111111111111
+    },
+    {
+      "id": "fox",
+      "name": "小狐狸",
+      "level": 8,
+      "growthMinutes": 180,
+      "cycleMinutes": 240,
+      "rounds": 8,
+      "price": 2673,
+      "yield": 3,
+      "sellPrice": 142,
+      "lifetimeXp": 318,
+      "lifetimeHours": 35,
+      "hallProfit": 665,
+      "xpPerHour": 9.085714285714285
+    },
+    {
+      "id": "alpaca",
+      "name": "羊驼",
+      "level": 9,
+      "growthMinutes": 240,
+      "cycleMinutes": 480,
+      "rounds": 6,
+      "price": 4372,
+      "yield": 4,
+      "sellPrice": 232,
+      "lifetimeXp": 510,
+      "lifetimeHours": 52,
+      "hallProfit": 1092,
+      "xpPerHour": 9.807692307692308
+    },
+    {
+      "id": "hedgehog",
+      "name": "刺猬",
+      "level": 9,
+      "growthMinutes": 180,
+      "cycleMinutes": 240,
+      "rounds": 8,
+      "price": 2963,
+      "yield": 3,
+      "sellPrice": 157,
+      "lifetimeXp": 343,
+      "lifetimeHours": 35,
+      "hallProfit": 735,
+      "xpPerHour": 9.8
+    },
+    {
+      "id": "deer",
+      "name": "梅花鹿",
+      "level": 10,
+      "growthMinutes": 240,
+      "cycleMinutes": 480,
+      "rounds": 6,
+      "price": 4784,
+      "yield": 3,
+      "sellPrice": 338,
+      "lifetimeXp": 546,
+      "lifetimeHours": 52,
+      "hallProfit": 1196,
+      "xpPerHour": 10.5
+    },
+    {
+      "id": "owl",
+      "name": "猫头鹰",
+      "level": 10,
+      "growthMinutes": 240,
+      "cycleMinutes": 480,
+      "rounds": 6,
+      "price": 4784,
+      "yield": 3,
+      "sellPrice": 338,
+      "lifetimeXp": 546,
+      "lifetimeHours": 52,
+      "hallProfit": 1196,
+      "xpPerHour": 10.5
+    },
+    {
+      "id": "penguin",
+      "name": "企鹅",
+      "level": 11,
+      "growthMinutes": 480,
+      "cycleMinutes": 480,
+      "rounds": 8,
+      "price": 7208,
+      "yield": 4,
+      "sellPrice": 286,
+      "lifetimeXp": 806,
+      "lifetimeHours": 72,
+      "hallProfit": 1800,
+      "xpPerHour": 11.194444444444445
+    },
+    {
+      "id": "snake",
+      "name": "小蛇",
+      "level": 11,
+      "growthMinutes": 480,
+      "cycleMinutes": 480,
+      "rounds": 6,
+      "price": 5616,
+      "yield": 3,
+      "sellPrice": 396,
+      "lifetimeXp": 627,
+      "lifetimeHours": 56,
+      "hallProfit": 1400,
+      "xpPerHour": 11.196428571428571
+    },
+    {
+      "id": "buffalo",
+      "name": "水牛",
+      "level": 12,
+      "growthMinutes": 480,
+      "cycleMinutes": 720,
+      "rounds": 6,
+      "price": 8648,
+      "yield": 4,
+      "sellPrice": 457,
+      "lifetimeXp": 952,
+      "lifetimeHours": 80,
+      "hallProfit": 2160,
+      "xpPerHour": 11.9
+    },
+    {
+      "id": "moose",
+      "name": "驼鹿",
+      "level": 12,
+      "growthMinutes": 480,
+      "cycleMinutes": 720,
+      "rounds": 6,
+      "price": 8642,
+      "yield": 3,
+      "sellPrice": 609,
+      "lifetimeXp": 952,
+      "lifetimeHours": 80,
+      "hallProfit": 2160,
+      "xpPerHour": 11.9
+    },
+    {
+      "id": "zebra",
+      "name": "斑马",
+      "level": 13,
+      "growthMinutes": 720,
+      "cycleMinutes": 720,
+      "rounds": 6,
+      "price": 9756,
+      "yield": 4,
+      "sellPrice": 515,
+      "lifetimeXp": 1058,
+      "lifetimeHours": 84,
+      "hallProfit": 2436,
+      "xpPerHour": 12.595238095238095
+    },
+    {
+      "id": "bear",
+      "name": "小熊",
+      "level": 13,
+      "growthMinutes": 720,
+      "cycleMinutes": 720,
+      "rounds": 8,
+      "price": 12540,
+      "yield": 3,
+      "sellPrice": 662,
+      "lifetimeXp": 1361,
+      "lifetimeHours": 108,
+      "hallProfit": 3132,
+      "xpPerHour": 12.601851851851851
+    },
+    {
+      "id": "monkey",
+      "name": "猴子",
+      "level": 14,
+      "growthMinutes": 240,
+      "cycleMinutes": 480,
+      "rounds": 8,
+      "price": 8436,
+      "yield": 3,
+      "sellPrice": 445,
+      "lifetimeXp": 904,
+      "lifetimeHours": 68,
+      "hallProfit": 2108,
+      "xpPerHour": 13.294117647058824
+    },
+    {
+      "id": "gorilla",
+      "name": "大猩猩",
+      "level": 14,
+      "growthMinutes": 720,
+      "cycleMinutes": 720,
+      "rounds": 6,
+      "price": 10428,
+      "yield": 4,
+      "sellPrice": 550,
+      "lifetimeXp": 1117,
+      "lifetimeHours": 84,
+      "hallProfit": 2604,
+      "xpPerHour": 13.297619047619047
+    },
+    {
+      "id": "giraffe",
+      "name": "长颈鹿",
+      "level": 15,
+      "growthMinutes": 720,
+      "cycleMinutes": 720,
+      "rounds": 8,
+      "price": 14268,
+      "yield": 4,
+      "sellPrice": 564,
+      "lifetimeXp": 1512,
+      "lifetimeHours": 108,
+      "hallProfit": 3564,
+      "xpPerHour": 14
+    },
+    {
+      "id": "rhino",
+      "name": "犀牛",
+      "level": 15,
+      "growthMinutes": 720,
+      "cycleMinutes": 1440,
+      "rounds": 6,
+      "price": 20604,
+      "yield": 3,
+      "sellPrice": 1448,
+      "lifetimeXp": 2184,
+      "lifetimeHours": 156,
+      "hallProfit": 5148,
+      "xpPerHour": 14
+    },
+    {
+      "id": "hippo",
+      "name": "河马",
+      "level": 16,
+      "growthMinutes": 720,
+      "cycleMinutes": 720,
+      "rounds": 8,
+      "price": 15140,
+      "yield": 4,
+      "sellPrice": 598,
+      "lifetimeXp": 1588,
+      "lifetimeHours": 108,
+      "hallProfit": 3780,
+      "xpPerHour": 14.703703703703704
+    },
+    {
+      "id": "crocodile",
+      "name": "鳄鱼",
+      "level": 16,
+      "growthMinutes": 720,
+      "cycleMinutes": 1440,
+      "rounds": 6,
+      "price": 21852,
+      "yield": 4,
+      "sellPrice": 1151,
+      "lifetimeXp": 2293,
+      "lifetimeHours": 156,
+      "hallProfit": 5460,
+      "xpPerHour": 14.698717948717949
+    },
+    {
+      "id": "lion",
+      "name": "狮子",
+      "level": 17,
+      "growthMinutes": 1440,
+      "cycleMinutes": 1440,
+      "rounds": 6,
+      "price": 24864,
+      "yield": 4,
+      "sellPrice": 1309,
+      "lifetimeXp": 2587,
+      "lifetimeHours": 168,
+      "hallProfit": 6216,
+      "xpPerHour": 15.398809523809524
+    },
+    {
+      "id": "elephant",
+      "name": "大象",
+      "level": 18,
+      "growthMinutes": 1440,
+      "cycleMinutes": 1440,
+      "rounds": 8,
+      "price": 33704,
+      "yield": 4,
+      "sellPrice": 1330,
+      "lifetimeXp": 3478,
+      "lifetimeHours": 216,
+      "hallProfit": 8424,
+      "xpPerHour": 16.10185185185185
+    },
+    {
+      "id": "panda",
+      "name": "大熊猫",
+      "level": 18,
+      "growthMinutes": 1440,
+      "cycleMinutes": 720,
+      "rounds": 8,
+      "price": 18728,
+      "yield": 4,
+      "sellPrice": 739,
+      "lifetimeXp": 1932,
+      "lifetimeHours": 120,
+      "hallProfit": 4680,
+      "xpPerHour": 16.1
+    },
+    {
+      "id": "sloth",
+      "name": "树懒",
+      "level": 20,
+      "growthMinutes": 1440,
+      "cycleMinutes": 1440,
+      "rounds": 8,
+      "price": 37160,
+      "yield": 4,
+      "sellPrice": 1465,
+      "lifetimeXp": 3780,
+      "lifetimeHours": 216,
+      "hallProfit": 9288,
+      "xpPerHour": 17.5
+    }
+  ],
+  "scenarios": [
+    {
+      "stepHours": 0.08333333333333333,
+      "strategy": "xp",
+      "exit": "sellAnimal",
+      "milestones": {
+        "2": 0.20833333333333334,
+        "3": 0.4479166666666667,
+        "5": 0.9895833333333334,
+        "8": 2.399305555555556,
+        "10": 3.6354166666666665,
+        "15": 7.635416666666667,
+        "18": 10.684027777777779,
+        "20": 12.774305555555555
+      },
+      "snapshots": {
+        "1": {
+          "level": 5,
+          "xp": 612,
+          "coins": 225,
+          "capacity": 6,
+          "animals": 6
+        },
+        "7": {
+          "level": 14,
+          "xp": 10127,
+          "coins": 902,
+          "capacity": 12,
+          "animals": 12
+        },
+        "30": {
+          "level": 32,
+          "xp": 111561,
+          "coins": 13205,
+          "capacity": 16,
+          "animals": 16
+        },
+        "90": {
+          "level": 53,
+          "xp": 512600,
+          "coins": 1566070,
+          "capacity": 16,
+          "animals": 16
+        }
+      },
+      "actions": 9011,
+      "hungryVisits": 0,
+      "finalLevel": 53
+    },
+    {
+      "stepHours": 1,
+      "strategy": "income",
+      "exit": "sellAnimal",
+      "milestones": {
+        "2": 0.375,
+        "3": 0.75,
+        "5": 1.4166666666666667,
+        "8": 2.7916666666666665,
+        "10": 4.083333333333333,
+        "15": 8.166666666666666,
+        "18": 11.166666666666666,
+        "20": 13.375
+      },
+      "snapshots": {
+        "1": {
+          "level": 3,
+          "xp": 355,
+          "coins": 581,
+          "capacity": 6,
+          "animals": 6
+        },
+        "7": {
+          "level": 13,
+          "xp": 8821,
+          "coins": 5,
+          "capacity": 10,
+          "animals": 10
+        },
+        "30": {
+          "level": 32,
+          "xp": 109751,
+          "coins": 17735,
+          "capacity": 16,
+          "animals": 16
+        },
+        "90": {
+          "level": 53,
+          "xp": 510696,
+          "coins": 1584032,
+          "capacity": 16,
+          "animals": 16
+        }
+      },
+      "actions": 6461,
+      "hungryVisits": 0,
+      "finalLevel": 53
+    },
+    {
+      "stepHours": 4,
+      "strategy": "income",
+      "exit": "sellAnimal",
+      "milestones": {
+        "2": 1.5,
+        "3": 2.3333333333333335,
+        "5": 3.1666666666666665,
+        "8": 5,
+        "10": 6.333333333333333,
+        "15": 10.666666666666666,
+        "18": 13.666666666666666,
+        "20": 16
+      },
+      "snapshots": {
+        "1": {
+          "level": 1,
+          "xp": 60,
+          "coins": 907,
+          "capacity": 4,
+          "animals": 4
+        },
+        "7": {
+          "level": 10,
+          "xp": 4620,
+          "coins": 169,
+          "capacity": 8,
+          "animals": 8
+        },
+        "30": {
+          "level": 30,
+          "xp": 93751,
+          "coins": 817,
+          "capacity": 16,
+          "animals": 16
+        },
+        "90": {
+          "level": 53,
+          "xp": 493288,
+          "coins": 1472296,
+          "capacity": 16,
+          "animals": 16
+        }
+      },
+      "actions": 3080,
+      "hungryVisits": 0,
+      "finalLevel": 53
+    },
+    {
+      "stepHours": 8,
+      "strategy": "income",
+      "exit": "sellAnimal",
+      "milestones": {
+        "2": 3,
+        "3": 4.666666666666667,
+        "5": 6,
+        "8": 9,
+        "10": 11.333333333333334,
+        "15": 17,
+        "18": 20.666666666666668,
+        "20": 23.333333333333332
+      },
+      "snapshots": {
+        "1": {
+          "level": 1,
+          "xp": 36,
+          "coins": 835,
+          "capacity": 4,
+          "animals": 4
+        },
+        "7": {
+          "level": 6,
+          "xp": 1130,
+          "coins": 171,
+          "capacity": 8,
+          "animals": 4
+        },
+        "30": {
+          "level": 25,
+          "xp": 53330,
+          "coins": 760,
+          "capacity": 16,
+          "animals": 16
+        },
+        "90": {
+          "level": 51,
+          "xp": 442008,
+          "coins": 1264336,
+          "capacity": 16,
+          "animals": 16
+        }
+      },
+      "actions": 2495,
+      "hungryVisits": 0,
+      "finalLevel": 51
+    },
+    {
+      "stepHours": 12,
+      "strategy": "income",
+      "exit": "sellAnimal",
+      "milestones": {
+        "2": 4.5,
+        "3": 7,
+        "5": 9,
+        "8": 12.5,
+        "10": 15,
+        "15": 23.5,
+        "18": 28,
+        "20": 31.5
+      },
+      "snapshots": {
+        "1": {
+          "level": 1,
+          "xp": 28,
+          "coins": 811,
+          "capacity": 4,
+          "animals": 4
+        },
+        "7": {
+          "level": 3,
+          "xp": 204,
+          "coins": 6,
+          "capacity": 6,
+          "animals": 5
+        },
+        "30": {
+          "level": 19,
+          "xp": 24591,
+          "coins": 106,
+          "capacity": 14,
+          "animals": 12
+        },
+        "90": {
+          "level": 48,
+          "xp": 379262,
+          "coins": 1030338,
+          "capacity": 16,
+          "animals": 16
+        }
+      },
+      "actions": 1896,
+      "hungryVisits": 0,
+      "finalLevel": 48
+    },
+    {
+      "stepHours": 24,
+      "strategy": "income",
+      "exit": "sellAnimal",
+      "milestones": {
+        "2": 9,
+        "3": 14,
+        "5": 18,
+        "8": 23,
+        "10": 29,
+        "15": 42,
+        "18": 49,
+        "20": 54
+      },
+      "snapshots": {
+        "1": {
+          "level": 1,
+          "xp": 20,
+          "coins": 747,
+          "capacity": 4,
+          "animals": 4
+        },
+        "7": {
+          "level": 1,
+          "xp": 68,
+          "coins": 851,
+          "capacity": 4,
+          "animals": 4
+        },
+        "30": {
+          "level": 10,
+          "xp": 4337,
+          "coins": 384,
+          "capacity": 10,
+          "animals": 5
+        },
+        "90": {
+          "level": 38,
+          "xp": 187291,
+          "coins": 263665,
+          "capacity": 16,
+          "animals": 16
+        }
+      },
+      "actions": 1185,
+      "hungryVisits": 0,
+      "finalLevel": 38
+    },
+    {
+      "stepHours": 0.08333333333333333,
+      "strategy": "low",
+      "exit": "sellAnimal",
+      "milestones": {
+        "2": 0.20833333333333334,
+        "3": 0.5590277777777778,
+        "5": 1.3993055555555556,
+        "8": 3.684027777777778,
+        "10": 5.930555555555556,
+        "15": 14.451388888888888,
+        "18": 21.520833333333332,
+        "20": 27.069444444444443
+      },
+      "snapshots": {
+        "1": {
+          "level": 4,
+          "xp": 412,
+          "coins": 1220,
+          "capacity": 6,
+          "animals": 6
+        },
+        "7": {
+          "level": 10,
+          "xp": 4544,
+          "coins": 5041,
+          "capacity": 10,
+          "animals": 10
+        },
+        "30": {
+          "level": 20,
+          "xp": 30744,
+          "coins": 24218,
+          "capacity": 16,
+          "animals": 16
+        },
+        "90": {
+          "level": 32,
+          "xp": 109736,
+          "coins": 215129,
+          "capacity": 16,
+          "animals": 16
+        }
+      },
+      "actions": 164786,
+      "hungryVisits": 0,
+      "finalLevel": 32
+    },
+    {
+      "stepHours": 4,
+      "strategy": "income",
+      "exit": "enterHall",
+      "milestones": {
+        "2": 1.5,
+        "3": 2.3333333333333335,
+        "5": 3.1666666666666665,
+        "8": 5.166666666666667,
+        "10": 7,
+        "15": 12.333333333333334,
+        "18": 15.833333333333334,
+        "20": 18.5
+      },
+      "snapshots": {
+        "1": {
+          "level": 1,
+          "xp": 60,
+          "coins": 884,
+          "capacity": 4,
+          "animals": 4
+        },
+        "7": {
+          "level": 10,
+          "xp": 3789,
+          "coins": 21,
+          "capacity": 8,
+          "animals": 8
+        },
+        "30": {
+          "level": 27,
+          "xp": 71305,
+          "coins": 13095,
+          "capacity": 16,
+          "animals": 16
+        },
+        "90": {
+          "level": 51,
+          "xp": 451290,
+          "coins": 701835,
+          "capacity": 16,
+          "animals": 16
+        }
+      },
+      "actions": 3321,
+      "hungryVisits": 0,
+      "finalLevel": 51
+    },
+    {
+      "stepHours": 4,
+      "strategy": "income",
+      "exit": "releaseAnimal",
+      "milestones": {
+        "2": 1.5,
+        "3": 2.3333333333333335,
+        "5": 3.1666666666666665,
+        "8": 5.166666666666667,
+        "10": 7,
+        "15": 12.333333333333334,
+        "18": 15.833333333333334,
+        "20": 18.5
+      },
+      "snapshots": {
+        "1": {
+          "level": 1,
+          "xp": 60,
+          "coins": 884,
+          "capacity": 4,
+          "animals": 4
+        },
+        "7": {
+          "level": 10,
+          "xp": 3789,
+          "coins": 21,
+          "capacity": 8,
+          "animals": 8
+        },
+        "30": {
+          "level": 27,
+          "xp": 71305,
+          "coins": 13095,
+          "capacity": 16,
+          "animals": 16
+        },
+        "90": {
+          "level": 51,
+          "xp": 451290,
+          "coins": 701835,
+          "capacity": 16,
+          "animals": 16
+        }
+      },
+      "actions": 3321,
+      "hungryVisits": 0,
+      "finalLevel": 51
+    }
+  ]
+}

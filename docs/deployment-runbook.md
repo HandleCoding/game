@@ -65,3 +65,14 @@ python3 scripts/release-postgres.py --deploy --reset-ranch
 --reset-ranch必须同时--deploy，预期恰好1个牧场档案；打开维护且停应用后再检查、备份最新PG dump和root私有ranch-before-reset-时间.json，并在同一事务仅重置animal-ranch钱包/动物/仓库/流水/其动作回执。原档案revision+1，账号/会话/猜数字不变。schema3食槽预算CHECK扩大至1800000000毫秒。禁止把此次用户授权当成未来可任意删玩家的授权。
 
 仅 operator scripts/reset-ranch.mjs 调用后端 reset.ts，未注册公开接口。正式执行需要 RANCH_RESET_MAINTENANCE=1 且pair-play已停止，禁止对在线服务直接运行。restore只可用于入口尚未开放的发布失败，脚本自动局部恢复牧场，账号与其他游戏不回滚；维护打开后产生新进度时不能覆盖旧快照。恢复失败时保持维护和停机排查，不能贸然打开旧代码。日后玩家数大于1须先取得具体重置范围授权并修改操作工具的限定，不绕过数量守卫。
+
+
+## 有限生产与名宠堂升级（2.7.0）
+
+先完成独立开发schema的迁移/幂等/批次与归档测试，类型构建、数值模拟与两浏览器双端UI。正式命令：
+
+python3 scripts/release-postgres.py --deploy --migrate-ranch-lifecycle
+
+此旗标禁止与--reset-ranch并用。检查活动对局→只关闭游戏域名→停止正式应用→最新PG一致性备份→编译后的migration operator一次事务校验并迁所有v1档案→启动2.7.0→核对账号/结果/档案数量与健康/目录/前端→恢复入口。操作报告仅数量，私有PG dump和服务备份仍在/var/backups/pair-play；不对外暴露连接或玩家数据。
+
+v2档案与永久动物不兼容旧版删除重插storage：迁移一旦开始，任何部署失败保持503与停写，保存报告、做兼容当前库的前向修复。禁止自动降级旧2.6代码、覆盖PG备份或清空名宠堂来“恢复”。独立恢复备份演练仍不覆盖正式库。

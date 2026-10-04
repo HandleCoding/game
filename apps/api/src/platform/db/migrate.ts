@@ -57,6 +57,41 @@ ALTER TABLE ranch_wallets ADD CONSTRAINT ranch_wallets_feed_ms_check CHECK(feed_
 INSERT INTO schema_migrations(version) VALUES(3);
 `);
     }
+
+    const lifecycle = await db.query(
+      "SELECT version FROM schema_migrations WHERE version=4",
+    );
+    if (!lifecycle.rowCount)
+      await db.query(`
+ALTER TABLE ranch_animals ADD COLUMN status text NOT NULL DEFAULT 'legacy' CHECK(status IN ('legacy','juvenile','producing','completed','hall','sold','released'));
+ALTER TABLE ranch_animals ADD CONSTRAINT ranch_lifecycle_valid CHECK(status='legacy' OR (
+ data->>'status'=status AND data->>'maxRounds' IS NOT NULL AND data->>'completedRounds' IS NOT NULL AND
+ (data->>'maxRounds')::int>0 AND (data->>'completedRounds')::int BETWEEN 0 AND (data->>'maxRounds')::int AND
+ (data->>'yield')::int>0 AND (data->>'cycleProgressMs')::bigint>=0 AND (data->>'cycleProgressMs')::bigint<(data->>'cycleMs')::bigint AND
+ (status NOT IN ('completed','hall') OR (data->>'completedRounds')::int=(data->>'maxRounds')::int) AND
+ (status NOT IN ('hall','sold','released') OR (data->>'stored')::int=0)));
+CREATE INDEX ranch_animals_status ON ranch_animals(game_id,world_id,"user",status,id);
+CREATE TABLE ranch_animal_batches(
+ game_id text NOT NULL,world_id text NOT NULL,"user" text NOT NULL,id text NOT NULL,
+ animal_id text NOT NULL,round_no integer NOT NULL CHECK(round_no>=0),harvested_at bigint,data jsonb NOT NULL CHECK((data->>'quantity')::int>0 AND (data->>'xp')::int>=0 AND (data->>'price')::int>=0),
+ PRIMARY KEY(game_id,world_id,"user",id),UNIQUE(game_id,world_id,"user",animal_id,round_no),
+ FOREIGN KEY(game_id,world_id,"user",animal_id) REFERENCES ranch_animals(game_id,world_id,"user",id));
+CREATE INDEX ranch_batches_pending ON ranch_animal_batches(game_id,world_id,"user") WHERE harvested_at IS NULL;
+CREATE TABLE ranch_inventory_lots(
+ game_id text NOT NULL,world_id text NOT NULL,"user" text NOT NULL,id text NOT NULL,
+ animal_id text,quantity bigint NOT NULL CHECK(quantity>=0),data jsonb NOT NULL CHECK((data->>'quantity')::bigint=quantity AND (data->>'price')::int>=0),
+ PRIMARY KEY(game_id,world_id,"user",id),
+ FOREIGN KEY(game_id,world_id,"user",animal_id) REFERENCES ranch_animals(game_id,world_id,"user",id),
+ FOREIGN KEY(game_id,world_id,"user") REFERENCES ranch_wallets(game_id,world_id,"user"));
+CREATE INDEX ranch_lots_stock ON ranch_inventory_lots(game_id,world_id,"user") WHERE quantity>0;
+CREATE TABLE ranch_animal_events(
+ game_id text NOT NULL,world_id text NOT NULL,"user" text NOT NULL,id text NOT NULL,
+ animal_id text NOT NULL,created bigint NOT NULL,type text NOT NULL,message text NOT NULL,
+ PRIMARY KEY(game_id,world_id,"user",id),
+ FOREIGN KEY(game_id,world_id,"user",animal_id) REFERENCES ranch_animals(game_id,world_id,"user",id));
+CREATE INDEX ranch_events_time ON ranch_animal_events(game_id,world_id,"user",animal_id,created DESC);
+INSERT INTO schema_migrations(version) VALUES(4);
+`);
   });
 }
 if (process.argv[1]?.endsWith("/migrate.ts")) {
