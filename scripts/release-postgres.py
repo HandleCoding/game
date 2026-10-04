@@ -45,13 +45,16 @@ if not reset_requested and not lifecycle_requested:
 stamp=time.strftime('%Y%m%d-%H%M%S')
 unit=Path('/etc/systemd/system/pair-play.service');caddy=Path('/etc/caddy/Caddyfile')
 old_unit=BACKUP/('pair-play-before-'+stamp+'.service');old_caddy=BACKUP/('Caddyfile-before-'+stamp)
-shutil.copy2(unit,old_unit);old_unit.chmod(0o600);shutil.copy2(caddy,old_caddy);old_caddy.chmod(0o600)
+resume=[a.split('=',1)[1] for a in sys.argv if a.startswith('--resume-caddy=')]
+resume_source=Path(resume[0]).resolve() if resume else caddy
+if resume and (not lifecycle_requested or resume_source.parent!=BACKUP.resolve() or not resume_source.name.startswith('Caddyfile-before-') or not resume_source.is_file()):raise RuntimeError('Invalid maintenance recovery config')
+shutil.copy2(unit,old_unit);old_unit.chmod(0o600);shutil.copy2(resume_source,old_caddy);old_caddy.chmod(0o600)
 unit_text=unit.read_text()
 unit_text=re.sub(r'^WorkingDirectory=.*$',f'WorkingDirectory={release}',unit_text,flags=re.M)
 unit_text=re.sub(r'^ExecStart=.*$',f'ExecStart=/usr/bin/node {release}/dist/apps/api/src/main.js',unit_text,flags=re.M)
 candidate=BACKUP/('pair-play-release-'+stamp+'.service');candidate.write_text(unit_text);candidate.chmod(0o600)
 call(['systemd-analyze','verify',str(candidate)],stdout=subprocess.DEVNULL)
-original=caddy.read_text();start=original.index('game.aicoding.ltd {');depth=0;end=None
+original=old_caddy.read_text();start=original.index('game.aicoding.ltd {');depth=0;end=None
 for pos in range(original.index('{',start),len(original)):
  if original[pos]=='{':depth+=1
  elif original[pos]=='}':

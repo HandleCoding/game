@@ -1,5 +1,6 @@
 import Fastify, { type FastifyError } from "fastify";
 import staticFiles from "@fastify/static";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { authenticate, signIn } from "./platform/accounts.js";
 import { GameError, check } from "./platform/errors.js";
@@ -8,6 +9,9 @@ import { migrate } from "./platform/db/migrate.js";
 import { RoomHub } from "./platform/rooms.js";
 import { registry } from "./games/registry.js";
 import { PersistentService } from "./platform/persistent.js";
+const applicationVersion = JSON.parse(
+  readFileSync(process.cwd() + "/package.json", "utf8"),
+).version;
 await migrate();
 const hub = new RoomHub();
 await hub.load();
@@ -71,7 +75,7 @@ app.setErrorHandler((cause, req, reply) => {
 });
 app.get("/healthz", async () => {
   await pool.query("SELECT 1");
-  return { ok: true, version: "2.6.2", database: "postgresql" };
+  return { ok: true, version: applicationVersion, database: "postgresql" };
 });
 app.get("/api/catalog", async () => ({
   games: registry.catalog(),

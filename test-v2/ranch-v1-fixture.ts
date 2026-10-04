@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
-import { check } from "../../platform/errors.js";
+import { check } from "../apps/api/src/platform/errors.js";
 import type {
   RanchSpecies,
   RanchSpeciesInfo,
   RanchView,
-} from "../../../../../packages/contracts/src/ranch.js";
+} from "../packages/contracts/src/ranch.js";
 import {
   FEED_UNIT_MS,
   FEED_CAPACITY,
@@ -12,10 +12,10 @@ import {
   expansionFor,
   ranchLevel,
   xpForLevel,
-} from "../../../../../packages/contracts/src/ranch-balance.js";
+} from "../packages/contracts/src/ranch-balance.js";
 export const MINUTE = 60_000;
-export { ranchCatalog as species } from "./legacy-catalog.js";
-import { ranchCatalog as species } from "./legacy-catalog.js";
+export { ranchCatalog as species } from "../apps/api/src/games/animal-ranch/legacy-catalog.js";
+import { ranchCatalog as species } from "../apps/api/src/games/animal-ranch/legacy-catalog.js";
 export interface Animal {
   id: string;
   species: RanchSpecies;

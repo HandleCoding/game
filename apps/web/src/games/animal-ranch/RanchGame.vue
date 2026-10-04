@@ -953,9 +953,7 @@ function productAnimal(id: string) {
           <p v-if="owner && selected.status === 'completed'">
             生产已结束，不再耗粮。收完最后产物后，为它选择去向。
           </p>
-          <p v-if="selected.legacy" class="panel-hint">
-            旧版伙伴保留原周期和产物价值；有限生产轮次从本次升级起计算。
-          </p>
+
           <form
             v-if="owner"
             class="animal-naming"

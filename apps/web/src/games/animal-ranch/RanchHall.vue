@@ -88,7 +88,7 @@ const labels = {
 };
 function date(t: number | null) {
   return t === null
-    ? "旧版日期未记录"
+    ? "早期日期未记录"
     : new Date(t).toLocaleString("zh-CN", { hour12: false });
 }
 watch(mode, () => {
@@ -193,7 +193,7 @@ onMounted(() => void load());
               <dd>
                 {{
                   selected.totalProduced === null
-                    ? "旧版累计未知"
+                    ? "早期累计未知"
                     : selected.totalProduced + " 份"
                 }}
               </dd>

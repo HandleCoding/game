@@ -151,28 +151,37 @@ test("牧场动作：名宠堂/出售/放生保留身份、礼物零返还与昵
   );
 });
 
-test("旧版迁移：先按原规则结算离线，再保留周期、饲料预算与价格快照", async () => {
-  const old = await import("../apps/api/src/games/animal-ranch/legacy-v1.js");
-  const legacy = old.initialRanch(0);
-  legacy.coins = 3456;
-  legacy.xp = 321;
-  legacy.inventory = { egg: 12 };
-  legacy.animals[0]!.stored = 0;
-  legacy.animals[0]!.ageMs = legacy.animals[0]!.growthMs;
-  const end = 72 * HOUR,
-    expected = old.settleRanch(legacy, 0, end),
-    actual = settleRanch(legacy, 0, end);
-  assert.equal(actual.coins, expected.coins);
-  assert.equal(actual.xp, expected.xp);
-  assert.equal(actual.feedMs, expected.feedMs);
-  assert.equal(actual.animals[0]!.stored, expected.animals[0]!.stored);
-  assert.equal(actual.animals[0]!.growthMs, expected.animals[0]!.growthMs);
-  assert.equal(actual.animals[0]!.cycleMs, expected.animals[0]!.cycleMs);
-  assert.equal(actual.animals[0]!.completedRounds, 0);
+test("统一规则转换：旧动物切换新周期与价格，保留比例和既有资产，二次执行无变化", async () => {
+  const old = await import("./ranch-v1-fixture.js");
+  const { upgradeRanchRules } =
+    await import("../apps/api/src/games/animal-ranch/migration.js");
+  const s = old.initialRanch(0);
+  s.coins = 3456;
+  s.xp = 321;
+  s.inventory = { egg: 12 };
+  s.animals[0]!.paid = 120;
+  s.animals[0]!.ageMs = s.animals[0]!.growthMs + s.animals[0]!.cycleMs / 2;
+  const result = upgradeRanchRules(s, 72 * HOUR),
+    a = result.state.animals[0]!;
+  assert.equal(result.changed, 1);
+  assert.equal(result.state.coins, 3456);
+  assert.equal(result.state.xp, 321);
+  assert.equal(result.state.feedMs, s.feedMs);
+  assert.equal(a.growthMs, species[0]!.growthMs);
+  assert.equal(a.cycleMs, species[0]!.cycleMs);
+  assert.equal(a.cycleProgressMs, species[0]!.cycleMs / 2);
+  assert.equal(a.paid, species[0]!.price);
+  assert.equal(a.legacy, false);
+  assert.equal(a.stored, 3);
+  assert.equal(result.state.lots[0]!.quantity, 12);
+  assert.equal(a.completedRounds, 0);
+  assert.equal(upgradeRanchRules(result.state, 100 * HOUR).changed, 0);
+  const v2 = structuredClone(result.state);
+  v2.animals[0]!.legacy = true;
+  v2.animals[0]!.cycleMs = 10 * HOUR;
+  v2.animals[0]!.cycleProgressMs = 5 * HOUR;
   assert.equal(
-    actual.batches.reduce((n, b) => n + b.quantity, 0),
-    expected.animals[0]!.stored,
+    upgradeRanchRules(v2, 100 * HOUR).state.animals[0]!.cycleProgressMs,
+    species[0]!.cycleMs / 2,
   );
-  assert.equal(actual.lots[0]!.quantity, 12);
-  assert.deepEqual(settleRanch(legacy, 0, end), actual);
 });

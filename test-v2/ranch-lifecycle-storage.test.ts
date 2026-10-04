@@ -19,8 +19,7 @@ test("生命周期 PostgreSQL：旧存档无损迁移、批次价格、名宠堂
   const { ranchStorage } =
     await import("../apps/api/src/games/animal-ranch/storage.js");
   const engine = await import("../apps/api/src/games/animal-ranch/engine.js");
-  const legacy =
-    await import("../apps/api/src/games/animal-ranch/legacy-v1.js");
+  const legacy = await import("./ranch-v1-fixture.js");
   const oldCatalog =
     await import("../apps/api/src/games/animal-ranch/legacy-catalog.js");
   try {
@@ -82,15 +81,25 @@ test("生命周期 PostgreSQL：旧存档无损迁移、批次价格、名宠堂
     assert.equal(migrated.state.coins, 4321);
     assert.equal(migrated.state.xp, 123);
     assert.equal(a.stored, 6);
-    assert.equal(a.legacy, true);
+    assert.equal(a.legacy, false);
     assert.equal(a.createdAt, null);
     assert.equal(a.totalProduced, null);
     assert.notEqual(a.id, old.animals[0]!.id);
     const saved = (
       await pool.query("SELECT data FROM ranch_animals WHERE \"user\"='legacy'")
     ).rows[0].data;
-    for (const field of ["growthMs", "cycleMs", "yield", "paid", "harvestXp"])
-      assert.equal(saved[field], old.animals[0]![field as keyof typeof saved]);
+    for (const field of ["growthMs", "cycleMs", "yield"])
+      assert.equal(saved[field], engine.species[0]![field as "growthMs"]);
+    assert.equal(saved.paid, engine.species[0]!.price);
+    assert.equal(saved.harvestXp, 0);
+    assert.equal(
+      saved.cycleProgressMs,
+      Math.floor(
+        (12345 / old.animals[0]!.cycleMs) * engine.species[0]!.cycleMs,
+      ) +
+        migrated.serverNow -
+        report.cutoff,
+    );
     assert.equal(
       migrated.state.inventory[0].value,
       17 * oldCatalog.ranchCatalog[0]!.sellPrice,

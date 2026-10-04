@@ -19,8 +19,6 @@ import {
   xpForLevel,
 } from "../../../../../packages/contracts/src/ranch-balance.js";
 import { ranchCatalog as species } from "../../../../../packages/contracts/src/ranch-catalog.js";
-import { ranchCatalog as oldSpecies } from "./legacy-catalog.js";
-import { settleRanch as settleLegacy } from "./legacy-v1.js";
 export { species };
 export const MINUTE = 60_000;
 export const level = ranchLevel;
@@ -215,84 +213,11 @@ export function initialRanch(at = Date.now()): RanchState {
   event(s, first, "gift", "迎来了第一位小鸡伙伴", at);
   return s;
 }
-export function migrateLegacy(
-  raw: Record<string, unknown>,
-  last: number,
-  now: number,
-): RanchState {
-  const old = settleLegacy(raw, last, now);
-  const scope = String(raw.migrationScope ?? "unit-test");
-  const s = {
-    ...old,
-    version: 2,
-    feedUnitMs: old.feedUnitMs ?? MINUTE,
-    animals: [],
-    batches: [],
-    lots: [],
-    events: [],
-    hallCount: 0,
-    collection: {},
-  } as unknown as RanchState;
-  for (const prev of old.animals) {
-    const kind = species.find((k) => k.id === prev.species)!;
-    const a = {
-      ...newAnimal(stableId(scope + ":" + prev.id), kind, now),
-      ...prev,
-      id: stableId(scope + ":" + prev.id),
-      legacyId: prev.id,
-      legacy: true,
-      createdAt: null,
-      adultAt: null,
-      completedAt: null,
-      exitAt: null,
-      totalProduced: null,
-      cycleProgressMs: Math.max(0, prev.ageMs - prev.growthMs) % prev.cycleMs,
-      status: prev.ageMs < prev.growthMs ? "juvenile" : "producing",
-      sellPrice: oldSpecies.find((k) => k.id === prev.species)!.sellPrice,
-      maxStored: Math.max(
-        prev.stored,
-        prev.yield *
-          Math.min(
-            kind.maxRounds,
-            Math.max(3, Math.ceil((24 * HOUR) / prev.cycleMs)),
-          ),
-      ),
-    } as Animal;
-    const stored = a.stored;
-    a.stored = 0;
-    s.animals.push(a);
-    if (stored) addBatch(s, a, 0, stored, stored * prev.harvestXp, now);
-    event(
-      s,
-      a,
-      "legacy",
-      "旧版伙伴迁入：原周期与待收产物保留；历史累计产量未知",
-      now,
-    );
-  }
-  for (const [product, quantity] of Object.entries(old.inventory)) {
-    if (!quantity) continue;
-    const kind = oldSpecies.find((k) => k.product === product);
-    check(kind, "旧产物不支持");
-    s.lots.push({
-      id: stableId(scope + ":inventory:" + product),
-      animalId: null,
-      batchId: null,
-      product,
-      quantity,
-      price: kind.sellPrice,
-      at: now,
-    });
-  }
-  delete s.migrationScope;
-  return s;
-}
 export function settleRanch(
   raw: Record<string, unknown>,
   last: number,
   now: number,
 ): RanchState {
-  if (raw.version === 1) return migrateLegacy(raw, last, now);
   const s = structuredClone(raw) as RanchState;
   check(s.version === 2, "牧场存档版本不支持");
   let cursor = Math.max(last, s.at),
@@ -327,10 +252,9 @@ export function settleRanch(
           a.cycleProgressMs = 0;
           const k = ++a.completedRounds;
           check(k <= a.maxRounds, "生产轮次超出上限");
-          const xp = a.legacy
-            ? a.yield * a.harvestXp
-            : Math.floor((k * a.lifetimeXp) / a.maxRounds) -
-              Math.floor(((k - 1) * a.lifetimeXp) / a.maxRounds);
+          const xp =
+            Math.floor((k * a.lifetimeXp) / a.maxRounds) -
+            Math.floor(((k - 1) * a.lifetimeXp) / a.maxRounds);
           addBatch(s, a, k, a.yield, xp, cursor);
           if (a.totalProduced !== null) a.totalProduced += a.yield;
           if (k === a.maxRounds) {
@@ -352,7 +276,6 @@ export function settleRanch(
   return s;
 }
 export function saleCoins(a: Animal) {
-  if (a.legacy) return Math.floor(a.paid * (a.ageMs >= a.growthMs ? 0.6 : 0.3));
   if (a.status === "juvenile") return Math.floor(a.paid * 0.3);
   return Math.floor(
     (a.paid * (60 * a.maxRounds - 45 * a.completedRounds)) /

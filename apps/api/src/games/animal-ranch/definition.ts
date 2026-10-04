@@ -8,7 +8,6 @@ import {
 } from "./engine.js";
 import { ranchStorage } from "./storage.js";
 export const animalRanch: PersistentDefinition = {
-  previousVersions: [1],
   changeKey,
   metadata: {
     id: "animal-ranch",

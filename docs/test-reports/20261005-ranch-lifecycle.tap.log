@@ -6,153 +6,153 @@ TAP version 13
 # Subtest: exact positions only, repeated digits and numeric bounds
 ok 1 - exact positions only, repeated digits and numeric bounds
   ---
-  duration_ms: 1.224976
+  duration_ms: 1.295809
   type: 'test'
   ...
 # Subtest: two ready players required and immutable secret; third player rejected
 ok 2 - two ready players required and immutable secret; third player rejected
   ---
-  duration_ms: 0.923106
+  duration_ms: 0.924139
   type: 'test'
   ...
 # Subtest: dice tie retries both rolls, then high roll starts
 ok 3 - dice tie retries both rolls, then high roll starts
   ---
-  duration_ms: 0.932424
+  duration_ms: 0.962302
   type: 'test'
   ...
 # Subtest: turn enforcement, valid guesses and complete victory
 ok 4 - turn enforcement, valid guesses and complete victory
   ---
-  duration_ms: 0.537774
+  duration_ms: 0.548316
   type: 'test'
   ...
 # Subtest: late guess cannot win; timeout consumes one turn
 ok 5 - late guess cannot win; timeout consumes one turn
   ---
-  duration_ms: 0.280393
+  duration_ms: 0.255386
   type: 'test'
   ...
 # Subtest: disconnect pauses, reconnect preserves remaining time, 60s grace ends game
 ok 6 - disconnect pauses, reconnect preserves remaining time, 60s grace ends game
   ---
-  duration_ms: 0.41417
+  duration_ms: 0.418155
   type: 'test'
   ...
 # Subtest: both offline draw, settings reset readiness, rematch resets secrets and dice
 ok 7 - both offline draw, settings reset readiness, rematch resets secrets and dice
   ---
-  duration_ms: 0.294399
+  duration_ms: 0.285138
   type: 'test'
   ...
 # Subtest: memory mode hides history and exposes only latest opponent guess, while giving current feedback
 ok 8 - memory mode hides history and exposes only latest opponent guess, while giving current feedback
   ---
-  duration_ms: 0.493641
+  duration_ms: 0.522015
   type: 'test'
   ...
 # Subtest: zero-prefixed secrets and memory mode expose only latest opponent guess
 ok 9 - zero-prefixed secrets and memory mode expose only latest opponent guess
   ---
-  duration_ms: 0.847227
+  duration_ms: 2.06185
   type: 'test'
   ...
 # Subtest: finished games reveal full review to both players in either mode and clear it on rematch
 ok 10 - finished games reveal full review to both players in either mode and clear it on rematch
   ---
-  duration_ms: 1.173752
+  duration_ms: 1.143292
   type: 'test'
   ...
-# (node:1254522) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (node:1258443) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 # (Use `node --trace-warnings ...` to show where the warning was created)
 # Subtest: Migration retains IDs, original passwords, sessions, results, and private room snapshots
 ok 11 - Migration retains IDs, original passwords, sessions, results, and private room snapshots
   ---
-  duration_ms: 1102.938424
+  duration_ms: 1041.581374
   type: 'test'
   ...
 # Subtest: PostgreSQL: persistent isolation, concurrent duplicate actions, and rollback
 ok 12 - PostgreSQL: persistent isolation, concurrent duplicate actions, and rollback
   ---
-  duration_ms: 184.400811
+  duration_ms: 184.861127
   type: 'test'
   ...
 # Subtest: 平衡：等级边界和食槽覆盖一天，完成释放消耗
 ok 13 - 平衡：等级边界和食槽覆盖一天，完成释放消耗
   ---
-  duration_ms: 4.872537
+  duration_ms: 3.424063
   type: 'test'
   ...
 # Subtest: 平衡：重复买卖不刷XP、扩建双门槛、食槽上限
 ok 14 - 平衡：重复买卖不刷XP、扩建双门槛、食槽上限
   ---
-  duration_ms: 133.907578
+  duration_ms: 118.820896
   type: 'test'
   ...
 # Subtest: 平衡：完整生涯入堂也能回本，经验分摊不凭空增发
 ok 15 - 平衡：完整生涯入堂也能回本，经验分摊不凭空增发
   ---
-  duration_ms: 0.405606
+  duration_ms: 0.467228
   type: 'test'
   ...
 # Subtest: 平衡：真实引擎模拟，首日不超过Lv5，不会一下午全解锁
 ok 16 - 平衡：真实引擎模拟，首日不超过Lv5，不会一下午全解锁
   ---
-  duration_ms: 2559.026886
+  duration_ms: 2583.989775
   type: 'test'
   ...
 # Subtest: 生命周期 PostgreSQL：旧存档无损迁移、批次价格、名宠堂隐私分页与双设备退出
 ok 17 - 生命周期 PostgreSQL：旧存档无损迁移、批次价格、名宠堂隐私分页与双设备退出
   ---
-  duration_ms: 2762.567045
+  duration_ms: 2714.692381
   type: 'test'
   ...
 # Subtest: PostgreSQL 牧场：唯一初始化、双设备收获、原子钱包仓库流水、重载与事务失败回滚
 ok 18 - PostgreSQL 牧场：唯一初始化、双设备收获、原子钱包仓库流水、重载与事务失败回滚
   ---
-  duration_ms: 383.413082
+  duration_ms: 377.885738
   type: 'test'
   ...
 # Subtest: 牧场目录：36个独立物种、分钟至24小时、有限轮次与完整生涯收益
 ok 19 - 牧场目录：36个独立物种、分钟至24小时、有限轮次与完整生涯收益
   ---
-  duration_ms: 1.127983
+  duration_ms: 1.161035
   type: 'test'
   ...
 # Subtest: 牧场结算：成年、首产、最后一轮边界及无限离线不会超产
 ok 20 - 牧场结算：成年、首产、最后一轮边界及无限离线不会超产
   ---
-  duration_ms: 1.070919
+  duration_ms: 1.058521
   type: 'test'
   ...
 # Subtest: 牧场暂停：缺粮、满存、恢复、时钟倒退与分段时间守恒
 ok 21 - 牧场暂停：缺粮、满存、恢复、时钟倒退与分段时间守恒
   ---
-  duration_ms: 2.713817
+  duration_ms: 2.719814
   type: 'test'
   ...
 # Subtest: 牧场动作：名宠堂/出售/放生保留身份、礼物零返还与昵称校验
 ok 22 - 牧场动作：名宠堂/出售/放生保留身份、礼物零返还与昵称校验
   ---
-  duration_ms: 3.549927
+  duration_ms: 3.332218
   type: 'test'
   ...
-# Subtest: 旧版迁移：先按原规则结算离线，再保留周期、饲料预算与价格快照
-ok 23 - 旧版迁移：先按原规则结算离线，再保留周期、饲料预算与价格快照
+# Subtest: 统一规则转换：旧动物切换新周期与价格，保留比例和既有资产，二次执行无变化
+ok 23 - 统一规则转换：旧动物切换新周期与价格，保留比例和既有资产，二次执行无变化
   ---
-  duration_ms: 6.935141
+  duration_ms: 29.718167
   type: 'test'
   ...
 # Subtest: Room registry, three-player capacity, action deduplication, stale revisions, and durable reviews
 ok 24 - Room registry, three-player capacity, action deduplication, stale revisions, and durable reviews
   ---
-  duration_ms: 223.932185
+  duration_ms: 240.072289
   type: 'test'
   ...
 # Subtest: 真实服务器：账号、邀请、隐私、完整对局、重开与重启恢复
 ok 25 - 真实服务器：账号、邀请、隐私、完整对局、重开与重启恢复
   ---
-  duration_ms: 24923.129566
+  duration_ms: 24827.583874
   type: 'test'
   ...
 1..25
@@ -163,4 +163,4 @@ ok 25 - 真实服务器：账号、邀请、隐私、完整对局、重开与重
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 28222.054098
+# duration_ms 28174.765861

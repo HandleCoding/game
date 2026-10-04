@@ -144,8 +144,6 @@ try {
             start,
           ),
         ];
-        // Render legacy metadata in the isolated fixture; actual v1 conversion is exercised in PostgreSQL integration tests.
-        Object.assign(s.animals[2],{legacy:true,createdAt:null,totalProduced:null});
         const done = engineCode.settleRanch(s, start, Date.now());
         assert(done.animals.every((a) => a.status === "completed"));
         const saved = await ranchStorage.save(done, ctx);
@@ -159,9 +157,6 @@ try {
       await page.waitForFunction(
         () => !document.querySelector(".scene-loading"),
       );
-      await page.getByRole("button",{name:"查看山羊",exact:true}).click();
-      assert(await page.getByText("旧版伙伴保留原周期和产物价值；有限生产轮次从本次升级起计算。",{exact:true}).isVisible());
-      await page.getByRole("button",{name:"关闭牧场面板"}).click();
       await page.getByRole("button", { name: "查看小鸡", exact: true }).click();
       assert(
         await page
@@ -291,7 +286,7 @@ try {
         size,
         passed: true,
         checks: [
-          "legacy-notice","finite-round-display",
+          "finite-round-display",
           "harvest-before-hall",
           "exit-cancel",
           "hall-no-active-slot",
