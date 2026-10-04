@@ -132,41 +132,25 @@ try {
         viewportLayout.scrollH <= size.height,
         "Immersive game requires page scrolling",
       );
-      const feedBox = await page.getByTestId("central-feeder").boundingBox();
       assert(
-        feedBox.x >= 0 && feedBox.x + feedBox.width <= size.width,
-        "Central feeder cropped on entry",
+        await page.getByRole("button", { name: /添饲料/ }).isVisible(),
+        "Phone feeding fallback missing",
+      );
+      await page.getByRole("button", { name: /添饲料/ }).click();
+      await page.getByRole("dialog").waitFor();
+      await page.getByRole("button", { name: "关闭牧场面板" }).click();
+      await page.getByRole("button", { name: "查看牧场全景" }).click();
+      const feedBox = await page.getByTestId("side-feeder").boundingBox();
+      assert(
+        feedBox && feedBox.x >= 0 && feedBox.x + feedBox.width <= size.width,
+        "Side label not visible in panorama",
       );
       assert(
-        feedBox.y >= 80 && feedBox.y + feedBox.height < size.height - 80,
-        "Central feeder hidden by HUD/toolbelt",
+        feedBox.x + feedBox.width / 2 < size.width / 3,
+        "Food label intrudes into central field",
       );
-      const overlap = await page.evaluate(() => {
-        const a = document
-          .querySelector('[data-testid="central-feeder"]')
-          .getBoundingClientRect();
-        const b = document
-          .querySelector(".game-offline-note")
-          .getBoundingClientRect();
-        const c = document
-          .querySelector(".animal-picker")
-          .getBoundingClientRect();
-        const d = document
-          .querySelector(".ranch-toolbelt")
-          .getBoundingClientRect();
-        const intersects = (x, y) =>
-          x.left < y.right &&
-          x.right > y.left &&
-          x.top < y.bottom &&
-          x.bottom > y.top;
-        return { foodNote: intersects(a, b), pickerTools: intersects(c, d) };
-      });
-      assert.equal(overlap.foodNote, false, "Offline hint obscures feeder");
-      assert.equal(
-        overlap.pickerTools,
-        false,
-        "Animal picker overlaps toolbar",
-      );
+      assert.equal(await page.locator(".feeder-caption").textContent(), "食槽");
+      assert.equal(await page.getByTestId("central-feeder").count(), 0);
       const before = await page
         .locator("canvas")
         .evaluate((c) => c.toDataURL());
@@ -210,21 +194,18 @@ try {
       assert.equal(await cards.count(), 1);
       await cards.getByRole("button", { name: /金币 · 认养/ }).click();
       await page.getByRole("button", { name: "关闭牧场面板" }).click();
-      const foodObject = await page.getByTestId("central-feeder").boundingBox();
-      if (mobile)
-        await page.touchscreen.tap(
-          foodObject.x + foodObject.width / 2,
-          foodObject.y - 20,
-        );
-      else
-        await page.mouse.click(
-          foodObject.x + foodObject.width / 2,
-          foodObject.y - 20,
-        );
+      const scene = await page.getByTestId("ranch-canvas").boundingBox();
+      const fitScale = Math.min(scene.width / 1200, scene.height / 800);
+      const foodX =
+        scene.x + (scene.width - 1200 * fitScale) / 2 + 95 * fitScale;
+      const foodY =
+        scene.y + (scene.height - 800 * fitScale) / 2 + 375 * fitScale;
+      if (mobile) await page.touchscreen.tap(foodX, foodY);
+      else await page.mouse.click(foodX, foodY);
       await page.getByRole("dialog").waitFor();
       await page.getByRole("button", { name: "关闭牧场面板" }).click();
-      if (mobile) await page.getByTestId("central-feeder").tap();
-      else await page.getByTestId("central-feeder").click();
+      if (mobile) await page.getByTestId("side-feeder").tap();
+      else await page.getByTestId("side-feeder").click();
       await page.getByRole("dialog").waitFor();
       const foodResponse = page.waitForResponse(
         (r) =>
@@ -237,7 +218,7 @@ try {
       await page.waitForFunction(
         (feed) =>
           document
-            .querySelector('[data-testid="central-feeder"]')
+            .querySelector('[data-testid="side-feeder"]')
             .getAttribute("aria-label")
             .includes("剩余" + feed + "份"),
         foodState.state.feed,
@@ -371,9 +352,14 @@ try {
             .filter({ hasText: "隐私验收邻居" })
             .getByRole("button", { name: "参观牧场" })
             .click();
+          await page.getByTestId("ranch-canvas").waitFor();
+          await page.waitForFunction(
+            () => !document.querySelector(".scene-loading"),
+          );
+          await page.getByRole("button", { name: "查看牧场全景" }).click();
           await page.locator(".feeder-visitor-caption").waitFor();
           assert.equal(
-            await page.getByTestId("central-feeder").count(),
+            await page.getByTestId("side-feeder").count(),
             0,
             "Visitor can add food",
           );
@@ -396,7 +382,10 @@ try {
           await page
             .getByRole("button", { name: "回我的牧场", exact: true })
             .click();
-          await page.getByTestId("central-feeder").waitFor();
+          await page.getByTestId("ranch-canvas").waitFor();
+          await page.waitForFunction(
+            () => !document.querySelector(".scene-loading"),
+          );
         } finally {
           await neighbor.close();
         }
@@ -443,7 +432,9 @@ try {
           "viewport-filling-scene",
           "no-lobby-header",
           "no-page-scroll",
-          "central-feeder-touch",
+          "side-feeder-touch",
+          "feeding-toolbar-fallback",
+          "side-label-away-from-center",
           ...(size.width === 390
             ? ["visitor-private-resource-hiding", "visit-modal-close"]
             : []),
@@ -483,7 +474,7 @@ try {
     await context.close();
   }
   await writeFile(
-    "docs/test-reports/20261004-ranch-immersive-ui-" + engine + ".json",
+    "docs/test-reports/20261004-ranch-side-feeder-ui-" + engine + ".json",
     JSON.stringify(
       {
         browser: engine,

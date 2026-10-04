@@ -30,9 +30,9 @@ type Walker = {
 };
 const walkers = new Map<string, Walker>(),
   sheets: HTMLImageElement[] = [],
-  background = new Image(),
-  feeder = new Image();
-const feederBox = ref({ left: 0, top: 0, width: 180, height: 155 });
+  background = new Image();
+const feederBox = ref({ left: 0, top: 0, width: 64, height: 44 });
+const feederVisible = ref(false);
 let disposed = false;
 let frame = 0,
   last = 0,
@@ -122,11 +122,16 @@ function clampCamera() {
   offsetX = width / 2 - cameraX * scale;
   offsetY = height / 2 - cameraY * scale;
   const next = {
-    left: offsetX + 500 * scale,
-    top: offsetY + 550 * scale - 44,
-    width: 200 * scale,
+    left: Math.max(8, Math.min(width - 72, offsetX + 110 * scale - 32)),
+    top: offsetY + 440 * scale - 22,
+    width: 64,
     height: 44,
   };
+  feederVisible.value =
+    offsetX + 110 * scale >= 0 &&
+    offsetX + 110 * scale <= width &&
+    next.top >= 0 &&
+    next.top + next.height <= height;
   if (
     Object.keys(next).some(
       (k) =>
@@ -176,20 +181,6 @@ function tag(
   ctx.textAlign = "center";
   ctx.fillText(text, x, y + font * 0.36);
 }
-function drawFeeder(ctx: CanvasRenderingContext2D) {
-  const cell = feeder.width / 2;
-  ctx.drawImage(
-    feeder,
-    props.hungry ? cell : 0,
-    0,
-    cell,
-    feeder.height,
-    500,
-    345,
-    200,
-    200,
-  );
-}
 function draw(now: number) {
   if (disposed) return;
   frame = requestAnimationFrame(draw);
@@ -237,8 +228,6 @@ function draw(now: number) {
         const p = w.phase++ * 1.71;
         w.tx = 340 + (Math.sin(p) * 0.5 + 0.5) * 600;
         w.ty = 330 + (Math.cos(p * 0.7) * 0.5 + 0.5) * 270;
-        // Walk around the central trough, rather than through its wooden body.
-        if (w.tx > 500 && w.tx < 700 && w.ty > 420 && w.ty < 540) w.ty = 565;
         w.state = "walk";
       }
     }
@@ -246,14 +235,9 @@ function draw(now: number) {
   const sorted = [...props.animals].sort(
     (a, b) => (walkers.get(a.id)?.y || 0) - (walkers.get(b.id)?.y || 0),
   );
-  let feederDrawn = false;
   for (const a of sorted) {
     const w = walkers.get(a.id);
     if (!w) continue;
-    if (!feederDrawn && w.y >= 535) {
-      drawFeeder(ctx);
-      feederDrawn = true;
-    }
     const location = spriteLocation(a.species),
       sheet = sheets[location.group];
     if (!sheet) continue;
@@ -318,7 +302,6 @@ function draw(now: number) {
     }
     ctx.restore();
   }
-  if (!feederDrawn) drawFeeder(ctx);
   const age = elapsed - effectAt;
   if (age >= 0 && age < 2.4) {
     for (let i = 0; i < 12; i++) {
@@ -425,11 +408,9 @@ function up(e: PointerEvent) {
         y < w.y + 25
       );
     });
-    if (props.owner && x > 515 && x < 685 && y > 400 && y < 525)
+    if (props.owner && x > 45 && x < 145 && y > 310 && y < 430)
       pendingTap = { type: "feed" };
     else if (a) pendingTap = { type: "select", id: a.id };
-    else if (x > 500 && x < 700 && y > 405 && y < 560 && props.owner)
-      pendingTap = { type: "feed" };
     else if (x < 260 && y < 300) pendingTap = { type: "shop" };
   }
   if (!pointers.size) dragging = false;
@@ -488,10 +469,14 @@ watch(
     liveEffect = e.type;
     if (e.type === "buyFeed")
       for (const w of walkers.values()) {
-        const p = ((w.phase % 12) / 12) * Math.PI * 2;
-        w.tx = 600 + Math.cos(p) * 110;
-        w.ty = 545 + Math.sin(p) * 42;
-        w.state = "walk";
+        if (feederVisible.value) {
+          w.tx = 165 + (w.phase % 3) * 32;
+          w.ty = 350 + (w.phase % 4) * 30;
+          w.state = "walk";
+        } else {
+          w.state = "eat";
+          w.until = elapsed + 4 + (w.phase % 3);
+        }
       }
   },
 );
@@ -501,14 +486,12 @@ onMounted(async () => {
   if (canvas.value) resize.observe(canvas.value);
   reduced.addEventListener("change", reducedChange);
   try {
-    const [image, trough] = await Promise.all([
+    const [image] = await Promise.all([
       getImage("/ranch/scene/pasture.png"),
-      getImage("/ranch/scene/feeder-states.png"),
       ensureSheets(),
     ]);
     if (disposed) return;
     background.src = image.src;
-    feeder.src = trough.src;
     ready.value = true;
     measure();
     frame = requestAnimationFrame(draw);
@@ -541,31 +524,34 @@ onUnmounted(() => {
       {{ failure ? "场景素材未加载，请刷新重试" : "小动物们正在出来玩…" }}
     </div>
     <button
-      v-if="ready && owner"
+      v-if="ready && owner && feederVisible"
       class="feeder-hitbox"
-      data-testid="central-feeder"
+      data-testid="side-feeder"
       :style="{
         left: feederBox.left + 'px',
         top: feederBox.top + 'px',
         width: feederBox.width + 'px',
         height: feederBox.height + 'px',
       }"
-      :aria-label="'中央食槽，剩余' + (feed ?? 0) + '份饲料，点击添加食物'"
+      :aria-label="'左侧食槽，剩余' + (feed ?? 0) + '份饲料，点击添加食物'"
+      :title="
+        hungry
+          ? '需要喂食，点击添加饲料'
+          : '剩余 ' + (feed ?? 0) + ' 份，点击添加饲料'
+      "
       @click="emit('feed')"
     >
-      <span class="feeder-caption" :class="{ empty: hungry }"
-        >🌾 {{ hungry ? "缺粮 · 点击添食" : "食槽 · " + (feed ?? 0) + " 份" }}
-        <b>＋</b></span
-      >
+      <span class="feeder-caption" :class="{ empty: hungry }">食槽</span>
     </button>
     <span
-      v-else-if="ready"
+      v-else-if="ready && !owner && feederVisible"
       class="feeder-visitor-caption"
+      :title="hungry ? '需要喂食 · 只读参观' : '饲料充足 · 只读参观'"
       :style="{
         left: feederBox.left + feederBox.width / 2 + 'px',
         top: feederBox.top + feederBox.height + 'px',
       }"
-      >{{ hungry ? "食槽 · 需要喂食" : "食槽 · 饲料充足" }}</span
+      >食槽</span
     >
     <div class="scene-controls">
       <button aria-label="缩小牧场" @click="zoomBy(-0.3)">−</button
@@ -765,30 +751,19 @@ onUnmounted(() => {
 }
 .feeder-caption,
 .feeder-visitor-caption {
-  background: #fff7d8ed;
-  color: #537331;
-  border: 2px solid #a2b862;
-  border-radius: 24px;
-  padding: 7px 10px;
-  box-shadow: 0 3px 0 #5e71442b;
+  background: linear-gradient(#e6bf86e8, #bb8b57e8);
+  color: #fff5d8;
+  border: 1px solid #956333;
+  border-radius: 6px;
+  padding: 5px 11px;
+  box-shadow: 0 2px 2px #5d452537;
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
-}
-.feeder-caption b {
-  display: inline-grid;
-  place-items: center;
-  margin-left: 5px;
-  background: #99b656;
-  color: #fff;
-  border-radius: 50%;
-  width: 19px;
-  height: 19px;
+  text-shadow: 0 1px #845a31;
 }
 .feeder-caption.empty {
-  background: #ffedc5;
-  color: #a36c2d;
-  border-color: #d09a52;
+  border-color: #c87234;
 }
 .feeder-visitor-caption {
   position: absolute;

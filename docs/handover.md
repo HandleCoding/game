@@ -90,3 +90,7 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 ## 2026-10-04 沉浸式牧场 2.3.0（已上线）
 
 独立铺满视口的 Canvas 游戏、浮动 HUD / 工具、中央食槽两状态 / 点击添食 / 动物聚集、清晰头顶状态、原生面板和访客隐私。读取 ranch-immersive.md 与 test-reports/20261004-ranch-immersive.md。18 项回归与 Chromium / WebKit 共 10 组 UI 验收通过，手机触屏弹窗点击穿透已修复并检查购买请求唯一。正式目录 /opt/pair-play/releases/v2.3.0-20261004-145017，发布源提交 a4a348a0817d84f3f4074204f252bdd6ce75e857；备份与数据数量核验见 20261004-ranch-immersive-release.json。候选互动 / 装饰 / 互助尚未实现。
+
+## 2026-10-04 侧边食槽 2.3.1（已验收，待发布）
+
+移除中央大食槽，复用背景左侧原设施，增加小木牌“食槽”；实体 / 木牌点击可添粮，手机保留底部入口。原中央 PNG 为历史归档，不再加载。源码 RanchScene.vue，文档 ranch-immersive.md / test-reports/20261004-ranch-side-feeder.md。两种浏览器共10组验收通过，后端规则和 schema 未变。当前正式仍为上方 2.3.0，部署后更新。
