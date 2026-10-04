@@ -34,3 +34,7 @@ curl --fail http://127.0.0.1:3211/healthz
 邀请通知 15 秒有效。断线暂停，60 秒重连窗口。支持日间 / 夜间、固定输入区、对方回合预写草稿、己方回合边框提示、骰子和命中效果、手机 / 电脑混合对战。
 
 根目录旧 JS / SQLite 文件仅保留作为迁移参考；新入口是 `apps/api/src/main.ts`，构建运行 `dist/apps/api/src/main.js`，网页输出 `web-dist/`。
+
+## GitHub 与协作
+
+源码仓库：https://github.com/HandleCoding/game 。主分支 main，云端开发目录 /opt/pair-play-dev。后续 Agent 先读 AGENTS.md、docs/handover.md 和 docs/git-workflow.md。GitHub 保存源码、文档和版本历史；运行数据库、备份、配置密钥不上传。

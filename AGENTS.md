@@ -2,7 +2,7 @@
 
 用户后续指令优先。开发和测试都在京东云 `117.72.116.83` 的 `/opt/pair-play-dev`，浏览器可在电脑、手机访问云端服务。
 
-先读 `docs/handover.md` → `docs/development-guide.md` → `docs/testing-guide.md`。涉及架构再读 technology-decisions、multi-game-architecture、persistent-game-architecture；正式发布读 deployment-runbook。
+先读 `docs/handover.md` → `docs/development-guide.md` → `docs/testing-guide.md` → `docs/git-workflow.md`。涉及架构再读 technology-decisions、multi-game-architecture、persistent-game-architecture；正式发布读 deployment-runbook。
 
 ## 实际技术栈
 
@@ -28,6 +28,8 @@ Vue 3 + TypeScript + Vite；Node.js + Fastify + TypeScript；PostgreSQL 18；HTT
 ## 交付
 
 先检查 git status 和运行环境，不覆盖其他 Agent 的工作；新分支使用 `codex/` 前缀。测试只连接开发库，独立 schema，固定 3221 集成端口要加锁。
+
+GitHub origin 为 git@github.com:HandleCoding/game.git，main 为验收后的主分支。后续开发使用 codex/功能名 分支，提交前检查 diff 和敏感文件；将已验收提交推送到对应远程分支，不 force push。Git 推送与正式发布是两个步骤；推送不能自动触发服务重启。
 
 修改后记录实际验证、未完成项、源提交和正式版本，更新 handover。用户授权的发布按 runbook 完成，数据库迁移必须备份和验证。正式新版本已经接受写入后，不能自动退回旧 SQLite 丢失新用户。
 

@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 独立仓库，无远程；分支 codex/architecture-migration。正式发布源提交 dd15692fb726032493e4b9be5c1212a6ae8cbc43；后续验收文档提交看 git log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 dd15692fb726032493e4b9be5c1212a6ae8cbc43；后续验收文档提交看 git log。
 
 ## 已落地
 
