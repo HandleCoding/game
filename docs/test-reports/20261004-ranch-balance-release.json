@@ -1,0 +1,54 @@
+{
+  "sourceCommit": "3729432553b0b27ad17cf4ae46428eff0d7d9cd7",
+  "release": "/opt/pair-play/releases/v2.6.0-20261004-193242",
+  "version": "2.6.0",
+  "databaseBackup": "/var/backups/pair-play/postgres-prod-20261004-193244.dump",
+  "ranchReset": {
+    "profiles": 1,
+    "backup": "/var/backups/pair-play/ranch-before-reset-20261004-193243.json",
+    "scope": "animal-ranch only",
+    "balanceVersion": 2,
+    "verified": {
+      "wallets": 1,
+      "xp": 0,
+      "coins": 800,
+      "capacity": 4,
+      "animals": 1,
+      "inventory": 0,
+      "ledger": 0,
+      "feedMs": 432000000
+    }
+  },
+  "before": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "after": {
+    "users": 2,
+    "sessions": 3,
+    "results": 3,
+    "result_players": 6,
+    "persistent_profiles": 1
+  },
+  "unitBackup": "/var/backups/pair-play/pair-play-before-20261004-193243.service",
+  "caddyBackup": "/var/backups/pair-play/Caddyfile-before-20261004-193243",
+  "schemaVersion": 3,
+  "completedAt": "2026-10-04T19:32:45+0800",
+  "postDeployBalance": {
+    "profiles": 1,
+    "xp": 0,
+    "coins": 800,
+    "capacity": 4,
+    "feedMs": 432000000,
+    "feedUnitMs": 1800000,
+    "animals": 1,
+    "growthMs": 28800000,
+    "cycleMs": 21600000,
+    "stored": 3
+  },
+  "publicBundlesVerified": true,
+  "additionalAuthenticatedRanchCheck": "Not run: automatic approval rejected extracting production session tokens; direct DB and public bundle verification completed instead."
+}

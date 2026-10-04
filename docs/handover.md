@@ -1,13 +1,13 @@
 # 新架构接手状态
 
-更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户明确授权上线一起牧场 2.5.3。当前发布、备份与验证见 [当前公网慢速修复报告](test-reports/20261004-ranch-loading-fix.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
+更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户明确授权上线一起牧场 2.6.0。当前发布、备份与验证见 [当前数值与重置报告](test-reports/20261004-ranch-balance.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
 
 ## 环境
 
 | 项目 | 正式 | 开发 |
 | --- | --- | --- |
 | 主机 | 京东云 117.72.116.83 | 同一主机 |
-| 代码 | /opt/pair-play/releases/v2.5.3-20261004-190443 | /opt/pair-play-dev |
+| 代码 | /opt/pair-play/releases/v2.6.0-20261004-193242 | /opt/pair-play-dev |
 | 服务 | pair-play.service | pair-play-dev.service |
 | 用户 | pairplay | pairplaydev |
 | 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 30dbcbd9fd5b1a705e47facb06956eb0c1452144；后续验收文档提交看 git log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 3729432553b0b27ad17cf4ae46428eff0d7d9cd7；后续验收文档提交看 git log。
 
 ## 已落地
 
@@ -46,7 +46,7 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 | scripts/prepare-release.py、cutover.py | 本次首次迁移发布；不可当成日常部署脚本反复执行 |
 | scripts/release-postgres.py | 日常 PostgreSQL 发布；准备构建或经授权 --deploy，备份与会话验证、只回退代码 |
 | scripts/backup-postgres.py、verify-backup-restore.py | 私有备份与独立库恢复验证 |
-| test-v2/ | 新架构的 18 项云端测试 |
+| test-v2/ | 新架构的 25 项云端测试 |
 
 旧 server.mjs / game.mjs / public / test 留作兼容参考，服务不再以其为新入口。
 
@@ -114,3 +114,13 @@ RanchLoading.vue统一存档准备和资源加载画面；RanchScene按必要图
 ## 公网慢速加载修复 v2.5.3（已上线）
 
 旧25秒整图限时在公网误中断正常下载，Windows单PNG实测74.85秒。现为分块进度/45秒连续无数据超时/两路并发；HUD就绪后才挂载，11张版本化无损WebP减少约26%体积且长期缓存。原PNG、可见像素、透明度和裁切保持。两种引擎32秒六图慢速测试、42项重试检查、702项新格式裁切检查和Chromium5组交互回归通过；已核验原有效会话、存档、公开13个资源正文与缓存头。见test-reports/20261004-ranch-loading-fix.md。不要把本机快速加载通过当作公网带宽通过，也不要恢复25秒总时长中断；改图必须使用新的版本文件名。
+
+## 2026-10-04 数值重做 2.6.0（已上线）
+
+小时级成长/产出；每只30分钟1份饲料；初始240份供4只30小时，满槽1000份供16只31小时15分。经验按80+25(L-1)+10(L-1)^2递增；购买/送别/扩建/售产物/喂食零XP。扩建Lv3/6/9/12/15/18、600/1800/4200/8000/14000/22000金币，保持4→16位置。36种均保留，规则与全表在ranch-balance.md，实际180天模拟全解锁约40天（15分钟XP策略）至85–90天（6/12/24小时收益策略），不是保证日期。
+
+用户明确授权重置唯一真实牧场；已在维护/停写下备份完整库和仅牧场私有快照，仅重置animal-ranch资源、流水及其动作回执，原档案revision+1。2个账号、3会话、3猜数字结果、6结果玩家关联均保持；新牧场Lv1/800金币/240饲料/4位置/1成年小鸡带3鸡蛋。严禁未来发布自动重复重置：需要新的用户授权和明确范围。
+
+schema3仅扩大ranch_wallets.feed_ms约束至1800000000；摘要增加feedUnitMs，缺失按旧一分钟单位读取；实例周期仍在购入时保存。operator reset.ts、scripts/reset-ranch.mjs没有HTTP接口。scripts/release-postgres.py --deploy --reset-ranch限定1个牧场，停写后备份/重置；若开放前失败只恢复牧场行，不能回滚用户/猜数字。
+
+验证：25项回归、operator CLI重置/恢复/600文件/人数变化守卫、Chromium/WebKit各5组尺寸通过且截图实际查看；公网healthz2.6.0、正式钱包/周期/单位数值和新RanchGame JS/CSS逐字节验证正常。追加使用生产登录令牌的牧场API验收被自动审批拒绝，未绕过；改为直接数值与公网文件核对。正式登录后的互动未作这项追加验收，开发库HTTP与双内核完整交互已验证。报告test-reports/20261004-ranch-balance.md和release.json。保留2.5.3分块加载/45秒闲置超时/2并发/WebP不可变缓存、真实帧裁切、柔和写实幼年成年与侧边食槽。

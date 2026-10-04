@@ -39,6 +39,12 @@ GitHub origin 为 git@github.com:HandleCoding/game.git，main 为验收后的主
 
 游戏 ID animal-ranch，kind=persistent。动物配置唯一来源 packages/contracts/src/ranch-catalog.ts。先读 docs/animal-ranch.md、ranch-balance.md、ranch-assets.md。首版 36 个物种，禁止用重复幼崽或换名图凑数。普通离线成长按食槽和实例保存周期结算，不需要 worker。缺粮暂停，不死亡；生产存量最多 3 轮。访客只读且不显示钱、仓库、流水。
 
-schema v2 的 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger 与档案、动作回执在同一行锁事务内写入；不可仅修改 JSON 而绕开钱包、仓库或流水。配置修改不能追溯改已有动物参数。测试当前 18 项。
+schema v3 的 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger 与档案、动作回执在同一行锁事务内写入；不可仅修改 JSON 而绕开钱包、仓库或流水。配置修改不能追溯改已有动物参数。测试当前 25 项。
 
 动态场景前端为 RanchScene.vue；资源计算仍在后端。手机 / 桌面 UI 验收 npm run test:ui，必须开发库与独立 schema / 3221 锁，见 testing-guide 和 ranch-scene 验收报告。不得把模拟测试说成真机测试。
+
+## 当前牧场数值与重置边界（2.6.0）
+
+先读ranch-balance.md最新表；成长/生产单位小时，每只30分钟耗1份，初始240份。XP逐级增加、仅收获获得XP、扩建等级金币双门槛；不要再写xp/80或每分钟一份的逻辑。食槽单位feedUnitMs保存在摘要；旧摘要缺失时按旧单位读，普通改配置不追溯已购动物。schema3扩大feed_ms预算CHECK。
+
+唯一正式旧牧场已按用户本次明确授权重置，账号/会话/猜数字保持。任何未来清空真实进度需新的明确授权与范围，禁止例行发布附带--reset-ranch。operator文件不暴露HTTP重置接口；备份留/var/backups/pair-play私有目录，不提交。重置/恢复验收脚本ranch-reset-qa.mjs强制开发库隔离schema。当前25项回归与两内核10组尺寸通过，报告20261004-ranch-balance.md。

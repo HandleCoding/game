@@ -37,3 +37,9 @@
 尚未增加装饰、任务、动物寿命或额外消费；完成扩建后金币仍可持续积累。当前通过等级门槛防止积累金币直接买通全部动物。后续经济扩展需重新模拟产出/消费，不将本次数值视作永远不变的定值。
 
 已实际查看 artifacts/ranch-balance-review.jpg 的390竖屏食槽、1440桌面食槽/商店截图；新时间单位与面板触控布局可见，未出现图集串图。
+
+## 实际正式发布
+
+源提交 3729432553b0b27ad17cf4ae46428eff0d7d9cd7，正式 /opt/pair-play/releases/v2.6.0-20261004-193242；完成 2026-10-04T19:32:45+0800，schema3。完整备份 /var/backups/pair-play/postgres-prod-20261004-193244.dump；仅牧场恢复快照 /var/backups/pair-play/ranch-before-reset-20261004-193243.json（root私有，不提交内容）。
+
+发布前后：users2 / sessions3 / results3 / result_players6 / persistent_profiles1一致；重置1份，Lv1、800金币、240饲料、4位置、成年小鸡1只与3鸡蛋，仓库与牧场流水清空。公网Windows healthz2.6.0正常、新RanchGame JS/CSS逐字节一致，三个相关服务active。追加读取生产令牌做牧场API验收被自动审批拒绝，未执行也未绕过；直接正式库钱包/周期/食槽单位与公网文件校验已完成。开发独立账号HTTP与两内核完整交互已验证；未将它说成正式用户登录互动验收。
