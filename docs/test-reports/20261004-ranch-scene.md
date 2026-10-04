@@ -31,3 +31,10 @@
 
 京东云开发服务：127.0.0.1:3211。Windows localhost:3211 为仅本机 SSH 转发入口，程序与数据库在云端。转发已恢复并实际验证 healthz=2.2.0 / PostgreSQL；不开放公网开发端口。
 正式版本更新以本报告后续发布结果和 handover 环境表为准。上线先备份、核对无活动短局、保存账号会话和牧场档案，不导入开发数据。
+
+## 正式发布结果
+
+已于 2026-10-04T14:20:34+0800 上线 https://game.aicoding.ltd/。
+源提交 38ced49989a779223720cf26364a13fcdaa9d3fe，发布目录 /opt/pair-play/releases/v2.2.0-20261004-142030；备份 /var/backups/pair-play/postgres-prod-20261004-142032.dump。
+原用户 2、会话 3、猜数字结果 3、参与记录 6、长期牧场档案 1，切换前后数量一致；有效会话身份验证通过。数据库继续 schema v2，无开发测试账号导入。
+公网 healthz=2.2.0 / PostgreSQL，HTML、JS/CSS、原 36 个动物资源和新 5 个场景 / 图集 HTTPS 验证通过。正式 / 开发 / Caddy 均 active，未更改无关服务。

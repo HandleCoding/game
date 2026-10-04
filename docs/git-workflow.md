@@ -35,4 +35,4 @@ git status --short --branch
 git log -3 --oneline
 git ls-remote origin
 
-首次迁移源提交在 docs/test-reports/20261004-production-cutover.json，当前牧场上线源提交和发布目录在 docs/test-reports/20261004-animal-ranch.md；main 后续的文档提交不代表线上构建改变。源码同步不需要重新导入数据或重启 PostgreSQL。
+首次迁移源提交在 docs/test-reports/20261004-production-cutover.json，当前动态牧场上线源提交和发布目录在 docs/test-reports/20261004-ranch-scene.md；main 后续的文档提交不代表线上构建改变。源码同步不需要重新导入数据或重启 PostgreSQL。

@@ -1,13 +1,13 @@
 # 新架构接手状态
 
-更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户明确授权上线一起牧场 2.1.0。当前发布、备份与验证见 [牧场上线报告](test-reports/20261004-animal-ranch.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
+更新：2026-10-04。已完成架构和现有注册数据迁移，并按用户明确授权上线一起牧场 2.2.0。当前发布、备份与验证见 [牧场上线报告](test-reports/20261004-ranch-scene.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
 
 ## 环境
 
 | 项目 | 正式 | 开发 |
 | --- | --- | --- |
 | 主机 | 京东云 117.72.116.83 | 同一主机 |
-| 代码 | /opt/pair-play/releases/v2.1.0-20261004-132821 | /opt/pair-play-dev |
+| 代码 | /opt/pair-play/releases/v2.2.0-20261004-142030 | /opt/pair-play-dev |
 | 服务 | pair-play.service | pair-play-dev.service |
 | 用户 | pairplay | pairplaydev |
 | 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 b30c80334fd0e5eb800d9d0c90d2e7073a96e6bc；后续验收文档提交看 git log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 38ced49989a779223720cf26364a13fcdaa9d3fe；后续验收文档提交看 git log。
 
 ## 已落地
 
@@ -75,10 +75,14 @@ PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库
 
 已经实现动物牧场与 ranch_wallets / ranch_animals / ranch_inventory / ranch_ledger；作物种植、交易、偷取、赠送和后台事件 worker 尚未实现。普通动物成长在访问或操作时结算，不依赖浏览器和后台逐秒写入。
 
-此前猜数字浏览器验证覆盖桌面和 390px 手机视口、日夜主题、双账号完整记忆模式对局、草稿 / 最新提示、结束复盘 / 刷新 / 筛选。新增牧场因浏览器自动控制超时，未完成实际前端交互和手机视口验收；不要将既有猜数字验收当成牧场验收。真实手机键盘与后台行为仍待实机验证。
+此前猜数字浏览器验证覆盖桌面和 390px 手机视口、日夜主题、双账号完整记忆模式对局、草稿 / 最新提示、结束复盘 / 刷新 / 筛选。新增牧场 2.2.0 已在云端独立 Chromium / WebKit 通过 10 组手机尺寸、桌面与交互模拟验收，截图已实际检查。真实手机硬件、软键盘及微信内置浏览器行为不在本次模拟验收范围；不要把模拟器说成真机。
 
 下一游戏先实现后端定义和 Vue 模块，补专属测试，再注册。持续游戏要完成资源事务 / 时间 / 权限规则，不能将档案塞进 active_rooms。
 
 ## 2026-10-04 动物牧场扩展
 
-版本 2.1.0，schema v2。游戏 ID animal-ranch，36 种动物覆盖家禽家畜、宠物、动物园。源码 games/animal-ranch 与共享 ranch-catalog.ts；前端 RanchGame.vue。资料、数值、素材、规则见 animal-ranch.md、ranch-balance.md、ranch-assets.md。正式发布目录和源提交以 test-reports/20261004-animal-ranch.md 的发布结果为准，上方环境表已更新，旧账号和猜数字记录保留。
+版本 2.1.0，schema v2。游戏 ID animal-ranch，36 种动物覆盖家禽家畜、宠物、动物园。源码 games/animal-ranch 与共享 ranch-catalog.ts；前端 RanchGame.vue。资料、数值、素材、规则见 animal-ranch.md、ranch-balance.md、ranch-assets.md。正式发布目录和源提交以 test-reports/20261004-ranch-scene.md 的发布结果为准，上方环境表已更新，旧账号和猜数字记录保留。
+
+## 当前动态牧场 2.2.0
+
+全身动物、Canvas 场景、四帧走路、待机、喂食 / 收获提示、触摸平移 / 缩放、木质工具栏和弹窗。渲染入口 RanchScene.vue，图鉴 AnimalPortrait.vue，裁切 atlas-metadata.ts，素材 / 提示词 ranch-scene-assets.md。18 项回归 + 10 组浏览器 UI 验收通过，正式账号与牧场档案保留。Windows localhost:3211 为云端开发的 SSH 转发（仅本机监听），程序并不在 Windows 运行。
