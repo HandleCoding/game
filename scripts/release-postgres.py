@@ -4,7 +4,8 @@ Only additive, backward-compatible schema changes may use automatic code rollbac
 """
 import json,os,re,shutil,subprocess,sys,time,urllib.request,shlex
 from pathlib import Path
-ROOT=Path('/opt/pair-play-dev');BACKUP=Path('/var/backups/pair-play')
+ROOT=Path(__file__).resolve().parents[1];BACKUP=Path('/var/backups/pair-play')
+if ROOT != Path('/opt/pair-play-dev') and not ROOT.is_relative_to(Path('/opt/pair-play-worktrees')):raise RuntimeError('Release source must be a cloud development checkout')
 def call(args,**kw):return subprocess.run(args,check=True,**kw)
 def sql(query):
  result=call(['runuser','-u','postgres','--','psql','-X','-A','-t','--dbname=playroom_prod','-c',query],stdout=subprocess.PIPE,text=True)

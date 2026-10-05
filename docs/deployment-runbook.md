@@ -91,3 +91,8 @@ v2档案与永久动物不兼容旧版删除重插storage：迁移一旦开始�
 完整实施与边界见 ranch-mutation-v2.8.md。已为原钱包初始化feature生效时间，旧成年不补抽、旧库存保值，账号和牧场不重置。发布：`python3 scripts/release-postgres.py --deploy --ranch-mutations`。不与 `--reset-ranch` 并用；只在已提交且已构建的开发运行源码上执行。脚本保留当前Caddy全配置（含独立三维小样路由）、停正式写入后备份最新PG，迁移后验证schema、features数量和钱包快照。
 schema5启用后不向旧2.7回滚，避免其忽略冻结价格和fused状态。失败保持维护及写服务停止，保留最新数据做前向修复；恢复域名用同次原Caddy备份，可传 `--resume-caddy=/var/backups/pair-play/Caddyfile-before-时间`，不能把维护配置当原配置。恢复脚本先检查健康，如写服务已停，先准备并启动兼容schema5的修复代码，验证后再恢复入口，禁止直接覆盖数据库。
 开发3211只重启开发服务，正式3210仅发布脚本操作；测试临时schema绝不导入正式库。任何未来真实数据高危删除必须先向用户明确范围确认。
+
+
+## 生成属性外观发布（2.8.1）
+
+用户已明确授权上线。发布工具现在使用自身所属开发 checkout，允许 /opt/pair-play-dev 或 /opt/pair-play-worktrees 下目录，不再固定读取另一个 Agent 的开发目录。此版本只改前端图片与选择，不新增迁移；命令 python3 scripts/release-postgres.py --deploy，不传任何 reset/migration 旗标。保留当前 Caddy 的 /ranch-2d 和 /ranch-3d 路由、正式库 schema5 与既有玩家。先构建、提交、备份再发布，验证主站和 CDN 图集。
