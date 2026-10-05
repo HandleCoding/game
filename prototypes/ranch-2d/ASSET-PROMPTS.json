@@ -1,0 +1,36 @@
+{
+  "mode": "built-in imagegen",
+  "reference": "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-scene/pasture.png",
+  "originalAnimalAssets": "unchanged /ranch/scene/soft/*.webp",
+  "prompts": [
+    [
+      "ground",
+      "Use case: precise-object-edit. Edit target: the supplied original ranch environment. This is a clean background/ground layer for a layered 2.5D game, not a redesign. Preserve EXACT soft realistic painterly quality, bright natural yellow-green grass, blue sky, distant mountains, river and village, camera angle and warm daylight. REMOVE only the foreground barn on the left, side feeding trough, large near tree on the right, its hay cart, near pond, all close fences/gate, close rocks/sunflowers. Inpaint those areas as continuous beautiful meadow and low subtle meadow plants. The lower 72% is continuous navigable grass, no obstacles, no paved paths. Keep the lovely far landscape and small distant vegetation in the upper 28%. No animals, no text, no UI. Landscape 3:2 composition. Not low poly, not toy 3D, not chibi. The existing art style must stay."
+    ],
+    [
+      "tree",
+      "Use case: background-extraction. Reference image: original ranch. Produce one standalone isolated mature leafy tree matching the beautiful large tree at the original scene's right side. Match EXACT warm softly painted realistic foliage, bark and camera elevation. Tree whole trunk, exposed roots and leafy canopy, no grass patch, no sky, no other objects, no ground shadow. Real natural varied leaf detail, not spherical clusters, not low poly, not cartoon outlines. Genuine transparent alpha surrounding the entire tree. Natural three-quarter elevated 2.5D game object. Entire tree centered with margins; maximum detail at foliage edges."
+    ],
+    [
+      "trough",
+      "Use case: background-extraction. Reference image original ranch. Produce ONE standalone isolated wooden feeding trough matching the existing narrow rustic wooden hay/grain trough at left fence in that image, but facing diagonally lower-right so its straw and grains are visible. Match same warm soft realistic painted wood, camera elevation and natural scale. Full wooden trough with legs and golden feed, simple farm object, entire object clear and centered with margins. NO grass patch, background, other structures, animals, ground shadow or text. Genuine transparent alpha. This is an independent clickable 2.5D ranch object, not an icon or a rendered UI button."
+    ],
+    [
+      "fence",
+      "Use case: background-extraction. Reference image original ranch. Produce ONE standalone fence segment matching the same rustic honey-colored timber fence seen along the foreground of this original ranch. Two upright wooden posts, two horizontal rails connecting them. Seen in elevated 3/4 farm game perspective, slightly sloping down to right, so wood has naturally painted depth. Match original soft realistic painting, warm grain details, no outline. Entire fence clearly centered with margins. NO ground, grass patch, flowers, plants, ropes, animals, other structures, ground shadows or text. Genuine transparent alpha. A repeatable independent ranch scenery object. Not toy, not low poly."
+    ]
+  ],
+  "edits": [
+    {
+      "name": "trough",
+      "prompt": "Edit only the transparency and background of this existing game object. Preserve the exact wooden animal feeding trough with grain and straw design, details, color, shape and soft realistic painterly style. Remove ALL brown/golden backdrop, translucent haze, halo, studio glow, and cast shadows outside the physical object. Make all surrounding space, and empty gaps inside rails, completely transparent alpha 0. Keep the object opaque and cleanly cut out without a rectangle or luminous outline. Single original object, no extra objects, no ground, no text.",
+      "output": "trough-v2.png"
+    },
+    {
+      "name": "fence",
+      "prompt": "Edit only the transparency and background of this existing game object. Preserve the exact wooden short wooden fence segment with two posts and horizontal rails design, details, color, shape and soft realistic painterly style. Remove ALL brown/golden backdrop, translucent haze, halo, studio glow, and cast shadows outside the physical object. Make all surrounding space, and empty gaps inside rails, completely transparent alpha 0. Keep the object opaque and cleanly cut out without a rectangle or luminous outline. Single original object, no extra objects, no ground, no text.",
+      "output": "fence-v2.png"
+    }
+  ],
+  "runtime": "Original pixels preserved; Canvas crops and composites at runtime."
+}
