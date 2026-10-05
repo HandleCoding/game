@@ -169,3 +169,8 @@ schema3仅扩大ranch_wallets.feed_ms约束至1800000000；摘要增加feedUnitM
 ## 2026-10-05 生成属性外观独立 Worktree
 
 分支 codex/ranch-generated-variants，目录 /opt/pair-play-worktrees/ranch-generated-variants，基于95dec7d。36物种、两个阶段、五种属性共360款/1440帧；普通图保留。见 ranch-generated-variants.md、art/generation-plan.json 与新验收报告。双属性仍第一属性生成图+第二属性动态效果，无专属组合图。未发布正式、未迁移/重置数据库，其他Agent的3D工作目录/路由未修改。源码与提示词均在云端；推送分支不等于正式部署。
+
+
+### 生成属性外观正式上线（2.8.1）
+
+用户确认上线后，从独立 Worktree 发布，源提交 ec90d2cf881c54928e2627cc42418a7ab3537852；正式目录 /opt/pair-play/releases/v2.8.1-20261005-144542。PG备份 /var/backups/pair-play/postgres-prod-20261005-144544.dump；账号/会话/猜数字/牧场保留，schema5无迁移或重置。此前未发布描述为开发验收时状态，现以本段为准。40张主站WebP和五属性CDN抽样哈希/CORS已验证；CDN验证请求带网页Origin，详见test-reports/20261005-ranch-generated-production.json。保留Caddy的2D/3D小样路由与其他Agent工作区。

@@ -1,0 +1,306 @@
+{
+  "sourceCommit": "ec90d2cf881c54928e2627cc42418a7ab3537852",
+  "release": "/opt/pair-play/releases/v2.8.1-20261005-144542",
+  "version": "2.8.1",
+  "databaseBackup": "/var/backups/pair-play/postgres-prod-20261005-144544.dump",
+  "before": {
+    "users": 2,
+    "sessions": 5,
+    "results": 5,
+    "result_players": 10,
+    "persistent_profiles": 2
+  },
+  "after": {
+    "users": 2,
+    "sessions": 5,
+    "results": 5,
+    "result_players": 10,
+    "persistent_profiles": 2
+  },
+  "unitBackup": "/var/backups/pair-play/pair-play-before-20261005-144544.service",
+  "caddyBackup": "/var/backups/pair-play/Caddyfile-before-20261005-144544",
+  "schemaVersion": 5,
+  "completedAt": "2026-10-05T14:45:46+0800",
+  "publicHealth": {
+    "ok": true,
+    "version": "2.8.1",
+    "database": "postgresql"
+  },
+  "originAssets": [
+    {
+      "asset": "adult-dream-0-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 533434,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-dream-1-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 524864,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-dream-2-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 620432,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-dream-3-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 519824,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-fire-0-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 558142,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-fire-1-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 454628,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-fire-2-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 495768,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-fire-3-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 495076,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-gold-0-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 371808,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-gold-1-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 663482,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-gold-2-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 608358,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-gold-3-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 527792,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-lightning-0-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 565504,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-lightning-1-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 446788,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-lightning-2-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 490146,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-lightning-3-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 498740,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-water-0-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 345496,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-water-1-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 429176,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-water-2-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 571282,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-water-3-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 545742,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-dream-0-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 451282,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-dream-1-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 392042,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-dream-2-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 531704,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-dream-3-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 552046,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-fire-0-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 490892,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-fire-1-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 393514,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-fire-2-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 562962,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-fire-3-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 522100,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-gold-0-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 536278,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-gold-1-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 536124,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-gold-2-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 541862,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-gold-3-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 488780,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-lightning-0-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 420174,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-lightning-1-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 409162,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-lightning-2-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 479386,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-lightning-3-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 656000,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-water-0-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 549600,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-water-1-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 376380,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-water-2-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 638416,
+      "sha256Verified": true
+    },
+    {
+      "asset": "baby-water-3-v1.webp",
+      "host": "game.aicoding.ltd",
+      "bytes": 495648,
+      "sha256Verified": true
+    }
+  ],
+  "cdnSamples": [
+    {
+      "asset": "adult-lightning-0-v1.webp",
+      "host": "static.aicoding.ltd",
+      "bytes": 565504,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-fire-0-v1.webp",
+      "host": "static.aicoding.ltd",
+      "bytes": 558142,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-water-0-v1.webp",
+      "host": "static.aicoding.ltd",
+      "bytes": 345496,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-gold-0-v1.webp",
+      "host": "static.aicoding.ltd",
+      "bytes": 371808,
+      "sha256Verified": true
+    },
+    {
+      "asset": "adult-dream-0-v1.webp",
+      "host": "static.aicoding.ltd",
+      "bytes": 533434,
+      "sha256Verified": true
+    }
+  ],
+  "cdnRequestOrigin": "https://game.aicoding.ltd",
+  "noReset": true,
+  "noDatabaseMigration": true
+}
