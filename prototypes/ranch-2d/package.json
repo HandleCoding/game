@@ -6,7 +6,7 @@
   "scripts": {
     "check": "tsc --noEmit",
     "build": "vite build",
-    "test": "tsc navigation.ts --target es2022 --module esnext --outDir artifacts/navigation && node navigation.test.mjs"
+    "test": "tsc navigation.ts feeding.ts --target es2022 --module esnext --outDir artifacts/navigation && node navigation.test.mjs && node feeding.test.mjs"
   },
   "devDependencies": {
     "vite": "7.3.6",

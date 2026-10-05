@@ -4,3 +4,5 @@
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 @media(max-width:640px){nav{gap:4px}nav button{min-width:58px}nav canvas,.pause-icon{width:54px;height:54px}nav button>span:last-child{min-width:59px;padding:7px 3px;font-size:10px}.pause-icon{font-size:25px}.hint{font-size:8px}}
 @media(max-height:520px) and (min-width:641px){#picker{left:18px;right:auto;bottom:104px;width:min(310px,calc(100vw - 36px));margin-bottom:0}}
+
+.zoom-tools button{padding:0;white-space:nowrap}nav button[disabled]{opacity:.67;cursor:default}

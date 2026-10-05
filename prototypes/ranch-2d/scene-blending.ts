@@ -15,7 +15,7 @@ export class RanchBlending {
     const sample=makeCanvas(120,80),ctx=sample.getContext('2d',{willReadFrequently:true})!;
     ctx.drawImage(background,0,0,120,80);this.land=ctx.getImageData(0,0,120,80).data;
   }
-  frame(key:string,sheet:HTMLImageElement,crop:FrameCrop,sheetWidth:number,col:number):SpriteFrame{
+  frame(key:string,sheet:CanvasImageSource,crop:FrameCrop,sheetWidth:number,col:number):SpriteFrame{
     const hit=this.cache.get(key);if(hit){this.cache.delete(key);this.cache.set(key,hit);return hit;}
     const ratio=Math.min(1,(key.startsWith('object-')?768:256)/Math.max(crop.width,crop.height)),w=Math.ceil(crop.width*ratio),h=Math.ceil(crop.height*ratio);
     const raw=makeCanvas(w,h),ctx=raw.getContext('2d',{willReadFrequently:true})!;

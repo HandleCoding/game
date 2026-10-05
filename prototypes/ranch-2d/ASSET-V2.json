@@ -1,0 +1,42 @@
+{
+  "mode": "built-in imagegen",
+  "date": "2026-10-05",
+  "feeding": [
+    {
+      "species": "goat",
+      "prompt": "ONLY the cream-white goat in the SEVENTH ROW of each reference atlas. Adult: slim cream goat, natural brown eyes, curved dark brown horns, small beard and gray-brown hooves. Juvenile: the same baby goat with soft cream fur, very short horn buds, smaller rounded face. Create a production game animation SPRITE SHEET continuing the exact original soft realistic painted animal design. Output EXACTLY 8 separate whole-body poses in an evenly spaced 4-column by 2-row grid. TOP ROW adult, BOTTOM ROW juvenile. Every pose faces RIGHT, same 3/4 side camera view. Column 1 standing, head up and relaxed. Column 2 neck bends halfway down to feed. Column 3 head lowered deeply to eat, snout/beak close to the foot baseline. Column 4 raises head halfway, gently chewing. Keep torso, paws/hooves/legs stationary and at the exact same ground baseline and scale in all 4 cells of each row; only head/neck/ears change pose, no body rotation. Clear 15% transparent padding around EVERY cell so absolutely no animal touches or crosses a cell boundary. True clean transparent alpha background, including gaps between legs. No backdrop, NO grass, no trough, no cast shadow, no halo, no text, no lines, no cell border, no extra species. Adult and juvenile are independent natural proportions; soft daylight and detailed fur/feathers matching the reference. Preserve original animal identity, never redesign with large cartoon eyes or glossy plastic.",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-0.png",
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-0.png"
+      ],
+      "file": "exec-2b5103e2-5775-43b7-9e9e-22ebebd46050.png"
+    },
+    {
+      "species": "rabbit",
+      "prompt": "ONLY the ivory-white LOP-EARED RABBIT in the reference. Adult top row, juvenile bottom row. Keep naturally sized brown eyes, drooping long ears with pale pink inner ears, soft ivory-white fluffy coat and short rounded tail. No upright ears. Create a production game animation SPRITE SHEET continuing the exact original soft realistic painted animal design. Output EXACTLY 8 separate whole-body poses in an evenly spaced 4-column by 2-row grid. TOP ROW adult, BOTTOM ROW juvenile. Every pose faces RIGHT, same 3/4 side camera view. Column 1 standing, head up and relaxed. Column 2 neck bends halfway down to feed. Column 3 head lowered deeply to eat, snout/beak close to the foot baseline. Column 4 raises head halfway, gently chewing. Keep torso, paws/hooves/legs stationary and at the exact same ground baseline and scale in all 4 cells of each row; only head/neck/ears change pose, no body rotation. Clear 15% transparent padding around EVERY cell so absolutely no animal touches or crosses a cell boundary. True clean transparent alpha background, including gaps between legs. No backdrop, NO grass, no trough, no cast shadow, no halo, no text, no lines, no cell border, no extra species. Adult and juvenile are independent natural proportions; soft daylight and detailed fur/feathers matching the reference. Preserve original animal identity, never redesign with large cartoon eyes or glossy plastic.",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/rabbit-stages.png"
+      ],
+      "file": "exec-c27b12bb-fffb-4dc7-968f-0f507fc1fe32.png"
+    },
+    {
+      "species": "chicken",
+      "prompt": "ONLY the adult brown HEN and cream-yellow CHICK in the FIRST ROW of the reference atlases. Adult: warm brown layered feathers, small red comb and wattle, natural dark eyes and yellow legs. Juvenile: fluffy pale yellow chick with tiny orange beak and delicate legs. Create a production game animation SPRITE SHEET continuing the exact original soft realistic painted animal design. Output EXACTLY 8 separate whole-body poses in an evenly spaced 4-column by 2-row grid. TOP ROW adult, BOTTOM ROW juvenile. Every pose faces RIGHT, same 3/4 side camera view. Column 1 standing, head up and relaxed. Column 2 neck bends halfway down to feed. Column 3 head lowered deeply to eat, snout/beak close to the foot baseline. Column 4 raises head halfway, gently chewing. Keep torso, paws/hooves/legs stationary and at the exact same ground baseline and scale in all 4 cells of each row; only head/neck/ears change pose, no body rotation. Clear 15% transparent padding around EVERY cell so absolutely no animal touches or crosses a cell boundary. True clean transparent alpha background, including gaps between legs. No backdrop, NO grass, no trough, no cast shadow, no halo, no text, no lines, no cell border, no extra species. Adult and juvenile are independent natural proportions; soft daylight and detailed fur/feathers matching the reference. Preserve original animal identity, never redesign with large cartoon eyes or glossy plastic.",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-0.png",
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-0.png"
+      ],
+      "file": "exec-d839c7c6-dd6e-4b57-b29f-c6ed121dc7af.png"
+    }
+  ],
+  "grass": {
+    "prompt": "Use the attached meadow painting as the exact style and palette reference. Generate one low, wide clump of meadow grass with a few tiny white daisies, an independent foreground prop for a 2.5D pasture game. Soft realistic painted brushwork, yellow-green sunlit leaves with olive-green undersides, same medium-distance detail and gentle warm daylight as the reference. A small irregular tuft about twice as wide as tall, individual thin grass tips at the top, very soft uneven lower edge, no dirt mound or pedestal. True transparent alpha background, clean alpha 0 outside physical leaves; no cast shadow, no ground rectangle, no backdrop, no studio glow, no text or border. The plant is viewed from the slightly elevated ranch camera, with visible leaf layering, not an icon and not glossy 3D.",
+    "file": "exec-0aae7b0a-da78-4a48-b851-a8d5567d3ed3.png"
+  },
+  "formatConversion": {
+    "mode": "PNG to lossless WebP",
+    "pixels": "Decoded RGBA equality verified for all four assets",
+    "sourcePNGsRetained": true
+  },
+  "crop": "Actual alpha bands and gaps, 24 frames, no image files cropped; source-pixel mouth landmarks reviewed manually"
+}
