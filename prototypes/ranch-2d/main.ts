@@ -8,7 +8,7 @@ const canvas=$<HTMLCanvasElement>('scene'),ctx=canvas.getContext('2d')!;
 const paths=['/ranch-2d/scenery/ground-v1.png','/ranch-2d/scenery/tree-v1.png','/ranch-2d/scenery/trough-v2.png','/ranch-2d/scenery/fence-v2.png','/ranch/scene/soft/adult-0-v1.webp','/ranch/scene/soft/baby-0-v1.webp','/ranch/scene/soft/rabbit-stages-v1.webp','/ranch/ui/ranch-tools-v1.webp'];
 const images=new Map<string,HTMLImageElement>(),downloaded=new Map<string,number>();
 let ready=false,paused=matchMedia('(prefers-reduced-motion:reduce)').matches,blended=true,elapsed=0,last=0,lastRender=0,feedUntil=0,feedLevel=60,gateOpen=false,gateBlend=0,shakeAt=-999,shakenTree=1,toastTimer=0;
-let width=innerWidth,height=innerHeight,dpr=Math.min(devicePixelRatio||1,2),zoom=1,cameraX=600,cameraY=450,scale=1,offsetX=0,offsetY=0,follow=innerWidth<641;
+let width=innerWidth,height=innerHeight,dpr=Math.min(devicePixelRatio||1,2),zoom=1,cameraX=600,cameraY=400,scale=1,offsetX=0,offsetY=0,follow=innerWidth<641;
 let blender:RanchBlending,ground:HTMLImageElement,treeSprite:SpriteFrame,feederSprite:SpriteFrame,fenceSprite:SpriteFrame,flatScene:HTMLCanvasElement,farLayer:HTMLCanvasElement;
 interface Animal extends Point {id:string;name:string;species:RanchSpecies;baby:boolean;dir:number;phase:number;until:number;state:'idle'|'walk'|'eat';path:Point[];goal:Point|null;shade:number;intent:'walk'|'feed'|'shade'}
 const seeds:Pick<Animal,'id'|'name'|'species'|'baby'|'x'|'y'|'phase'>[]=[
