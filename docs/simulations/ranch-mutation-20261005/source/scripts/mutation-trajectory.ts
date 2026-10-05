@@ -12,12 +12,17 @@ function random(seed:number) {
     t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296; };
 }
 function trajectory(gap:number,strategy:'income'|'xp'|'low',policyName:string,
-                    rate:number|'codex',seed:number,tokenMode:'individual'|'species'='individual',days=90,craftCap=4) {
+                    rate:number|'codex',seed:number,tokenMode:'individual'|'species'='individual',days=90,craftCap=4,
+                    fusionMode:'none'|'inherit'|'random'='none', progressive=false,
+                    craftStrategy:'greedy'|'save-high'='greedy') {
   const rng=random(seed), policy=config.policies[policyName];
   let s=initialRanch(0),carry=0,crystals=0,grossFixed=0,bought=0,retired=0;
   const meta=new Map<string,{attrs:number[],q:number,adult:boolean,bornP:number}>();
   const completed=new Set<string>(), variants=new Set<string>();
   const stocks:Record<string,number[]>={},daily:Record<string,{keys:Set<string>,count:number}>={};
+  const hallItems:Record<string,{id:string,q:number,attrs:number[]}[]>={};
+  let fusionCount=0,fusionCoins=0,fusionTokens=0,randomCount=0;
+  const firstCraft:Record<string,number>={},craftByGrade=[0,0,0,0,0];
   const milestones:Record<string,number>={},snapshots:Record<string,unknown>={},possible:Record<string,unknown>={};
   const rngPick=(weights:number[])=> {let r=rng()*weights.reduce((a,b)=>a+b,0);
     for(let i=0;i<weights.length;i++){r-=weights[i]!;if(r<0)return i;}return weights.length-1;};
@@ -44,10 +49,11 @@ function trajectory(gap:number,strategy:'income'|'xp'|'low',policyName:string,
     if(stock.some((n,q)=>q>=target&&n>0))return {tokens:0,coins:0};
     if(target>craftCap)return null;
     stock=stock.map((n,q)=>q>craftCap?0:n);
-    if(stock.reduce((n,c,q)=>n+c*2**q,0)<2**target)return null;
+    const weights=progressive?[1,2,4,12,36]:[1,2,4,8,16];
+    if(stock.reduce((n,c,q)=>n+c*weights[q]!,0)<weights[target]!)return null;
     const arr=[...stock],counts=[0,0,0,0,0];
     function take(q:number){if(arr[q]!>0){arr[q]!--;return;}
-      assert(q>0);take(q-1);take(q-1);counts[q]!++;}
+      assert(q>0);for(let i=0;i<(progressive&&q>=3?3:2);i++)take(q-1);counts[q]!++;}
     take(target);
     const fees=[0,...[.10,.25,.50,1].map(f=>Math.ceil(price*f-1e-12))];
     return {tokens:counts.reduce((n,c,q)=>n+c*config.fusion_tiers.balanced[q],0),coins:counts.reduce((n,c,q)=>n+c*fees[q]!,0)};
@@ -75,6 +81,7 @@ function trajectory(gap:number,strategy:'income'|'xp'|'low',policyName:string,
     for(const a of s.animals.filter(a=>a.status==='completed')) {
       const q=meta.get(a.id)?.q??0;const hist=stocks[a.species]??=Array(5).fill(0);
       hist[q]++;completed.add(a.species);retired++;act('enterHall',{animalId:a.id});
+      (hallItems[a.species]??=[]).push({id:a.id,q,attrs:[...(meta.get(a.id)?.attrs??[])]});
     }
     s.animals=s.animals.filter(active);s.batches=s.batches.filter(b=>b.harvestedAt===null);
     s.events=[];s.log=[];s.lots=s.lots.filter(l=>l.quantity>0);
@@ -93,6 +100,41 @@ function trajectory(gap:number,strategy:'income'|'xp'|'low',policyName:string,
     }
     const target=Math.min(FEED_CAPACITY,Math.ceil((gap+12)*2*s.animals.filter(feeding).length));
     for(const units of [300,100,20])while(s.feedMs/FEED_UNIT_MS+units<=target&&s.coins>=units)act('buyFeed',{units});
+    if(fusionMode!=='none') {
+      const order=Array.from({length:craftCap},(_,i)=>i);
+      if(craftStrategy==='save-high')order.reverse();
+      for(const k of species)for(const sourceQ of order) {
+        const items=hallItems[k.id];if(!items)continue;
+        while(true){
+          const targetQ=sourceQ+1;
+          const required=progressive&&targetQ>=3?3:2;
+          const pair=items.filter(a=>a.q===sourceQ).slice(0,required);if(pair.length<required)break;
+          const fee=Math.ceil(k.price*[0,.10,.25,.50,1][targetQ]!-1e-12);
+          const tokenCost=config.fusion_tiers.balanced[targetQ]+(fusionMode==='random'?[0,1,2,4,8][targetQ]!:0);
+          const extra=fusionMode==='random';
+          const saved=craftStrategy==='save-high'&&tokenCost>0?(targetQ<=2?(extra?104:84):targetQ===3?(extra?56:48):0):0;
+          if(s.coins<fee+reserve||crystals<tokenCost+saved)break;
+          pair.sort((a,b)=>b.attrs.length-a.attrs.length);
+          const main=pair[0]!;let attrs=[...main.attrs];
+          const before=crystals,coinsBefore=s.coins;
+          s.coins-=fee;crystals-=tokenCost;
+          if(fusionMode==='random'){
+            const retained=attrs.length===2?[attrs[0]!]:[];
+            const weights=config.attr_weights.map((v:number,i:number)=>retained.includes(i)?0:v);
+            attrs=[...retained,rngPick(weights)];randomCount++;
+          }
+          assert(attrs.length<=2&&new Set(attrs).size===attrs.length);
+          if(attrs.length===2)assert(pair.some(a=>a.attrs.length===2));
+          assert(pair.every(a=>a.q===sourceQ&&a.q<craftCap));
+          stocks[k.id]![sourceQ]-=required;stocks[k.id]![targetQ]++;
+          main.q=targetQ;main.attrs=attrs;
+          for(const consumed of pair.slice(1))items.splice(items.indexOf(consumed),1);
+          s.hallCount-=required-1;fusionCount++;fusionCoins+=fee;fusionTokens+=tokenCost;discover(k.id,main);
+          craftByGrade[targetQ]++;firstCraft[targetQ]??=s.at/HOUR/24;
+          assert.equal(coinsBefore-s.coins,fee);assert.equal(before-crystals,tokenCost);
+        }
+      }
+    }
     for(const l of [2,3,5,8,10,15,18,20])if(level(s.xp)>=l&&milestones[l]===undefined)milestones[l]=s.at/HOUR/24;
     for(const targetQ of [2,3,4])if(possible[targetQ]===undefined){
       for(const k of species){if(!stocks[k.id])continue;const path=plan(stocks[k.id]!,targetQ,k.price);
@@ -110,10 +152,59 @@ function trajectory(gap:number,strategy:'income'|'xp'|'low',policyName:string,
     if(d>dayRecorded){dayRecorded=d;if([1,7,30,90].includes(d))snapshots[d]={level:level(s.xp),xp:s.xp,
       coins:s.coins,capacity:s.capacity,crystals,completed_species:completed.size,variants:variants.size,mutation_probability:pNow()};}
   }
-  return {gap,strategy,policy:policyName,rate,seed,tokenMode,days,craftCap,milestones,snapshots,possible,
+  assert.equal(Object.values(daily).reduce((n,r)=>n+r.count,0),crystals+fusionTokens);
+  assert.equal(Object.values(stocks).reduce((n,h)=>n+h.reduce((a,b)=>a+b,0),0),s.hallCount);
+  for(const [id,items] of Object.entries(hallItems))for(let q=0;q<5;q++)
+    assert.equal(items.filter(a=>a.q===q).length,stocks[id]![q]);
+  const consumed=craftByGrade.reduce((n,c,q)=>n+c*((progressive&&q>=3?3:2)-1),0);
+  assert.equal(s.hallCount,retired-consumed);
+  return {gap,strategy,policy:policyName,rate,seed,tokenMode,days,craftCap,fusionMode,progressive,craftStrategy,milestones,snapshots,possible,
     caveat:'possible = independent first-upgrade affordability; does not spend resources or reserve desired attributes',
     finalLevel:level(s.xp),coins:s.coins,xp:s.xp,crystals,probability:pNow(),completedSpecies:completed.size,
-    variantCount:variants.size,bought,retired,stocks,carry};
+    variantCount:variants.size,bought,retired,stocks,carry,fusionCount,fusionCoins,fusionTokens,randomCount,firstCraft,craftByGrade};
+}
+
+if(process.env.SIM_APPEND_SAVING==='1'){
+  const result=JSON.parse(fs.readFileSync(root+'/trajectory-results.json','utf8'));
+  assert.equal(result.runs.length,58);
+  for(const policy of ['lifecycle','conservative'])for(const gap of [4,8,12])for(const mode of ['inherit','random'] as const)
+    result.runs.push(trajectory(gap,'income',policy,'codex',SEED,'individual',90,4,mode,true,'save-high'));
+  for(const gap of [4,8,12])for(const mode of ['inherit','random'] as const)
+    result.runs.push(trajectory(gap,'low','lifecycle','codex',SEED,'individual',90,4,mode,true,'save-high'));
+  fs.writeFileSync(root+'/trajectory-results.json',JSON.stringify(result,null,2));
+  console.log(JSON.stringify(result.runs.slice(58).map(r=>({gap:r.gap,strategy:r.strategy,policy:r.policy,
+    mode:r.fusionMode,firstCraft:r.firstCraft,craftByGrade:r.craftByGrade,
+    crystals:r.crystals,fusionTokens:r.fusionTokens,variants:r.variantCount,probability:r.probability})),null,2));
+  process.exit(0);
+}
+
+if(process.env.SIM_APPEND_PROGRESSIVE==='1'){
+  const result=JSON.parse(fs.readFileSync(root+'/trajectory-results.json','utf8'));
+  assert.equal(result.runs.length,40);
+  for(const policy of ['lifecycle','conservative'])for(const gap of [4,8,12]){
+    result.runs.push(trajectory(gap,'income',policy,'codex',SEED,'individual',90,4,'inherit',true));
+    for(let i=0;i<2;i++)result.runs.push(trajectory(gap,'income',policy,'codex',SEED+i,'individual',90,4,'random',true));
+  }
+  fs.writeFileSync(root+'/trajectory-results.json',JSON.stringify(result,null,2));
+  console.log(JSON.stringify(result.runs.slice(40).map(r=>({gap:r.gap,policy:r.policy,seed:r.seed,fusionMode:r.fusionMode,
+    lv20:r.milestones[20],d30:r.snapshots['30'],fusionCount:r.fusionCount,fusionCoins:r.fusionCoins,
+    fusionTokens:r.fusionTokens,randomCount:r.randomCount,variants:r.variantCount,probability:r.probability,
+    redHall:Object.values(r.stocks).reduce((n,h)=>n+h[4]!,0)})),null,2));
+  process.exit(0);
+}
+
+if(process.env.SIM_APPEND_FUSION==='1'){
+  const result=JSON.parse(fs.readFileSync(root+'/trajectory-results.json','utf8'));
+  assert.equal(result.runs.length,31);
+  for(const gap of [4,8,12]){
+    result.runs.push(trajectory(gap,'income','lifecycle','codex',SEED,'individual',90,2,'inherit'));
+    for(let i=0;i<2;i++)result.runs.push(trajectory(gap,'income','lifecycle','codex',SEED+i,'individual',90,2,'random'));
+  }
+  fs.writeFileSync(root+'/trajectory-results.json',JSON.stringify(result,null,2));
+  console.log(JSON.stringify(result.runs.slice(31).map(r=>({gap:r.gap,seed:r.seed,fusionMode:r.fusionMode,
+    lv20:r.milestones[20],d30:r.snapshots['30'],fusionCount:r.fusionCount,fusionCoins:r.fusionCoins,
+    fusionTokens:r.fusionTokens,randomCount:r.randomCount,variants:r.variantCount,probability:r.probability})),null,2));
+  process.exit(0);
 }
 
 // Validate the frozen real engine for all species, including finite XP/feed.
