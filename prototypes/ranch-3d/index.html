@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ecede2" />
+  <title>山间牧场 · 一起玩</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23465b40'/%3E%3Cpath d='M32 47V25M32 34C13 36 15 13 15 13S37 13 32 34M33 27C32 10 52 14 52 14S51 31 33 27' fill='none' stroke='%23f7eedb' stroke-width='5'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main id="world" aria-label="可以拖动和缩放的牧场场景"></main>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="返回游戏大厅">
+      <svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 24V11M14 16C3 16 5 3 5 3s13 0 9 13m0-4C14 3 24 4 24 4s1 10-10 8"/></svg>
+      <span>一起玩<small>山间牧场</small></span>
+    </a>
+    <div class="weather"><span class="weather-dot"></span><span id="weather-label">晴 · 微风</span><span class="preview-tag">体验小样</span></div>
+  </header>
+  <aside class="intro"><span class="eyebrow">A LITTLE PLACE TO SLOW DOWN</span><h1>山间有个小牧场。</h1><p>听风，看云，陪它们慢慢长大。</p></aside>
+  <section class="animal-card" aria-label="当前伙伴">
+    <div class="animal-heading"><span class="tiny-label">牧场里的伙伴</span><span id="stage-label">成年</span></div>
+    <div class="animal-tabs" role="group" aria-label="选择伙伴">
+      <button data-animal="chicken" aria-pressed="true">小鸡</button>
+      <button data-animal="rabbit" aria-pressed="false">垂耳兔</button>
+      <button data-animal="goat" aria-pressed="false">山羊</button>
+    </div>
+    <div class="animal-info"><strong id="animal-name">小鸡</strong><span id="animal-state">在草地上散步</span></div>
+    <div class="animal-actions"><button id="focus" class="text-button">靠近看看 <span>↗</span></button><button id="baby" class="text-button">看看幼年</button></div>
+  </section>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <footer class="bottom-area">
+    <p class="gesture-hint">拖动换个角度 · 滚轮或双指缩放 · 点击动物</p>
+    <nav class="dock" aria-label="牧场操作">
+      <button id="feed" class="feed-button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V4m0 12C4 16 5 8 5 8s8 0 7 8m0-5c0-6 7-6 7-6s1 7-7 6"/></svg><span>添饲料</span></button>
+      <button id="light"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 1v2m0 18v2M1 12h2m18 0h2M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2"/></svg><span id="light-label">切换夜晚</span></button>
+      <button id="overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m12-6v6h-6"/></svg><span>看全景</span></button>
+      <button id="pause" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg><span id="pause-label">暂停</span></button>
+    </nav>
+  </footer>
+  <div id="loading" class="loading" role="status" aria-live="polite"><div class="loading-inner"><span class="loading-mark">✦</span><span class="eyebrow">一起牧场</span><h2 id="loading-title">走进一片小小的绿意</h2><p id="loading-message">正在准备草地和伙伴…</p><div class="loading-track"><div id="loading-progress"></div></div><span id="loading-percent">0%</span><button id="retry" hidden>重新进入</button></div></div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

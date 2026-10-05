@@ -156,3 +156,12 @@ schema3仅扩大ranch_wallets.feed_ms约束至1800000000；摘要增加feedUnitM
 统一转换在维护停写下只执行一次，二次无变化；游戏运行时只支持当前存档v2和规则，没有旧周期/旧返还/旧XP分支。原v1代码已移入test-v2/ranch-v1-fixture.ts，仅用于真实旧结构夹具；旧目录仅离线迁移时给既有库存定价。普通未来版本是否统一改所有动物另以用户要求为准。
 
 启动检查首次暂停的原因是healthz仍硬编码2.6.2，服务实际能启动；现已自动读取根package版本，避免同类遗漏。第一次迁移已保留数据，保持维护后做前向更新，未回退2.6或覆盖数据库。恢复发布需--resume-caddy指向同次维护保存的原Caddyfile，仅允许/var/backups/pair-play/Caddyfile-before-*，不会将503维护配置当成要恢复的正式配置。
+
+
+## 2026-10-05 独立三维牧场体验小样（非正式牧场升级）
+
+用户要求验证动物/背景真正融为同一场景，已制作 /opt/pair-play-dev/prototypes/ranch-3d，公共体验入口 https://game.aicoding.ltd/ranch-3d/ 。Three.js+TS，真实三维草地/房屋/树/围栏/食槽/池塘及小鸡、垂耳兔、山羊，共享灯光、阴影、遮挡，支持走动/喂食/近景/昼夜/幼年比例切换。独立包/锁文件，不接数据库与账号；程序模型仅小样，不代表最终柔和写实美术和72套模型。
+
+云端 check/build 通过，实际浏览器1440x900、390x844、360x780、844x390检查及截图审阅通过；属于尺寸模拟，未称真机测试。读 prototypes/ranch-3d/README.md 与 test-reports/20261005-ranch-3d-prototype.md。代码分支 codex/ranch-3d-prototype，不包含其他Agent正在开发的变异改动，未改变正式2.7.0应用。
+
+Caddy game站点新增 /ranch-3d/* 静态handle_path，根为该小样dist；其余路径反代3210。后续维护/发布须保留该路由，不要把整个开发根目录开放为静态根。Caddy修改前备份 /var/backups/pair-play/caddy-ranch-3d-20261005-103637.conf。没有停写、重置或重启应用/PG。
