@@ -1,13 +1,13 @@
 # 新架构接手状态
 
-更新：2026-10-05。当前正式一起牧场2.7.0，有限生产、名宠堂和所有已有动物统一新规则已上线；本次没有重置。实际验证与发布见 [2.7.0验收报告](test-reports/20261005-ranch-lifecycle.md)。旧版历史：当前发布、备份与验证见 [CDN接入报告](test-reports/20261004-ranch-cdn.md)；HUD修复见 [HUD遮挡修复报告](test-reports/20261004-ranch-hud-overlap.md)；数值与已完成重置见 [数值报告](test-reports/20261004-ranch-balance.md)；首次数据迁移见 [迁移报告](test-reports/20261004-architecture-migration.md)。
+更新：2026-10-05。当前正式一起牧场2.8.0，变异、品质、真实发现图鉴、产物溢价、名宠融合和现代UI已上线；原有限生产与名宠堂保持，本次没有重置。实际实现 [2.8.0实施交接](ranch-mutation-v2.8.md)，验收与发布 [2.8.0报告](test-reports/20261005-ranch-mutation.md)。历史：2.7.0与此前CDN/HUD/数值报告保留。
 
 ## 环境
 
 | 项目 | 正式 | 开发 |
 | --- | --- | --- |
 | 主机 | 京东云 117.72.116.83 | 同一主机 |
-| 代码 | /opt/pair-play/releases/v2.7.0-20261005-003621 | /opt/pair-play-dev |
+| 代码 | /opt/pair-play/releases/v2.8.0-20261005-112227 | /opt/pair-play-dev |
 | 服务 | pair-play.service | pair-play-dev.service |
 | 用户 | pairplay | pairplaydev |
 | 监听 | 127.0.0.1:3210 | 127.0.0.1:3211 |
@@ -15,7 +15,7 @@
 | 受保护配置 | /etc/pair-play/prod.env | /etc/pair-play/dev.env |
 | 入口 | https://game.aicoding.ltd/ | SSH 转发后 localhost:3211 或 127.0.0.1:3211 |
 
-PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 ff96f06146dc58586af85b6bac9ad6bd5934c75e；后续验收文档提交看 git log。
+PostgreSQL 18.6，数据 `/var/lib/postgresql/18/main`，5432 仅回环。两库不能相互连接。Node.js 22.22.1。开发服务一核 CPU 配额，512MB MemoryHigh / 768MB MemoryMax。Git 仓库 origin=git@github.com:HandleCoding/game.git；主分支 main，迁移分支 codex/architecture-migration 保留。后续流程读 git-workflow.md。正式发布源提交 44bc12f4e0b582aa4949d8708a7b200be3accb06；后续验收文档提交看 git log。
 
 ## 已落地
 
@@ -156,3 +156,11 @@ schema3仅扩大ranch_wallets.feed_ms约束至1800000000；摘要增加feedUnitM
 统一转换在维护停写下只执行一次，二次无变化；游戏运行时只支持当前存档v2和规则，没有旧周期/旧返还/旧XP分支。原v1代码已移入test-v2/ranch-v1-fixture.ts，仅用于真实旧结构夹具；旧目录仅离线迁移时给既有库存定价。普通未来版本是否统一改所有动物另以用户要求为准。
 
 启动检查首次暂停的原因是healthz仍硬编码2.6.2，服务实际能启动；现已自动读取根package版本，避免同类遗漏。第一次迁移已保留数据，保持维护后做前向更新，未回退2.6或覆盖数据库。恢复发布需--resume-caddy指向同次维护保存的原Caddyfile，仅允许/var/backups/pair-play/Caddyfile-before-*，不会将503维护配置当成要恢复的正式配置。
+
+
+## 2026-10-05 变异、品质、名宠融合2.8.0（已上线）
+详细实现/规则/迁移/后续边界见 ranch-mutation-v2.8.md；验收 test-reports/20261005-ranch-mutation.md、发布JSON同名前缀。购买/成年各一次10%～30%；五品质、雷火水黄金梦幻与双属性；品质最高值保留、真实发现图鉴与目标、冻结溢价/金币余数、晶露按生产日限额、2/2/3/3材料融合、珍藏与库存锁定。原周期/耗粮/XP/轮次保持，不加入训练。
+现代浅/深色弹窗、手机版分页材料与可选数量仓库；属性毛发色泽/光泽、雷弧/火焰/水波/金色星光/梦幻光点，幼年成年和双属性均覆盖，保持原图透明裁切、脚底影与侧边食槽。用户提出“看不到效果”时正式仍2.7.0，开发旧少量粒子已加强后验收发布；已有普通动物不补抽，普通外观保持。
+35项自动化、类型/构建、实际引擎40万概率样本、两内核30组交互回归与28张外观场景通过；均浏览器模拟，非真机。未知响应重试保留原requestId，提交后503不重复认养/抽取/扣费。schema5新增feature/codex/daily/fusion独立表，摘要仍v2（与初稿v3选择不同），不重置，材料fused永久留档。旧库存保值，已成年不补抽，旧幼年仅生效之后成年一次机会。
+源提交 `44bc12f4e0b582aa4949d8708a7b200be3accb06`，正式 `/opt/pair-play/releases/v2.8.0-20261005-112227`，最新停写备份 `/var/backups/pair-play/postgres-prod-20261005-112229.dump`。正式/开发与公开HTTPS均2.8.0；原账号2、会话5、结果5、关联10、档案2保持，钱包快照一致，原16只动物保留。全部公开JS/CSS哈希一致，独立 `/ranch-3d/*` 仍可用。仅本任务源码提交，另一Agent三维小样未包含。
+未来发布必须按 --ranch-mutations/schema5前向修复边界，禁止降级旧2.7或恢复整库覆盖新进度；真实数据高危删除须用户新确认。读deployment-runbook。
