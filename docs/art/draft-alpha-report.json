@@ -1,0 +1,782 @@
+[
+  {
+    "asset": "rabbit-dream-draft.png",
+    "size": [
+      1774,
+      887
+    ],
+    "hasRealTransparency": true,
+    "frames": [
+      {
+        "stage": "adult",
+        "frame": 0,
+        "cell": [
+          0,
+          0,
+          443,
+          443
+        ],
+        "alphaBounds": [
+          41,
+          148,
+          443,
+          433
+        ],
+        "boundaryPixels": 63,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 1,
+        "cell": [
+          443,
+          0,
+          444,
+          443
+        ],
+        "alphaBounds": [
+          38,
+          160,
+          444,
+          433
+        ],
+        "boundaryPixels": 257,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 2,
+        "cell": [
+          887,
+          0,
+          443,
+          443
+        ],
+        "alphaBounds": [
+          0,
+          161,
+          443,
+          437
+        ],
+        "boundaryPixels": 478,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 3,
+        "cell": [
+          1330,
+          0,
+          444,
+          443
+        ],
+        "alphaBounds": [
+          0,
+          164,
+          421,
+          434
+        ],
+        "boundaryPixels": 243,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "baby",
+        "frame": 0,
+        "cell": [
+          0,
+          443,
+          443,
+          444
+        ],
+        "alphaBounds": [
+          63,
+          111,
+          406,
+          330
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 1,
+        "cell": [
+          443,
+          443,
+          444,
+          444
+        ],
+        "alphaBounds": [
+          57,
+          118,
+          398,
+          332
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 2,
+        "cell": [
+          887,
+          443,
+          443,
+          444
+        ],
+        "alphaBounds": [
+          52,
+          123,
+          434,
+          334
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 3,
+        "cell": [
+          1330,
+          443,
+          444,
+          444
+        ],
+        "alphaBounds": [
+          72,
+          117,
+          404,
+          332
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      }
+    ],
+    "runtimeApproved": false,
+    "reason": "Style samples only; boundary/paw baseline/animation identity require final QA before game use"
+  },
+  {
+    "asset": "rabbit-fire-draft.png",
+    "size": [
+      1774,
+      887
+    ],
+    "hasRealTransparency": true,
+    "frames": [
+      {
+        "stage": "adult",
+        "frame": 0,
+        "cell": [
+          0,
+          0,
+          443,
+          443
+        ],
+        "alphaBounds": [
+          28,
+          137,
+          435,
+          430
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "adult",
+        "frame": 1,
+        "cell": [
+          443,
+          0,
+          444,
+          443
+        ],
+        "alphaBounds": [
+          32,
+          144,
+          443,
+          432
+        ],
+        "boundaryPixels": 27,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 2,
+        "cell": [
+          887,
+          0,
+          443,
+          443
+        ],
+        "alphaBounds": [
+          21,
+          144,
+          443,
+          433
+        ],
+        "boundaryPixels": 161,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 3,
+        "cell": [
+          1330,
+          0,
+          444,
+          443
+        ],
+        "alphaBounds": [
+          0,
+          146,
+          422,
+          431
+        ],
+        "boundaryPixels": 116,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "baby",
+        "frame": 0,
+        "cell": [
+          0,
+          443,
+          443,
+          444
+        ],
+        "alphaBounds": [
+          59,
+          98,
+          399,
+          332
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 1,
+        "cell": [
+          443,
+          443,
+          444,
+          444
+        ],
+        "alphaBounds": [
+          58,
+          108,
+          395,
+          335
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 2,
+        "cell": [
+          887,
+          443,
+          443,
+          444
+        ],
+        "alphaBounds": [
+          61,
+          111,
+          430,
+          336
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 3,
+        "cell": [
+          1330,
+          443,
+          444,
+          444
+        ],
+        "alphaBounds": [
+          68,
+          110,
+          393,
+          335
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      }
+    ],
+    "runtimeApproved": false,
+    "reason": "Style samples only; boundary/paw baseline/animation identity require final QA before game use"
+  },
+  {
+    "asset": "rabbit-gold-draft.png",
+    "size": [
+      1774,
+      887
+    ],
+    "hasRealTransparency": true,
+    "frames": [
+      {
+        "stage": "adult",
+        "frame": 0,
+        "cell": [
+          0,
+          0,
+          443,
+          443
+        ],
+        "alphaBounds": [
+          28,
+          151,
+          443,
+          443
+        ],
+        "boundaryPixels": 556,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 1,
+        "cell": [
+          443,
+          0,
+          444,
+          443
+        ],
+        "alphaBounds": [
+          0,
+          157,
+          444,
+          443
+        ],
+        "boundaryPixels": 976,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 2,
+        "cell": [
+          887,
+          0,
+          443,
+          443
+        ],
+        "alphaBounds": [
+          0,
+          165,
+          443,
+          443
+        ],
+        "boundaryPixels": 897,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 3,
+        "cell": [
+          1330,
+          0,
+          444,
+          443
+        ],
+        "alphaBounds": [
+          0,
+          163,
+          431,
+          443
+        ],
+        "boundaryPixels": 708,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "baby",
+        "frame": 0,
+        "cell": [
+          0,
+          443,
+          443,
+          444
+        ],
+        "alphaBounds": [
+          50,
+          0,
+          413,
+          344
+        ],
+        "boundaryPixels": 101,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "baby",
+        "frame": 1,
+        "cell": [
+          443,
+          443,
+          444,
+          444
+        ],
+        "alphaBounds": [
+          50,
+          0,
+          404,
+          343
+        ],
+        "boundaryPixels": 276,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "baby",
+        "frame": 2,
+        "cell": [
+          887,
+          443,
+          443,
+          444
+        ],
+        "alphaBounds": [
+          41,
+          0,
+          419,
+          349
+        ],
+        "boundaryPixels": 193,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "baby",
+        "frame": 3,
+        "cell": [
+          1330,
+          443,
+          444,
+          444
+        ],
+        "alphaBounds": [
+          82,
+          0,
+          405,
+          347
+        ],
+        "boundaryPixels": 327,
+        "requiresRegeneration": true
+      }
+    ],
+    "runtimeApproved": false,
+    "reason": "Style samples only; boundary/paw baseline/animation identity require final QA before game use"
+  },
+  {
+    "asset": "rabbit-lightning-draft.png",
+    "size": [
+      1774,
+      887
+    ],
+    "hasRealTransparency": true,
+    "frames": [
+      {
+        "stage": "adult",
+        "frame": 0,
+        "cell": [
+          0,
+          0,
+          443,
+          443
+        ],
+        "alphaBounds": [
+          41,
+          141,
+          443,
+          431
+        ],
+        "boundaryPixels": 347,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 1,
+        "cell": [
+          443,
+          0,
+          444,
+          443
+        ],
+        "alphaBounds": [
+          0,
+          148,
+          444,
+          432
+        ],
+        "boundaryPixels": 481,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 2,
+        "cell": [
+          887,
+          0,
+          443,
+          443
+        ],
+        "alphaBounds": [
+          0,
+          147,
+          443,
+          433
+        ],
+        "boundaryPixels": 565,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "adult",
+        "frame": 3,
+        "cell": [
+          1330,
+          0,
+          444,
+          443
+        ],
+        "alphaBounds": [
+          0,
+          142,
+          430,
+          430
+        ],
+        "boundaryPixels": 242,
+        "requiresRegeneration": true
+      },
+      {
+        "stage": "baby",
+        "frame": 0,
+        "cell": [
+          0,
+          443,
+          443,
+          444
+        ],
+        "alphaBounds": [
+          61,
+          108,
+          407,
+          331
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 1,
+        "cell": [
+          443,
+          443,
+          444,
+          444
+        ],
+        "alphaBounds": [
+          56,
+          99,
+          397,
+          333
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 2,
+        "cell": [
+          887,
+          443,
+          443,
+          444
+        ],
+        "alphaBounds": [
+          50,
+          100,
+          434,
+          334
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 3,
+        "cell": [
+          1330,
+          443,
+          444,
+          444
+        ],
+        "alphaBounds": [
+          75,
+          92,
+          406,
+          332
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      }
+    ],
+    "runtimeApproved": false,
+    "reason": "Style samples only; boundary/paw baseline/animation identity require final QA before game use"
+  },
+  {
+    "asset": "rabbit-water-draft.png",
+    "size": [
+      1774,
+      887
+    ],
+    "hasRealTransparency": true,
+    "frames": [
+      {
+        "stage": "adult",
+        "frame": 0,
+        "cell": [
+          0,
+          0,
+          443,
+          443
+        ],
+        "alphaBounds": [
+          34,
+          149,
+          426,
+          428
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "adult",
+        "frame": 1,
+        "cell": [
+          443,
+          0,
+          444,
+          443
+        ],
+        "alphaBounds": [
+          32,
+          154,
+          435,
+          430
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "adult",
+        "frame": 2,
+        "cell": [
+          887,
+          0,
+          443,
+          443
+        ],
+        "alphaBounds": [
+          24,
+          162,
+          435,
+          432
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "adult",
+        "frame": 3,
+        "cell": [
+          1330,
+          0,
+          444,
+          443
+        ],
+        "alphaBounds": [
+          41,
+          161,
+          406,
+          430
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 0,
+        "cell": [
+          0,
+          443,
+          443,
+          444
+        ],
+        "alphaBounds": [
+          67,
+          111,
+          387,
+          331
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 1,
+        "cell": [
+          443,
+          443,
+          444,
+          444
+        ],
+        "alphaBounds": [
+          58,
+          121,
+          387,
+          333
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 2,
+        "cell": [
+          887,
+          443,
+          443,
+          444
+        ],
+        "alphaBounds": [
+          52,
+          117,
+          425,
+          335
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      },
+      {
+        "stage": "baby",
+        "frame": 3,
+        "cell": [
+          1330,
+          443,
+          444,
+          444
+        ],
+        "alphaBounds": [
+          73,
+          121,
+          397,
+          334
+        ],
+        "boundaryPixels": 0,
+        "requiresRegeneration": false
+      }
+    ],
+    "runtimeApproved": false,
+    "reason": "Style samples only; boundary/paw baseline/animation identity require final QA before game use"
+  }
+]

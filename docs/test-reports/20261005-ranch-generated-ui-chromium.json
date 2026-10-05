@@ -1,0 +1,107 @@
+{
+  "engine": "chromium",
+  "isolatedDevelopmentSchema": true,
+  "results": [
+    {
+      "size": {
+        "width": 320,
+        "height": 740
+      },
+      "checks": [
+        "true-codex",
+        "three-goals",
+        "fractional-sale",
+        "lock-inventory",
+        "fusion-preview",
+        "dual-random",
+        "consumed-history",
+        "light-dark",
+        "in-viewport",
+        "no-overflow",
+        "no-js-errors",
+        "post-commit-retry-same-requestId"
+      ]
+    },
+    {
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "checks": [
+        "true-codex",
+        "three-goals",
+        "fractional-sale",
+        "lock-inventory",
+        "fusion-preview",
+        "dual-random",
+        "consumed-history",
+        "light-dark",
+        "in-viewport",
+        "no-overflow",
+        "no-js-errors",
+        "post-commit-retry-same-requestId"
+      ]
+    },
+    {
+      "size": {
+        "width": 430,
+        "height": 932
+      },
+      "checks": [
+        "true-codex",
+        "three-goals",
+        "fractional-sale",
+        "lock-inventory",
+        "fusion-preview",
+        "dual-random",
+        "consumed-history",
+        "light-dark",
+        "in-viewport",
+        "no-overflow",
+        "no-js-errors",
+        "post-commit-retry-same-requestId"
+      ]
+    },
+    {
+      "size": {
+        "width": 844,
+        "height": 390
+      },
+      "checks": [
+        "true-codex",
+        "three-goals",
+        "fractional-sale",
+        "lock-inventory",
+        "fusion-preview",
+        "dual-random",
+        "consumed-history",
+        "light-dark",
+        "in-viewport",
+        "no-overflow",
+        "no-js-errors",
+        "post-commit-retry-same-requestId"
+      ]
+    },
+    {
+      "size": {
+        "width": 1440,
+        "height": 1000
+      },
+      "checks": [
+        "true-codex",
+        "three-goals",
+        "fractional-sale",
+        "lock-inventory",
+        "fusion-preview",
+        "dual-random",
+        "consumed-history",
+        "light-dark",
+        "in-viewport",
+        "no-overflow",
+        "no-js-errors",
+        "post-commit-retry-same-requestId"
+      ]
+    }
+  ],
+  "failures": []
+}

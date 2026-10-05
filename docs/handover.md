@@ -164,3 +164,8 @@ schema3仅扩大ranch_wallets.feed_ms约束至1800000000；摘要增加feedUnitM
 35项自动化、类型/构建、实际引擎40万概率样本、两内核30组交互回归与28张外观场景通过；均浏览器模拟，非真机。未知响应重试保留原requestId，提交后503不重复认养/抽取/扣费。schema5新增feature/codex/daily/fusion独立表，摘要仍v2（与初稿v3选择不同），不重置，材料fused永久留档。旧库存保值，已成年不补抽，旧幼年仅生效之后成年一次机会。
 源提交 `44bc12f4e0b582aa4949d8708a7b200be3accb06`，正式 `/opt/pair-play/releases/v2.8.0-20261005-112227`，最新停写备份 `/var/backups/pair-play/postgres-prod-20261005-112229.dump`。正式/开发与公开HTTPS均2.8.0；原账号2、会话5、结果5、关联10、档案2保持，钱包快照一致，原16只动物保留。全部公开JS/CSS哈希一致，独立 `/ranch-3d/*` 仍可用。仅本任务源码提交，另一Agent三维小样未包含。
 未来发布必须按 --ranch-mutations/schema5前向修复边界，禁止降级旧2.7或恢复整库覆盖新进度；真实数据高危删除须用户新确认。读deployment-runbook。
+
+
+## 2026-10-05 生成属性外观独立 Worktree
+
+分支 codex/ranch-generated-variants，目录 /opt/pair-play-worktrees/ranch-generated-variants，基于95dec7d。36物种、两个阶段、五种属性共360款/1440帧；普通图保留。见 ranch-generated-variants.md、art/generation-plan.json 与新验收报告。双属性仍第一属性生成图+第二属性动态效果，无专属组合图。未发布正式、未迁移/重置数据库，其他Agent的3D工作目录/路由未修改。源码与提示词均在云端；推送分支不等于正式部署。

@@ -1,0 +1,54 @@
+{
+  "results": [
+    {
+      "stage": "adult",
+      "group": 0,
+      "renderedDesigns": 45,
+      "minOpaquePixels": 11317
+    },
+    {
+      "stage": "adult",
+      "group": 1,
+      "renderedDesigns": 45,
+      "minOpaquePixels": 8001
+    },
+    {
+      "stage": "adult",
+      "group": 2,
+      "renderedDesigns": 45,
+      "minOpaquePixels": 5298
+    },
+    {
+      "stage": "adult",
+      "group": 3,
+      "renderedDesigns": 45,
+      "minOpaquePixels": 6534
+    },
+    {
+      "stage": "baby",
+      "group": 0,
+      "renderedDesigns": 45,
+      "minOpaquePixels": 14055
+    },
+    {
+      "stage": "baby",
+      "group": 1,
+      "renderedDesigns": 45,
+      "minOpaquePixels": 9103
+    },
+    {
+      "stage": "baby",
+      "group": 2,
+      "renderedDesigns": 45,
+      "minOpaquePixels": 8195
+    },
+    {
+      "stage": "baby",
+      "group": 3,
+      "renderedDesigns": 45,
+      "minOpaquePixels": 6455
+    }
+  ],
+  "errors": [],
+  "designs": 360
+}

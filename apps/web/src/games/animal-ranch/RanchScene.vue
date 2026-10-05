@@ -9,8 +9,8 @@ import {
 } from "./appearance";
 import { ranchAssetUrl, useOriginAsset, rememberRanchAsset } from "./assets";
 import type { RanchAnimalView } from "../../../../../packages/contracts/src/ranch";
-import { spriteLocation, animalExtent } from "./sprites";
-import { softAtlasMetadata } from "./soft-atlas-metadata";
+import { animalExtent } from "./sprites";
+import { visualSprite } from "./visual-sprites";
 const props = defineProps<{
   animals: RanchAnimalView[];
   chosen: string | null;
@@ -43,8 +43,7 @@ type Walker = {
   dir: number;
   phase: number;
 };
-const walkers = new Map<string, Walker>(),
-  sheets: HTMLImageElement[] = [];
+const walkers = new Map<string, Walker>();
 let background: HTMLImageElement;
 const feederBox = ref({ left: 0, top: 0, width: 64, height: 44 });
 const feederVisible = ref(false);
@@ -225,22 +224,13 @@ function getImage(url: string) {
   pending.set(url, promise);
   return promise;
 }
-function sheetUrl(i: number) {
-  return i === 8
-    ? "/ranch/scene/soft/rabbit-stages-v1.webp"
-    : "/ranch/scene/soft/" +
-        (i >= 4 ? "baby" : "adult") +
-        "-" +
-        (i % 4) +
-        "-v1.webp";
-}
 function neededUrls() {
   return [
     "/ranch/scene/pasture-v1.webp",
     "/ranch/ui/ranch-tools-v1.webp",
     ...new Set(
-      props.animals.map((a) =>
-        sheetUrl(spriteLocation(a.species, a.baby).group),
+      props.animals.map(
+        (a) => visualSprite(a.species, a.baby, a.attributes).url,
       ),
     ),
   ];
@@ -284,10 +274,6 @@ async function prepareScene() {
         throw new Error("Resources unavailable");
       if (neededUrls().some((url) => !loaded.has(url))) continue;
       background = loaded.get("/ranch/scene/pasture-v1.webp")!;
-      for (const a of props.animals) {
-        const i = spriteLocation(a.species, a.baby).group;
-        sheets[i] = loaded.get(sheetUrl(i))!;
-      }
       sync();
       ready.value = true;
       measure();
@@ -393,23 +379,23 @@ function tag(
 }
 /** Native aspect and measured foot baseline, with species/depth scale. */
 function bodyGeometry(a: RanchAnimalView, w: Walker, col = 0) {
-  const location = spriteLocation(a.species, a.baby),
-    meta = softAtlasMetadata[location.group],
-    row = meta.rows[location.row];
+  const visual = visualSprite(a.species, a.baby, a.attributes, col),
+    row = visual.frame;
   const density = Math.min(1, Math.sqrt(7 / Math.max(1, props.animals.length)));
   const extent =
     animalExtent[a.species] *
     (a.baby ? 0.62 : 1) *
     (0.83 + (w.y - 330) / 1450) *
     density;
-  const ratio = extent / Math.max(row.width, row.height);
+  const ratio = extent / Math.max(row.bodyWidth, row.bodyHeight);
   return {
-    location,
-    meta,
+    ...visual,
     row,
+    left: -row.centerX * ratio,
+    bodyWidth: row.bodyWidth * ratio,
     width: row.width * ratio,
     height: row.height * ratio,
-    ground: (row.ground[col] - row.y) * ratio,
+    ground: row.ground * ratio,
   };
 }
 function groundShadow(ctx: CanvasRenderingContext2D, bodyWidth: number) {
@@ -499,16 +485,18 @@ function draw(now: number) {
         ? Math.floor(elapsed * 6 + w.phase) % 4
         : 0;
     const body = bodyGeometry(a, w, col),
-      sheet = sheets[body.location.group];
+      sheet = loaded.get(body.url);
     if (!sheet) continue;
     const { row } = body;
     ctx.save();
     ctx.translate(w.x, w.y);
-    groundShadow(ctx, body.width);
+    groundShadow(ctx, body.bodyWidth);
     drawAttributeAura(
       ctx,
-      a.attributes ?? [],
-      body.width,
+      body.generated
+        ? (a.attributes ?? []).filter((a) => a !== body.primary)
+        : (a.attributes ?? []),
+      body.bodyWidth,
       body.height,
       body.ground,
       elapsed,
@@ -539,11 +527,11 @@ function draw(now: number) {
     if (w.state === "eat" && !frozen.value)
       ctx.rotate(Math.sin(elapsed * 3 + w.phase) * 0.018);
     const attrs = a.attributes ?? [];
-    if (attrs.length) {
+    if (attrs.length && !body.generated) {
       const painted = materialFrame(
         sheet,
         a.species + ":" + a.baby + ":" + col,
-        (col * body.meta.width) / 4 + row.x,
+        row.x,
         row.y,
         row.width,
         row.height,
@@ -553,7 +541,7 @@ function draw(now: number) {
       ctx.shadowBlur = 6;
       ctx.drawImage(
         painted,
-        -body.width / 2,
+        body.left,
         -body.ground + bob,
         body.width,
         body.height,
@@ -561,11 +549,11 @@ function draw(now: number) {
     } else {
       ctx.drawImage(
         sheet,
-        (col * body.meta.width) / 4 + row.x,
+        row.x,
         row.y,
         row.width,
         row.height,
-        -body.width / 2,
+        body.left,
         -body.ground + bob,
         body.width,
         body.height,

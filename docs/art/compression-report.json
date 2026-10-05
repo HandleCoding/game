@@ -1,0 +1,246 @@
+{
+  "rawBytes": 65671834,
+  "webpBytes": 20290834,
+  "assets": [
+    {
+      "asset": "adult-dream-0-v1.webp",
+      "rawBytes": 1436668,
+      "webpBytes": 533434,
+      "sha256": "fb81bd4bf122819df5557baf0405a178c115f237691a50ae4c2432146bf57d88"
+    },
+    {
+      "asset": "adult-dream-1-v1.webp",
+      "rawBytes": 1492901,
+      "webpBytes": 524864,
+      "sha256": "da824acccf56c2723118f6f600d967d801f7a9c11568af515bf5671336f32768"
+    },
+    {
+      "asset": "adult-dream-2-v1.webp",
+      "rawBytes": 1694610,
+      "webpBytes": 620432,
+      "sha256": "928d8defbd691b2dc3788c259755ce82775defbd04669da19c49e0e3cabb4859"
+    },
+    {
+      "asset": "adult-dream-3-v1.webp",
+      "rawBytes": 1507423,
+      "webpBytes": 519824,
+      "sha256": "3f11330901fab708ef474552d60690b9b9d24877adf1fb841c42b5efe94412ae"
+    },
+    {
+      "asset": "adult-fire-0-v1.webp",
+      "rawBytes": 1535637,
+      "webpBytes": 558142,
+      "sha256": "8769f0d881ee3d815d9140ec9af79a2a010a21cb9d844bea8047bde3c9ed2d8b"
+    },
+    {
+      "asset": "adult-fire-1-v1.webp",
+      "rawBytes": 2347041,
+      "webpBytes": 454628,
+      "sha256": "e2a59f0950605a4f370c8a75b64771c87c7718d1aa8a02abab31fd1fd96f0fbd"
+    },
+    {
+      "asset": "adult-fire-2-v1.webp",
+      "rawBytes": 2476782,
+      "webpBytes": 495768,
+      "sha256": "3c1eda8d87b206c26c8f2e468bb592d25bb80130d0b78b69530f2b4c75327759"
+    },
+    {
+      "asset": "adult-fire-3-v1.webp",
+      "rawBytes": 1433556,
+      "webpBytes": 495076,
+      "sha256": "38c2eef49a1bfd9925fe773a0c7e091f6e14f13389d0a7c3d50de64a30da7ca5"
+    },
+    {
+      "asset": "adult-gold-0-v1.webp",
+      "rawBytes": 2229413,
+      "webpBytes": 371808,
+      "sha256": "9f258ca29af2ed0cd52b21c2afc90d90e6e43c6f8422b43e167aaeb8f881f1c4"
+    },
+    {
+      "asset": "adult-gold-1-v1.webp",
+      "rawBytes": 1651374,
+      "webpBytes": 663482,
+      "sha256": "7ff8efa7da436a742533b9fbf53acb8c25ce2820ca518581a2f92a47c5153140"
+    },
+    {
+      "asset": "adult-gold-2-v1.webp",
+      "rawBytes": 1593105,
+      "webpBytes": 608358,
+      "sha256": "f7403add7d2301ddf26ca0c3715c3f92ad2fe03d3812cd1841e86344a136db7f"
+    },
+    {
+      "asset": "adult-gold-3-v1.webp",
+      "rawBytes": 1489701,
+      "webpBytes": 527792,
+      "sha256": "536e37cb99d1aaa0fbf338761f78c6bba894199775f43d00815530c8b831f657"
+    },
+    {
+      "asset": "adult-lightning-0-v1.webp",
+      "rawBytes": 1629544,
+      "webpBytes": 565504,
+      "sha256": "4ca412f5741387fddeb818549f140583789ebe1f2e59685820aabaac1a63d041"
+    },
+    {
+      "asset": "adult-lightning-1-v1.webp",
+      "rawBytes": 1265535,
+      "webpBytes": 446788,
+      "sha256": "fa7d6da9f2aa1b357508ff73fa0b7decf181a0c7ae8202cb602757d1dacca21e"
+    },
+    {
+      "asset": "adult-lightning-2-v1.webp",
+      "rawBytes": 1339668,
+      "webpBytes": 490146,
+      "sha256": "77faa7dcd2033b76060b9dea1b5c48bbdb16773be8cdc64b6df47cd1b84a555f"
+    },
+    {
+      "asset": "adult-lightning-3-v1.webp",
+      "rawBytes": 1554678,
+      "webpBytes": 498740,
+      "sha256": "380cb36ac4e09677706a3dafbe77c4fa586c5b41d93c7be26077683e2737f463"
+    },
+    {
+      "asset": "adult-water-0-v1.webp",
+      "rawBytes": 921351,
+      "webpBytes": 345496,
+      "sha256": "60360268dd934a38f46777720223aca3ed8817a313f51eed37a5f96629c89db8"
+    },
+    {
+      "asset": "adult-water-1-v1.webp",
+      "rawBytes": 2343318,
+      "webpBytes": 429176,
+      "sha256": "40316834f50454453c55d263626195d08b828dc08dd9103387b183cdfe1ae9a3"
+    },
+    {
+      "asset": "adult-water-2-v1.webp",
+      "rawBytes": 1514630,
+      "webpBytes": 571282,
+      "sha256": "c89a6054e601e9f387b1cb4dd3dde69d2c3b6ef037c553f7925f5666552078c9"
+    },
+    {
+      "asset": "adult-water-3-v1.webp",
+      "rawBytes": 1572532,
+      "webpBytes": 545742,
+      "sha256": "eeaa7e76fdcda4055f1f37cb9e6c0a26b8ddb64fa3128a18cb2673538dd17002"
+    },
+    {
+      "asset": "baby-dream-0-v1.webp",
+      "rawBytes": 1284610,
+      "webpBytes": 451282,
+      "sha256": "b45786da2f85e59421ed4c73d7dc69947d1845a5d86154c4e79f6ffd3d3033d7"
+    },
+    {
+      "asset": "baby-dream-1-v1.webp",
+      "rawBytes": 2281690,
+      "webpBytes": 392042,
+      "sha256": "1b4bb04eec027ad895c5222763f9d8fefe98d124f3bbfa61650ce87614c56504"
+    },
+    {
+      "asset": "baby-dream-2-v1.webp",
+      "rawBytes": 1390335,
+      "webpBytes": 531704,
+      "sha256": "59b119a6f5c464814b0fa2ba444d6c88041ddd64e6f224b8a3f995b28cb857d5"
+    },
+    {
+      "asset": "baby-dream-3-v1.webp",
+      "rawBytes": 1535008,
+      "webpBytes": 552046,
+      "sha256": "4ce770d565414ae2b6a029648515d977bc811d8d472e3064f17bc11f55d3228e"
+    },
+    {
+      "asset": "baby-fire-0-v1.webp",
+      "rawBytes": 1391070,
+      "webpBytes": 490892,
+      "sha256": "5707039c0b90a369e0d9a448d62d02a020a59a3b9cbfe0687f1bf52334c4c018"
+    },
+    {
+      "asset": "baby-fire-1-v1.webp",
+      "rawBytes": 2236305,
+      "webpBytes": 393514,
+      "sha256": "78476435efc834848847fece2c686cc4a76dd87e0b25b1957a6c64e1549ec6c9"
+    },
+    {
+      "asset": "baby-fire-2-v1.webp",
+      "rawBytes": 1530690,
+      "webpBytes": 562962,
+      "sha256": "17d7914642f8c45b0b93003ab94c101dae91a1f5b5a4ba9c16832b596216e957"
+    },
+    {
+      "asset": "baby-fire-3-v1.webp",
+      "rawBytes": 1522512,
+      "webpBytes": 522100,
+      "sha256": "e78d1f8cedbb0c3c68e9ee92049f94b5896585881177fb3e250a237d38b9e1c0"
+    },
+    {
+      "asset": "baby-gold-0-v1.webp",
+      "rawBytes": 1464778,
+      "webpBytes": 536278,
+      "sha256": "b27448dc75279d556ad5a3a5c1a5ce61af0d84e3f077e541e5278cf571012e2a"
+    },
+    {
+      "asset": "baby-gold-1-v1.webp",
+      "rawBytes": 1410782,
+      "webpBytes": 536124,
+      "sha256": "3aed4f67e2cd4f5e7e45166d011b4a8c73aa9b0b68d0bf1db6fb461a9a0096c7"
+    },
+    {
+      "asset": "baby-gold-2-v1.webp",
+      "rawBytes": 1415280,
+      "webpBytes": 541862,
+      "sha256": "4812edb0e95a4dbf5f6bbcdc416c8735c0e33a353cfdbb4012fa3b4f25e5685e"
+    },
+    {
+      "asset": "baby-gold-3-v1.webp",
+      "rawBytes": 1263480,
+      "webpBytes": 488780,
+      "sha256": "11ce94b8ee1aae637f0bdc85cac23c100fadb4c0ad2aca7430b9e1da91c24fba"
+    },
+    {
+      "asset": "baby-lightning-0-v1.webp",
+      "rawBytes": 1267243,
+      "webpBytes": 420174,
+      "sha256": "a4bafad6935fae6ac592f682ddfcfbe28173cdde172d99b6e6fe8d37dd07399e"
+    },
+    {
+      "asset": "baby-lightning-1-v1.webp",
+      "rawBytes": 2328220,
+      "webpBytes": 409162,
+      "sha256": "2445012b9e48c136eb0c3a12ca34016d3271118ce6a96b5e732be7be8ae46867"
+    },
+    {
+      "asset": "baby-lightning-2-v1.webp",
+      "rawBytes": 1391064,
+      "webpBytes": 479386,
+      "sha256": "3585d258f1cc2a1c0a45410871649438d5fc3c54a0da36672a94604142812f09"
+    },
+    {
+      "asset": "baby-lightning-3-v1.webp",
+      "rawBytes": 1847915,
+      "webpBytes": 656000,
+      "sha256": "e3429022cde803bd15a4a7f038056fe83603c9f16ff7f0a7a57d4aff16d43895"
+    },
+    {
+      "asset": "baby-water-0-v1.webp",
+      "rawBytes": 1667494,
+      "webpBytes": 549600,
+      "sha256": "ff896353b303a54f619e7745fb8951b837d2b3dbbdc7cfb1314f93ceb0e75266"
+    },
+    {
+      "asset": "baby-water-1-v1.webp",
+      "rawBytes": 2197964,
+      "webpBytes": 376380,
+      "sha256": "6532ef86d4c4c1c65c11a2e28fe516bdb3b3e88270c498aaae42c7d029382ac6"
+    },
+    {
+      "asset": "baby-water-2-v1.webp",
+      "rawBytes": 1771864,
+      "webpBytes": 638416,
+      "sha256": "f25d5ad9721a9669694a96a124d5706c32203e60c5eaf1f24be758f458ab4c68"
+    },
+    {
+      "asset": "baby-water-3-v1.webp",
+      "rawBytes": 1444063,
+      "webpBytes": 495648,
+      "sha256": "c0a564c96a8efd60f99b885e4c61e4c9424d9f6cc12753c83ff30ff8dd6aab97"
+    }
+  ]
+}

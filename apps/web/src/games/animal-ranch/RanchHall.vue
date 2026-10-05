@@ -155,6 +155,7 @@ onMounted(() => void load());
           >
             <AnimalPortrait
               :species="a.species"
+              :attributes="a.attributes"
               :name="a.name"
               :baby="a.baby"
             />
@@ -198,6 +199,7 @@ onMounted(() => void load());
             <div class="hall-portrait">
               <AnimalPortrait
                 :species="selected.species"
+                :attributes="selected.attributes"
                 :name="selected.name"
                 :baby="selected.baby"
               />

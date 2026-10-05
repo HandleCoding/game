@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { computed, useId } from "vue";
 import type { RanchSpecies } from "../../../../../packages/contracts/src/ranch";
-import { spriteLocation } from "./sprites";
+import { visualSprite } from "./visual-sprites";
 import { useRanchAssetSource, useOriginAsset } from "./assets";
-import { softAtlasMetadata } from "./soft-atlas-metadata";
 const props = defineProps<{
   species: RanchSpecies;
   name?: string;
   baby?: boolean;
+  attributes?: readonly string[];
 }>();
 const clipId = "ranch-portrait-" + useId();
 const frame = computed(() => {
-  const s = spriteLocation(props.species, props.baby),
-    m = softAtlasMetadata[s.group],
-    row = m.rows[s.row];
+  const s = visualSprite(props.species, props.baby, props.attributes),
+    m = s.meta,
+    row = s.frame;
   return {
     url: s.url,
     width: m.width,

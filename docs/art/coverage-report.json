@@ -1,0 +1,247 @@
+{
+  "atlases": 40,
+  "designs": 360,
+  "frames": 1440,
+  "assets": [
+    {
+      "asset": "adult-dream-0-v1.png",
+      "approved": true,
+      "sha256": "e6ec011a974c25d5f18fea87f96eabb7e81ddd6aaee20e8c2b6e97b7489705ed",
+      "frames": 36
+    },
+    {
+      "asset": "adult-dream-1-v1.png",
+      "approved": true,
+      "sha256": "29fb48190a6acccaf2336523833bc65c31c98729b66bdcafdb17f7fff7e2ca8c",
+      "frames": 36
+    },
+    {
+      "asset": "adult-dream-2-v1.png",
+      "approved": true,
+      "sha256": "79b6d9d64db078c94f2c90aeb66d4caef30fc1b214462dc194e43757edfbbaf6",
+      "frames": 36
+    },
+    {
+      "asset": "adult-dream-3-v1.png",
+      "approved": true,
+      "sha256": "bcf92fdb34651436922642715cdfeff2c9e200f3b593d35528510b1652aaaddd",
+      "frames": 36
+    },
+    {
+      "asset": "adult-fire-0-v1.png",
+      "approved": true,
+      "sha256": "015b2d3d6a3df545242f0ee0f4bba4875570908d302f0b81f00129f2b3e489b7",
+      "frames": 36
+    },
+    {
+      "asset": "adult-fire-1-v1.png",
+      "approved": true,
+      "sha256": "bb94f9e7ed0e9c5eb7bdf8708d6da23d2f154ddc23d615d2782e2871c66520e2",
+      "frames": 36
+    },
+    {
+      "asset": "adult-fire-2-v1.png",
+      "approved": true,
+      "sha256": "c81d6810cc049c3eb872430ba4139e972a9610742562b78c4f3a69d772f5e3ee",
+      "frames": 36
+    },
+    {
+      "asset": "adult-fire-3-v1.png",
+      "approved": true,
+      "sha256": "a08655eb391e69cd464f0a0d912298191b59046206fe310294a136f21973a4aa",
+      "frames": 36
+    },
+    {
+      "asset": "adult-gold-0-v1.png",
+      "approved": true,
+      "sha256": "dba746185d37e82da2b5972d490fc11b1c6b7ab9e27b060292749a8cf1d980eb",
+      "frames": 36
+    },
+    {
+      "asset": "adult-gold-1-v1.png",
+      "approved": true,
+      "sha256": "a9f4e75282720009addb257a497c0bee69a976edf2a4e4cc21b5284c7f77bfca",
+      "frames": 36
+    },
+    {
+      "asset": "adult-gold-2-v1.png",
+      "approved": true,
+      "sha256": "e46a2ce77d3ae7bbfb4727633313a2c3061ee359619096c585313fb2991d939c",
+      "frames": 36
+    },
+    {
+      "asset": "adult-gold-3-v1.png",
+      "approved": true,
+      "sha256": "22614997a83b06e2768c81b30a2a7cb966e6e965c6739b329949aeba53f9390e",
+      "frames": 36
+    },
+    {
+      "asset": "adult-lightning-0-v1.png",
+      "approved": true,
+      "sha256": "cae52db03dd9e65c1beef9e5ab67657fdfbe17b423f56b63077929e7ad77fb6e",
+      "frames": 36
+    },
+    {
+      "asset": "adult-lightning-1-v1.png",
+      "approved": true,
+      "sha256": "2bee29dee1f36b01d75b5d7ff79e2cba12933323a9e1c031587d4f9c38e4a823",
+      "frames": 36
+    },
+    {
+      "asset": "adult-lightning-2-v1.png",
+      "approved": true,
+      "sha256": "1b83e7bf961af3a693966af6cfd8a8e518143945d927c515851d5a79b9edfde4",
+      "frames": 36
+    },
+    {
+      "asset": "adult-lightning-3-v1.png",
+      "approved": true,
+      "sha256": "eed54ad5e69b3bb2736a996acc9459cbf9e7da1a49ff305e59d1bab226c4a6c7",
+      "frames": 36
+    },
+    {
+      "asset": "adult-water-0-v1.png",
+      "approved": true,
+      "sha256": "33beddc8567810012edc38686a55de83fd4c5a587ce26d6592077cfd7fd4eabd",
+      "frames": 36
+    },
+    {
+      "asset": "adult-water-1-v1.png",
+      "approved": true,
+      "sha256": "0ac25d1898e8852af237bc948403178b84f638a30040757ca9bc0dea356fdeb1",
+      "frames": 36
+    },
+    {
+      "asset": "adult-water-2-v1.png",
+      "approved": true,
+      "sha256": "24dac6fbc494a4d9915e607ed0e492746f0731ebf20ca3f733b29be7355ed945",
+      "frames": 36
+    },
+    {
+      "asset": "adult-water-3-v1.png",
+      "approved": true,
+      "sha256": "f11026ebd4b4d6d8839afa1967825cb8a741ae2c0d9927f3b2a5e3f36bc09f38",
+      "frames": 36
+    },
+    {
+      "asset": "baby-dream-0-v1.png",
+      "approved": true,
+      "sha256": "bb04fc3acf81c9ed5fe54bfa15cb2db041228d7d79517f47547668e28f4c5e73",
+      "frames": 36
+    },
+    {
+      "asset": "baby-dream-1-v1.png",
+      "approved": true,
+      "sha256": "439dc8f9cc75c89b7522ec1190ed4c8bba62ba921601cccb56b39e8deb6e8020",
+      "frames": 36
+    },
+    {
+      "asset": "baby-dream-2-v1.png",
+      "approved": true,
+      "sha256": "05547cc81c68b472e47e150103c5a1c29ce6b8ac051d775d44d564ec0475f3ce",
+      "frames": 36
+    },
+    {
+      "asset": "baby-dream-3-v1.png",
+      "approved": true,
+      "sha256": "f698aef8713401f0a5ed181c73a1e0e1648370a5d9fe8eb4d17d7128cbf401d4",
+      "frames": 36
+    },
+    {
+      "asset": "baby-fire-0-v1.png",
+      "approved": true,
+      "sha256": "4f0396ec417b4b47b7523377b3d22b57c209083fc1ccddbc4496827b35ebb8be",
+      "frames": 36
+    },
+    {
+      "asset": "baby-fire-1-v1.png",
+      "approved": true,
+      "sha256": "d12f520617c31c70bcab52dba6aa8c2c9293571fd8c81d107322f3412f8ccced",
+      "frames": 36
+    },
+    {
+      "asset": "baby-fire-2-v1.png",
+      "approved": true,
+      "sha256": "1ad2592d9360c2d1fa4d7718e9691ba579fe00f4a45d5e0132f5f5c60e3092a7",
+      "frames": 36
+    },
+    {
+      "asset": "baby-fire-3-v1.png",
+      "approved": true,
+      "sha256": "63fb82d7bea2dbdc1f7d6bf4b45bf11eb8bb8627dce332bfe9c3429b916efe1f",
+      "frames": 36
+    },
+    {
+      "asset": "baby-gold-0-v1.png",
+      "approved": true,
+      "sha256": "857e01917e9d2b15f848fcc07867499899d053d72700c37e2f6a4a37c4fa32a2",
+      "frames": 36
+    },
+    {
+      "asset": "baby-gold-1-v1.png",
+      "approved": true,
+      "sha256": "25ec3f989a43b67c1ae451e2c574ca18167f170c504e6b5915e82a2e2a10e5cd",
+      "frames": 36
+    },
+    {
+      "asset": "baby-gold-2-v1.png",
+      "approved": true,
+      "sha256": "25c4050b43568a61767a122f1b038fe6378f8ad693081bc57b7963d77c431544",
+      "frames": 36
+    },
+    {
+      "asset": "baby-gold-3-v1.png",
+      "approved": true,
+      "sha256": "3469e6950cf48af11f11c7c2d52146c333c4d0027e9257700fc7dc5eee96c199",
+      "frames": 36
+    },
+    {
+      "asset": "baby-lightning-0-v1.png",
+      "approved": true,
+      "sha256": "13b66ca31db138c184f954a582d909b17acebd3e1e9485d3feeb96c213e48ddc",
+      "frames": 36
+    },
+    {
+      "asset": "baby-lightning-1-v1.png",
+      "approved": true,
+      "sha256": "c5f3b412d730a789ef223f51f38e52953e3025fae0a4f939ba11605e20522419",
+      "frames": 36
+    },
+    {
+      "asset": "baby-lightning-2-v1.png",
+      "approved": true,
+      "sha256": "10e2a057a19c91fdb215829d2087190dd31c28bb062cb133a4a837a0785c8a7c",
+      "frames": 36
+    },
+    {
+      "asset": "baby-lightning-3-v1.png",
+      "approved": true,
+      "sha256": "f9b943b8827560909642a87b22dc063cfb0c71bd9d5489b276cb60dc666b2794",
+      "frames": 36
+    },
+    {
+      "asset": "baby-water-0-v1.png",
+      "approved": true,
+      "sha256": "97deee442dd6d3c4ac6a453829a83bd10b2706390d3b1fdd372d3b3bfbdb1109",
+      "frames": 36
+    },
+    {
+      "asset": "baby-water-1-v1.png",
+      "approved": true,
+      "sha256": "b55cc0f792704a5fd25b019d7c4f3658e38d66c14beed69d90174bd32e461582",
+      "frames": 36
+    },
+    {
+      "asset": "baby-water-2-v1.png",
+      "approved": true,
+      "sha256": "bb6c100c3889ddb45121df7bb2ff0ff286647e15d248cb5220aaa239681f74b7",
+      "frames": 36
+    },
+    {
+      "asset": "baby-water-3-v1.png",
+      "approved": true,
+      "sha256": "0525089e4debf1769d495acf8851068c24f522f933c30e44406d672622c168b3",
+      "frames": 36
+    }
+  ]
+}

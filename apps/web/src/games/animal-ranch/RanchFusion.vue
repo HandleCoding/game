@@ -207,6 +207,7 @@ const names: Record<string, string> = {
           >
             <AnimalPortrait
               :species="a.species"
+              :attributes="a.attributes"
               :name="a.name"
               :baby="false"
             /><strong>{{ a.name }}</strong

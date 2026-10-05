@@ -1,0 +1,618 @@
+{
+  "tool": "built-in image_gen",
+  "style": "保留动物原貌，强化毛色与属性氛围",
+  "jobs": [
+    {
+      "id": "adult-lightning-0-v1",
+      "age": "adult",
+      "group": 0,
+      "attribute": "lightning",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Attached image is ONLY a rendering-style, safe spacing and walking-layout reference. REPLACE all its animals with these EXACT nine rows in order: 1. adult brown hen; 2. adult white lop-eared rabbit with long floppy ears; 3. adult golden retriever; 4. adult mallard duck; 5. adult cream wool sheep; 6. adult white goose; 7. adult cream goat; 8. adult black-white dairy cow; 9. adult ginger cat. All are mature adults, adult male deer/moose antlers, male lion full mane. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. LIGHTNING: natural original coat colors with subtle lavender blue tips/highlights; small branching blue-white electric arcs curl along shoulders, back and tail, lighting nearby fur/feathers. No water ribbons or droplets. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-20f7c9dd-f8ad-424f-abcc-70226a490a80.png",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-lightning-0-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-lightning-0-v1.webp",
+      "sha256": "cae52db03dd9e65c1beef9e5ab67657fdfbe17b423f56b63077929e7ad77fb6e"
+    },
+    {
+      "id": "adult-fire-0-v1",
+      "age": "adult",
+      "group": 0,
+      "attribute": "fire",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Attached image is ONLY a rendering-style, safe spacing and walking-layout reference. REPLACE all its animals with these EXACT nine rows in order: 1. adult brown hen; 2. adult white lop-eared rabbit with long floppy ears; 3. adult golden retriever; 4. adult mallard duck; 5. adult cream wool sheep; 6. adult white goose; 7. adult cream goat; 8. adult black-white dairy cow; 9. adult ginger cat. All are mature adults, adult male deer/moose antlers, male lion full mane. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. FIRE: retain original markings and natural body; warmly amber tinted tips; small realistic orange-gold flame tongues flowing near shoulders, back and tail, warm reflected light on fur/feathers, few embers. No water ribbons or droplets. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-b33221c0-32af-48e9-bb12-50245a796e07.png",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-fire-0-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-fire-0-v1.webp",
+      "sha256": "015b2d3d6a3df545242f0ee0f4bba4875570908d302f0b81f00129f2b3e489b7"
+    },
+    {
+      "id": "adult-water-0-v1",
+      "age": "adult",
+      "group": 0,
+      "attribute": "water",
+      "prompt": "Precise object edit of attached sprite sheet. Change ONLY sprite SIZE and spacing: shrink EVERY one of the 36 animals AND its associated water effects to 65% of its current size, centered at the center of its own imaginary cell. Keep the canvas dimensions unchanged and the 4-column, 9-row grid unchanged. Each cell must now have VERY LARGE EMPTY transparent margins. Animal identity, detailed natural fur, water appearance, four distinct walk poses, row order and alpha transparency stay unchanged. Do not enlarge the animals to fill the cells. No scenery, no text, no cell borders. This is a necessary production sprite packing correction: reduce all 36 sprites to two thirds of original dimensions.",
+      "status": "alpha-and-crop-validated",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-water-0-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-water-0-v1.webp",
+      "sha256": "33beddc8567810012edc38686a55de83fd4c5a587ce26d6592077cfd7fd4eabd",
+      "sourcePath": "C:/Users/Administrator/.codex/generated_images/01a109d8-0fd8-7052-a4c3-aa5086309053/exec-36c6552c-a07c-41b4-a642-76afcc7bba25.png",
+      "references": [
+        "art/elemental-drafts/adult-water-0-v1.png"
+      ]
+    },
+    {
+      "id": "adult-gold-0-v1",
+      "age": "adult",
+      "group": 0,
+      "attribute": "gold",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Attached image is ONLY a rendering-style, safe spacing and walking-layout reference. REPLACE all its animals with these EXACT nine rows in order: 1. adult brown hen; 2. adult white lop-eared rabbit with long floppy ears; 3. adult golden retriever; 4. adult mallard duck; 5. adult cream wool sheep; 6. adult white goose; 7. adult cream goat; 8. adult black-white dairy cow; 9. adult ginger cat. All are mature adults, adult male deer/moose antlers, male lion full mane. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. GOLD: natural fur/feathers become warm champagne gold, original markings still recognizable, natural dark pupils, soft metallic sheen only in highlights and a few golden glints. Still a living furry/feathered animal, NOT a metallic statue. No water ribbons. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-a2daf076-308c-437c-be46-a3e048049074.png",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-gold-0-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-gold-0-v1.webp",
+      "sha256": "dba746185d37e82da2b5972d490fc11b1c6b7ab9e27b060292749a8cf1d980eb"
+    },
+    {
+      "id": "adult-dream-0-v1",
+      "age": "adult",
+      "group": 0,
+      "attribute": "dream",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE DREAM mutation: pearlescent lavender-pink-blue highlights in fur, feathers or scales, soft pastel starlight wisps curling along shoulders, back and tail, a few tiny stars to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses. Rabbit must have FLOPPY lop ears. Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 50% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-ad59d33f-67f2-4ef4-a644-d67da18dcddb.png",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-0.png"
+      ],
+      "alphaCheck": "report-saved",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-dream-0-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-dream-0-v1.webp",
+      "sha256": "e6ec011a974c25d5f18fea87f96eabb7e81ddd6aaee20e8c2b6e97b7489705ed"
+    },
+    {
+      "id": "adult-lightning-1-v1",
+      "age": "adult",
+      "group": 1,
+      "attribute": "lightning",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE branching blue-white ELECTRIC ARCS running along shoulders, back and tail, violet-blue fur or feather-tip highlights and electric light reflected on the animal. NOT smooth water ribbons to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 50% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-lightning-1-v1.png",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-cec69ca1-81b3-47cb-920b-77a8db2f9056.png",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-1.png"
+      ],
+      "alphaCheck": "report-saved",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-lightning-1-v1.webp",
+      "sha256": "2bee29dee1f36b01d75b5d7ff79e2cba12933323a9e1c031587d4f9c38e4a823"
+    },
+    {
+      "id": "adult-fire-1-v1",
+      "age": "adult",
+      "group": 1,
+      "attribute": "fire",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Attached image is ONLY a rendering-style, safe spacing and walking-layout reference. REPLACE all its animals with these EXACT nine rows in order: 1. adult pink pig; 2. adult green parrot; 3. adult green land tortoise; 4. adult chestnut horse; 5. adult green frog; 6. adult blue peacock; 7. adult red fox; 8. adult cream alpaca; 9. adult brown hedgehog. All are mature adults, adult male deer/moose antlers, male lion full mane. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. FIRE: retain original markings and natural body; warmly amber tinted tips; small realistic orange-gold flame tongues flowing near shoulders, back and tail, warm reflected light on fur/feathers, few embers. No water ribbons or droplets. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-c0b2cc8b-06e5-4c10-aa10-adf55f3c7616.png",
+      "alphaCheck": "report-saved",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-fire-1-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-fire-1-v1.webp",
+      "sha256": "bb94f9e7ed0e9c5eb7bdf8708d6da23d2f154ddc23d615d2782e2871c66520e2"
+    },
+    {
+      "id": "adult-water-1-v1",
+      "age": "adult",
+      "group": 1,
+      "attribute": "water",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Attached image is ONLY a rendering-style, safe spacing and walking-layout reference. REPLACE all its animals with these EXACT nine rows in order: 1. adult pink pig; 2. adult green parrot; 3. adult green land tortoise; 4. adult chestnut horse; 5. adult green frog; 6. adult blue peacock; 7. adult red fox; 8. adult cream alpaca; 9. adult brown hedgehog. All are mature adults, adult male deer/moose antlers, male lion full mane. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. WATER: retain original coat and markings; slight aqua highlights, small translucent water ribbons curling near shoulders/back/tail, a few clear droplets, reflected blue light on nearby fur/feathers. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-0d973c44-3aea-41d9-8f7c-e46dac32980c.png",
+      "alphaCheck": "report-saved",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-water-1-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-water-1-v1.webp",
+      "sha256": "0ac25d1898e8852af237bc948403178b84f638a30040757ca9bc0dea356fdeb1"
+    },
+    {
+      "id": "adult-gold-1-v1",
+      "age": "adult",
+      "group": 1,
+      "attribute": "gold",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE GOLD mutation: warm champagne-gold fur, feathers or scales with metallic highlights, original coat markings still recognizable, small golden sparkles. Keep a living soft animal, NOT a metal statue to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 50% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-gold-1-v1.png",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-105c17b8-6156-431b-9b50-865389cd0794.png",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-1.png"
+      ],
+      "alphaCheck": "report-saved",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-gold-1-v1.webp",
+      "sha256": "a9f4e75282720009addb257a497c0bee69a976edf2a4e4cc21b5284c7f77bfca"
+    },
+    {
+      "id": "adult-dream-1-v1",
+      "age": "adult",
+      "group": 1,
+      "attribute": "dream",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE DREAM mutation: pearlescent lavender-pink-blue highlights in fur, feathers or scales, soft pastel starlight wisps curling along shoulders, back and tail, a few tiny stars to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 50% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-dream-1-v1.png",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-6298d5ef-8386-4254-9744-48d28236a505.png",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-1.png"
+      ],
+      "alphaCheck": "report-saved",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-dream-1-v1.webp",
+      "sha256": "29fb48190a6acccaf2336523833bc65c31c98729b66bdcafdb17f7fff7e2ca8c"
+    },
+    {
+      "id": "adult-lightning-2-v1",
+      "age": "adult",
+      "group": 2,
+      "attribute": "lightning",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE branching blue-white ELECTRIC ARCS running along shoulders, back and tail, violet-blue fur or feather-tip highlights and electric light reflected on the animal. NOT smooth water ribbons to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 50% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-lightning-2-v1.png",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-8a2750ad-adf6-4c98-825c-0fe11937b297.png",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-2.png"
+      ],
+      "alphaCheck": "report-saved",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-lightning-2-v1.webp",
+      "sha256": "1b83e7bf961af3a693966af6cfd8a8e518143945d927c515851d5a79b9edfde4"
+    },
+    {
+      "id": "adult-fire-2-v1",
+      "age": "adult",
+      "group": 2,
+      "attribute": "fire",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Attached image is ONLY a rendering-style, safe spacing and walking-layout reference. REPLACE all its animals with these EXACT nine rows in order: 1. adult spotted deer; 2. adult brown owl; 3. adult black-white penguin; 4. adult green snake; 5. adult dark buffalo; 6. adult brown moose; 7. adult black-white zebra; 8. adult brown bear; 9. adult brown monkey. All are mature adults, adult male deer/moose antlers, male lion full mane. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. FIRE: retain original markings and natural body; warmly amber tinted tips; small realistic orange-gold flame tongues flowing near shoulders, back and tail, warm reflected light on fur/feathers, few embers. No water ribbons or droplets. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-64750870-28a7-49b0-8cd3-10de1b7c69b6.png",
+      "alphaCheck": "report-saved",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-fire-2-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-fire-2-v1.webp",
+      "sha256": "c81d6810cc049c3eb872430ba4139e972a9610742562b78c4f3a69d772f5e3ee"
+    },
+    {
+      "id": "adult-water-2-v1",
+      "age": "adult",
+      "group": 2,
+      "attribute": "water",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE translucent flowing blue WATER ribbons curling along shoulders and back, tiny clear floating droplets and aqua highlights reflected on fur, feathers or scales to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 50% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-water-2-v1.png",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-124ec87b-30a7-4207-bd63-c98298bf3d35.png",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-2.png"
+      ],
+      "alphaCheck": "report-saved",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-water-2-v1.webp",
+      "sha256": "24dac6fbc494a4d9915e607ed0e492746f0731ebf20ca3f733b29be7355ed945"
+    },
+    {
+      "id": "adult-gold-2-v1",
+      "age": "adult",
+      "group": 2,
+      "attribute": "gold",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE GOLD mutation: warm champagne-gold fur, feathers or scales with metallic highlights, original coat markings still recognizable, small golden sparkles. Keep a living soft animal, NOT a metal statue to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-8bd2ecca-988d-4a0d-bada-4d23f8f74558.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-2.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-gold-2-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-gold-2-v1.webp",
+      "sha256": "e46a2ce77d3ae7bbfb4727633313a2c3061ee359619096c585313fb2991d939c"
+    },
+    {
+      "id": "adult-dream-2-v1",
+      "age": "adult",
+      "group": 2,
+      "attribute": "dream",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE DREAM mutation: pearlescent lavender-pink-blue highlights in fur, feathers or scales, soft pastel starlight wisps curling along shoulders, back and tail, a few tiny stars to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-36ca4970-b4af-4302-a7a7-d982d55421cb.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-2.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-dream-2-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-dream-2-v1.webp",
+      "sha256": "79b6d9d64db078c94f2c90aeb66d4caef30fc1b214462dc194e43757edfbbaf6"
+    },
+    {
+      "id": "adult-lightning-3-v1",
+      "age": "adult",
+      "group": 3,
+      "attribute": "lightning",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE branching blue-white ELECTRIC ARCS running along shoulders, back and tail, violet-blue fur or feather-tip highlights and electric light reflected on the animal. NOT smooth water ribbons to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-7c8a89e8-cfde-4142-970e-34f97b4ab183.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-3.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-lightning-3-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-lightning-3-v1.webp",
+      "sha256": "eed54ad5e69b3bb2736a996acc9459cbf9e7da1a49ff305e59d1bab226c4a6c7"
+    },
+    {
+      "id": "adult-fire-3-v1",
+      "age": "adult",
+      "group": 3,
+      "attribute": "fire",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE warm orange-gold FLAME tongues curling along shoulders, back and tail, a few embers and warm glowing highlights reflected on fur or feathers to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-974b117d-190c-4a4d-923d-2a73e13fbaf8.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-3.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-fire-3-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-fire-3-v1.webp",
+      "sha256": "a08655eb391e69cd464f0a0d912298191b59046206fe310294a136f21973a4aa"
+    },
+    {
+      "id": "adult-water-3-v1",
+      "age": "adult",
+      "group": 3,
+      "attribute": "water",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE translucent flowing blue WATER ribbons curling along shoulders and back, tiny clear floating droplets and aqua highlights reflected on fur, feathers or scales to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-48867621-97a4-4840-b8c0-c778075f3df9.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-3.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-water-3-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-water-3-v1.webp",
+      "sha256": "f11026ebd4b4d6d8839afa1967825cb8a741ae2c0d9927f3b2a5e3f36bc09f38"
+    },
+    {
+      "id": "adult-gold-3-v1",
+      "age": "adult",
+      "group": 3,
+      "attribute": "gold",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE GOLD mutation: warm champagne-gold fur, feathers or scales with metallic highlights, original coat markings still recognizable, small golden sparkles. Keep a living soft animal, NOT a metal statue to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-7a157782-9b49-4ec5-a29d-85886645ab29.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-3.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-gold-3-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-gold-3-v1.webp",
+      "sha256": "22614997a83b06e2768c81b30a2a7cb966e6e965c6739b329949aeba53f9390e"
+    },
+    {
+      "id": "adult-dream-3-v1",
+      "age": "adult",
+      "group": 3,
+      "attribute": "dream",
+      "prompt": "Edit this transparent ADULT-animal walking sprite sheet. Add clearly VISIBLE DREAM mutation: pearlescent lavender-pink-blue highlights in fur, feathers or scales, soft pastel starlight wisps curling along shoulders, back and tail, a few tiny stars to EVERY animal in all 36 frames. Keep recognizable natural animal identity, mature adult anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-99c39193-e1ee-43e3-b321-c64aec801290.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/adult-3.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/adult-dream-3-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/adult-dream-3-v1.webp",
+      "sha256": "bcf92fdb34651436922642715cdfeff2c9e200f3b593d35528510b1652aaaddd"
+    },
+    {
+      "id": "baby-lightning-0-v1",
+      "age": "baby",
+      "group": 0,
+      "attribute": "lightning",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE branching blue-white ELECTRIC ARCS running along shoulders, back and tail, violet-blue fur or feather-tip highlights and electric light reflected on the animal. NOT smooth water ribbons to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses. Rabbit must have FLOPPY lop ears. Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-a9600e27-5b8c-4bd3-aa06-9ad2c772d240.png",
+      "alphaCheck": "report-saved",
+      "revisionReason": "Regenerate genuine juveniles: hen/mallard/goose incorrectly mature",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-0.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-lightning-0-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-lightning-0-v1.webp",
+      "sha256": "13b66ca31db138c184f954a582d909b17acebd3e1e9485d3feeb96c213e48ddc"
+    },
+    {
+      "id": "baby-fire-0-v1",
+      "age": "baby",
+      "group": 0,
+      "attribute": "fire",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE warm orange-gold FLAME tongues curling along shoulders, back and tail, a few embers and warm glowing highlights reflected on fur or feathers to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses. Rabbit must have FLOPPY lop ears. Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-6532ac4c-9ffe-49d9-ab8a-d37d5cbbff65.png",
+      "alphaCheck": "report-saved",
+      "revisionReason": "Regenerate genuine juveniles: hen/mallard/goose incorrectly mature",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-0.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-fire-0-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-fire-0-v1.webp",
+      "sha256": "4f0396ec417b4b47b7523377b3d22b57c209083fc1ccddbc4496827b35ebb8be"
+    },
+    {
+      "id": "baby-water-0-v1",
+      "age": "baby",
+      "group": 0,
+      "attribute": "water",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Image 1 is the actual species and AGE reference: preserve its young/adult body shapes, poses and natural appearance, except rabbit must have FLOPPY lop ears. Image 2 is ONLY the generous-spacing and elemental rendering style guide. Never replace babies with adults. SHRINK every animal AND all its effects to 60% of the animal size in Image 1, centered in its own frame, to create safe transparent gutters. REPLACE all its animals with these EXACT nine rows in order: 1. tiny fluffy yellow CHICK, no comb, no adult brown hen feathers; 2. baby white lop rabbit, short round baby body and floppy ears; 3. golden retriever PUPPY with round juvenile head and small body; 4. tiny fluffy yellow-brown DUCKLING, NO green adult mallard head; 5. small fluffy LAMB with round juvenile head; 6. tiny fluffy yellow GOSLING, short neck, NO adult white goose feathers; 7. goat KID with tiny horn buds, NO large curved horns; 8. dairy CALF with baby face and NO udders; 9. small ginger KITTEN with round young head. All are true juveniles with young anatomy, soft down or baby fur, small limbs and age-specific colors; NOT scaled-down adults. Young deer/moose have NO antlers, young peacock has NO display tail, duckling/gosling/chick fluffy down, lion cub NO mane, elephant calf NO tusks, rhino only tiny horn bud, penguin chick gray fluff. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. WATER: retain original coat and markings; slight aqua highlights, small translucent water ribbons curling near shoulders/back/tail, a few clear droplets, reflected blue light on nearby fur/feathers. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-72dce91f-4026-4aa5-a1a1-5a8ac049c384.png",
+      "alphaCheck": "report-saved",
+      "revisionReason": "Regenerate genuine juveniles: hen/mallard/goose incorrectly mature",
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-water-0-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-water-0-v1.webp",
+      "sha256": "97deee442dd6d3c4ac6a453829a83bd10b2706390d3b1fdd372d3b3bfbdb1109"
+    },
+    {
+      "id": "baby-gold-0-v1",
+      "age": "baby",
+      "group": 0,
+      "attribute": "gold",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE GOLD mutation: warm champagne-gold fur, feathers or scales with metallic highlights, original coat markings still recognizable, small golden sparkles. Keep a living soft animal, NOT a metal statue to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses. Rabbit must have FLOPPY lop ears. Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-59c680d1-d3a8-4084-b7cf-fff52b95ddce.png",
+      "alphaCheck": "report-saved",
+      "revisionReason": "Regenerate genuine juveniles: hen/mallard/goose incorrectly mature",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-0.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-gold-0-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-gold-0-v1.webp",
+      "sha256": "857e01917e9d2b15f848fcc07867499899d053d72700c37e2f6a4a37c4fa32a2"
+    },
+    {
+      "id": "baby-dream-0-v1",
+      "age": "baby",
+      "group": 0,
+      "attribute": "dream",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE DREAM mutation: pearlescent lavender-pink-blue highlights in fur, feathers or scales, soft pastel starlight wisps curling along shoulders, back and tail, a few tiny stars to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses. Rabbit must have FLOPPY lop ears. Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-63f9a334-1bff-466a-b6e6-fc3b13ba8c4d.png",
+      "alphaCheck": "report-saved",
+      "revisionReason": "Regenerate genuine juveniles: hen/mallard/goose incorrectly mature",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-0.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-dream-0-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-dream-0-v1.webp",
+      "sha256": "bb04fc3acf81c9ed5fe54bfa15cb2db041228d7d79517f47547668e28f4c5e73"
+    },
+    {
+      "id": "baby-lightning-1-v1",
+      "age": "baby",
+      "group": 1,
+      "attribute": "lightning",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Attached image is ONLY a rendering-style, safe spacing and walking-layout reference. REPLACE all its animals with these EXACT nine rows in order: 1. juvenile pink pig; 2. juvenile green parrot; 3. juvenile green land tortoise; 4. juvenile chestnut horse; 5. juvenile green frog; 6. juvenile blue peacock; 7. juvenile red fox; 8. juvenile cream alpaca; 9. juvenile brown hedgehog. All are true juveniles with young anatomy, soft down or baby fur, small limbs and age-specific colors; NOT scaled-down adults. Young deer/moose have NO antlers, young peacock has NO display tail, duckling/gosling/chick fluffy down, lion cub NO mane, elephant calf NO tusks, rhino only tiny horn bud, penguin chick gray fluff. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. LIGHTNING: natural original coat colors with subtle lavender blue tips/highlights; small branching blue-white electric arcs curl along shoulders, back and tail, lighting nearby fur/feathers. No water ribbons or droplets. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-04979227-0f3a-4366-8574-a2ddbdf4a729.png",
+      "alphaCheck": "report-saved",
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-lightning-1-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-lightning-1-v1.webp",
+      "sha256": "c5f3b412d730a789ef223f51f38e52953e3025fae0a4f939ba11605e20522419"
+    },
+    {
+      "id": "baby-fire-1-v1",
+      "age": "baby",
+      "group": 1,
+      "attribute": "fire",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Attached image is ONLY a rendering-style, safe spacing and walking-layout reference. REPLACE all its animals with these EXACT nine rows in order: 1. juvenile pink pig; 2. juvenile green parrot; 3. juvenile green land tortoise; 4. juvenile chestnut horse; 5. juvenile green frog; 6. juvenile blue peacock; 7. juvenile red fox; 8. juvenile cream alpaca; 9. juvenile brown hedgehog. All are true juveniles with young anatomy, soft down or baby fur, small limbs and age-specific colors; NOT scaled-down adults. Young deer/moose have NO antlers, young peacock has NO display tail, duckling/gosling/chick fluffy down, lion cub NO mane, elephant calf NO tusks, rhino only tiny horn bud, penguin chick gray fluff. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. FIRE: retain original markings and natural body; warmly amber tinted tips; small realistic orange-gold flame tongues flowing near shoulders, back and tail, warm reflected light on fur/feathers, few embers. No water ribbons or droplets. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-c8061dcd-6467-46e7-a00d-4b5e0b21cd84.png",
+      "alphaCheck": "report-saved",
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-fire-1-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-fire-1-v1.webp",
+      "sha256": "d12f520617c31c70bcab52dba6aa8c2c9293571fd8c81d107322f3412f8ccced"
+    },
+    {
+      "id": "baby-water-1-v1",
+      "age": "baby",
+      "group": 1,
+      "attribute": "water",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Attached image is ONLY a rendering-style, safe spacing and walking-layout reference. REPLACE all its animals with these EXACT nine rows in order: 1. juvenile pink pig; 2. juvenile green parrot; 3. juvenile green land tortoise; 4. juvenile chestnut horse; 5. juvenile green frog; 6. juvenile blue peacock; 7. juvenile red fox; 8. juvenile cream alpaca; 9. juvenile brown hedgehog. All are true juveniles with young anatomy, soft down or baby fur, small limbs and age-specific colors; NOT scaled-down adults. Young deer/moose have NO antlers, young peacock has NO display tail, duckling/gosling/chick fluffy down, lion cub NO mane, elephant calf NO tusks, rhino only tiny horn bud, penguin chick gray fluff. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. WATER: retain original coat and markings; slight aqua highlights, small translucent water ribbons curling near shoulders/back/tail, a few clear droplets, reflected blue light on nearby fur/feathers. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-c86a8748-fa16-4808-96b2-7e0e2adfa2d5.png",
+      "alphaCheck": "report-saved",
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-water-1-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-water-1-v1.webp",
+      "sha256": "b55cc0f792704a5fd25b019d7c4f3658e38d66c14beed69d90174bd32e461582"
+    },
+    {
+      "id": "baby-gold-1-v1",
+      "age": "baby",
+      "group": 1,
+      "attribute": "gold",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE GOLD mutation: warm champagne-gold fur, feathers or scales with metallic highlights, original coat markings still recognizable, small golden sparkles. Keep a living soft animal, NOT a metal statue to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 50% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-af0a1f2c-02c7-4f73-820f-ada6a39af820.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-1.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-gold-1-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-gold-1-v1.webp",
+      "sha256": "25ec3f989a43b67c1ae451e2c574ca18167f170c504e6b5915e82a2e2a10e5cd"
+    },
+    {
+      "id": "baby-dream-1-v1",
+      "age": "baby",
+      "group": 1,
+      "attribute": "dream",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Attached image is ONLY a rendering-style, safe spacing and walking-layout reference. REPLACE all its animals with these EXACT nine rows in order: 1. juvenile pink pig; 2. juvenile green parrot; 3. juvenile green land tortoise; 4. juvenile chestnut horse; 5. juvenile green frog; 6. juvenile blue peacock; 7. juvenile red fox; 8. juvenile cream alpaca; 9. juvenile brown hedgehog. All are true juveniles with young anatomy, soft down or baby fur, small limbs and age-specific colors; NOT scaled-down adults. Young deer/moose have NO antlers, young peacock has NO display tail, duckling/gosling/chick fluffy down, lion cub NO mane, elephant calf NO tusks, rhino only tiny horn bud, penguin chick gray fluff. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. DREAM: original recognizable coat/markings with soft pearlescent lavender-pink-blue iridescence and sparse pastel starlight wisps around shoulders/back/tail, a few tiny stars. No costume, wings, horns or water ribbons. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-3bff9b97-e8d1-46df-8d57-e56d47ef3685.png",
+      "alphaCheck": "report-saved",
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-dream-1-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-dream-1-v1.webp",
+      "sha256": "439dc8f9cc75c89b7522ec1190ed4c8bba62ba921601cccb56b39e8deb6e8020"
+    },
+    {
+      "id": "baby-lightning-2-v1",
+      "age": "baby",
+      "group": 2,
+      "attribute": "lightning",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE branching blue-white ELECTRIC ARCS running along shoulders, back and tail, violet-blue fur or feather-tip highlights and electric light reflected on the animal. NOT smooth water ribbons to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-a6a9bdcc-25b7-4115-8adb-6b4e7fe26903.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-2.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-lightning-2-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-lightning-2-v1.webp",
+      "sha256": "10e2a057a19c91fdb215829d2087190dd31c28bb062cb133a4a837a0785c8a7c"
+    },
+    {
+      "id": "baby-fire-2-v1",
+      "age": "baby",
+      "group": 2,
+      "attribute": "fire",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE warm orange-gold FLAME tongues curling along shoulders, back and tail, a few embers and warm glowing highlights reflected on fur or feathers to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-d322e3c8-1776-4442-843a-8d60c61d5354.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-2.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-fire-2-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-fire-2-v1.webp",
+      "sha256": "1ad2592d9360c2d1fa4d7718e9691ba579fe00f4a45d5e0132f5f5c60e3092a7"
+    },
+    {
+      "id": "baby-water-2-v1",
+      "age": "baby",
+      "group": 2,
+      "attribute": "water",
+      "prompt": "Use case: stylized-concept. Production TRANSPARENT alpha sprite atlas for a pasture game. Image 1 is the actual species and AGE reference: preserve its young/adult body shapes, poses and natural appearance, except rabbit must have FLOPPY lop ears. Image 2 is ONLY the generous-spacing and elemental rendering style guide. Never replace babies with adults. SHRINK every animal AND all its effects to 60% of the animal size in Image 1, centered in its own frame, to create safe transparent gutters. REPLACE all its animals with these EXACT nine rows in order: 1. spotted FAWN without antlers; 2. fluffy down OWLET; 3. fluffy gray penguin CHICK; 4. small young green snake; 5. buffalo CALF with small horn buds; 6. moose CALF without antlers; 7. zebra FOAL with baby head and legs; 8. round brown bear CUB; 9. young baby monkey. All are true juveniles with young anatomy, soft down or baby fur, small limbs and age-specific colors; NOT scaled-down adults. Young deer/moose have NO antlers, young peacock has NO display tail, duckling/gosling/chick fluffy down, lion cub NO mane, elephant calf NO tusks, rhino only tiny horn bud, penguin chick gray fluff. EXACTLY four columns and nine rows, 36 sprites total. Each row four distinct successive WALKING poses, all face right, same body/camera for row. Soft realistic cute with NATURAL eyes, correct anatomy and detailed fur/feathers/scales, original identity and coat markings, soft warm sunlight upper left, subtle green ground bounce. WATER: retain original coat and markings; slight aqua highlights, small translucent water ribbons curling near shoulders/back/tail, a few clear droplets, reflected blue light on nearby fur/feathers. Generate the attribute as an integrated part of body material and lighting, not painted icons behind animal. IMPORTANT PACKING: keep animals AND their complete associated effects SMALL, like attached safely spaced reference, at most 60% of each cell width/height. Generous empty transparent gutters on every side, no animal/effect touching neighbor. Fit entire legs, horns, ears, long tails, wings and light effects; don't zoom to fill cells. Four matching foot-contact baselines per row. No ground or drop shadow, no environment, floor rings, text, label, frame border, grid, clothing, accessories, watermark, checkerboard. Real transparent background. Preserve animal identity; do not invent fantasy anatomy.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-35985607-bbd6-445b-92af-fac3d31fd4dd.png",
+      "alphaCheck": "report-saved",
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-water-2-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-water-2-v1.webp",
+      "sha256": "bb6c100c3889ddb45121df7bb2ff0ff286647e15d248cb5220aaa239681f74b7"
+    },
+    {
+      "id": "baby-gold-2-v1",
+      "age": "baby",
+      "group": 2,
+      "attribute": "gold",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE GOLD mutation: warm champagne-gold fur, feathers or scales with metallic highlights, original coat markings still recognizable, small golden sparkles. Keep a living soft animal, NOT a metal statue to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-1a0d18d4-2ee8-4461-80fa-5186656ffcdb.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-2.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-gold-2-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-gold-2-v1.webp",
+      "sha256": "25c4050b43568a61767a122f1b038fe6378f8ad693081bc57b7963d77c431544"
+    },
+    {
+      "id": "baby-dream-2-v1",
+      "age": "baby",
+      "group": 2,
+      "attribute": "dream",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE DREAM mutation: pearlescent lavender-pink-blue highlights in fur, feathers or scales, soft pastel starlight wisps curling along shoulders, back and tail, a few tiny stars to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-5b4c812d-0022-4582-a527-edf77ece1300.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-2.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-dream-2-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-dream-2-v1.webp",
+      "sha256": "05547cc81c68b472e47e150103c5a1c29ce6b8ac051d775d44d564ec0475f3ce"
+    },
+    {
+      "id": "baby-lightning-3-v1",
+      "age": "baby",
+      "group": 3,
+      "attribute": "lightning",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE branching blue-white ELECTRIC ARCS running along shoulders, back and tail, violet-blue fur or feather-tip highlights and electric light reflected on the animal. NOT smooth water ribbons to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-6afba225-ae79-4fa3-906a-452885314864.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-3.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-lightning-3-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-lightning-3-v1.webp",
+      "sha256": "f9b943b8827560909642a87b22dc063cfb0c71bd9d5489b276cb60dc666b2794"
+    },
+    {
+      "id": "baby-fire-3-v1",
+      "age": "baby",
+      "group": 3,
+      "attribute": "fire",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE warm orange-gold FLAME tongues curling along shoulders, back and tail, a few embers and warm glowing highlights reflected on fur or feathers to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-cb1c4014-7a84-4aea-ab94-28a0f4977de1.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-3.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-fire-3-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-fire-3-v1.webp",
+      "sha256": "63fb82d7bea2dbdc1f7d6bf4b45bf11eb8bb8627dce332bfe9c3429b916efe1f"
+    },
+    {
+      "id": "baby-water-3-v1",
+      "age": "baby",
+      "group": 3,
+      "attribute": "water",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE translucent flowing blue WATER ribbons curling along shoulders and back, tiny clear floating droplets and aqua highlights reflected on fur, feathers or scales to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-a8a518df-a99f-4541-8f2a-f8cc22204de9.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-3.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-water-3-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-water-3-v1.webp",
+      "sha256": "0525089e4debf1769d495acf8851068c24f522f933c30e44406d672622c168b3"
+    },
+    {
+      "id": "baby-gold-3-v1",
+      "age": "baby",
+      "group": 3,
+      "attribute": "gold",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE GOLD mutation: warm champagne-gold fur, feathers or scales with metallic highlights, original coat markings still recognizable, small golden sparkles. Keep a living soft animal, NOT a metal statue to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-eca4afe7-2b33-4326-a66b-19c75c5948a7.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-3.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-gold-3-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-gold-3-v1.webp",
+      "sha256": "3469e6950cf48af11f11c7c2d52146c333c4d0027e9257700fc7dc5eee96c199"
+    },
+    {
+      "id": "baby-dream-3-v1",
+      "age": "baby",
+      "group": 3,
+      "attribute": "dream",
+      "prompt": "Edit this transparent BABY-animal walking sprite sheet. Add clearly VISIBLE DREAM mutation: pearlescent lavender-pink-blue highlights in fur, feathers or scales, soft pastel starlight wisps curling along shoulders, back and tail, a few tiny stars to EVERY animal in all 36 frames. Keep recognizable natural animal identity, TRUE BABY anatomy, fluffy chick/duckling/gosling, young deer/moose NO antlers, lion cub NO mane, elephant calf NO tusks, natural eyes, warm sunlit soft realistic rendering and original four walking poses.  Keep original nine species rows and four walking frames per row, full bodies facing right. SHRINK every complete animal AND its whole effect to 55% of its current size, centered in its own cell, leaving very wide empty transparent gaps between frames. No effect reaching neighboring animal. Generate body and attribute lighting together. Actual transparent alpha background. No scenery, ground, ring, text, costume or watermark.",
+      "status": "alpha-and-crop-validated",
+      "sourcePath": "C:\\Users\\Administrator\\.codex\\generated_images\\01a109d8-0fd8-7052-a4c3-aa5086309053\\exec-eb5bcd2d-ac2b-4cba-b5f5-9678f69bfe56.png",
+      "alphaCheck": "report-saved",
+      "references": [
+        "E:/AIWorkSpace/codexSpace/pair-play/output/ranch-soft-realistic/baby-3.png"
+      ],
+      "projectPath": "apps/web/public/ranch/scene/variants/baby-dream-3-v1.png",
+      "runtimePath": "apps/web/public/ranch/scene/variants/baby-dream-3-v1.webp",
+      "sha256": "f698aef8713401f0a5ed181c73a1e0e1648370a5d9fe8eb4d17d7128cbf401d4"
+    }
+  ],
+  "coverageReport": "coverage-report.json",
+  "notes": [
+    "Latest journal entry wins after regeneration.",
+    "Runtime uses generated WebP; originals preserve alpha.",
+    "Juvenile and adult stages are separately generated.",
+    "No dedicated dual-attribute combination sprites."
+  ]
+}

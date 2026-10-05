@@ -987,6 +987,7 @@ function productAnimal(id: string) {
             <div class="ranch-detail-portrait">
               <AnimalPortrait
                 :species="selected.species"
+                :attributes="selected.attributes"
                 :name="selected.name"
                 :baby="selected.baby"
               />
