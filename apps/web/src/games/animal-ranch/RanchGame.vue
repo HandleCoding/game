@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import RanchScene from "./RanchScene.vue";
 import RanchHall from "./RanchHall.vue";
+import RanchCollection from "./RanchCollection.vue";
+import RanchTraits from "./RanchTraits.vue";
+import "./ranch-modern.css";
 import RanchLoading from "./RanchLoading.vue";
 import AnimalPortrait from "./AnimalPortrait.vue";
 import RanchIcon from "./RanchIcon.vue";
@@ -32,6 +35,7 @@ const panel = ref<
     | "help"
     | "hall"
     | "album"
+    | "goals"
     | null
   >(null),
   busy = ref(false),
@@ -123,25 +127,69 @@ async function visit(id: string | null) {
   await load();
   if (refreshAgain) void load();
 }
+type PendingAction = {
+  type: string;
+  payload: Record<string, unknown>;
+  requestId: string;
+  expectedRevision: number;
+};
+const pendingAction = ref<PendingAction | null>(null);
+const discoveries = computed(
+  () => farm.value?.mutation?.codex.filter((e) => !e.seen) || [],
+);
+async function retryAction() {
+  const p = pendingAction.value;
+  if (p) await action(p.type, p.payload);
+  else await load();
+}
 async function action(
   type: string,
   payload: Record<string, unknown> = {},
 ): Promise<boolean> {
-  let succeeded = false;
+  let succeeded = false,
+    actionError = "";
   if (!owner.value || !profile.value || busy.value || loading.value)
     return false;
+  if (
+    pendingAction.value &&
+    (pendingAction.value.type !== type ||
+      JSON.stringify(pendingAction.value.payload) !== JSON.stringify(payload))
+  ) {
+    error.value = "上一次操作的结果还未确认，请先重试该操作";
+    return false;
+  }
+  pendingAction.value ??= {
+    type,
+    payload: JSON.parse(JSON.stringify(payload)),
+    requestId: crypto.randomUUID(),
+    expectedRevision: profile.value.revision,
+  };
   busy.value = true;
   error.value = "";
+  const controller = new AbortController(),
+    timeout = setTimeout(() => controller.abort(), 30000);
   try {
-    const result = await api<RanchProfile>("games/animal-ranch/actions", {
-      type,
-      payload,
-      requestId: crypto.randomUUID(),
-      expectedRevision: profile.value.revision,
-    });
+    const result = await api<RanchProfile>(
+      "games/animal-ranch/actions",
+      {
+        ...pendingAction.value!,
+      },
+      controller.signal,
+    );
     if (result.revision >= profile.value.revision) profile.value = result;
     succeeded = true;
-    sceneEffect.value = { type, id: ++effectSequence };
+    pendingAction.value = null;
+    if (
+      [
+        "harvest",
+        "sellProducts",
+        "buyFeed",
+        "buyAnimal",
+        "upgrade",
+        "fuseAnimals",
+      ].includes(type)
+    )
+      sceneEffect.value = { type, id: ++effectSequence };
     pop.value =
       type === "harvest"
         ? "收获成功！"
@@ -151,20 +199,39 @@ async function action(
             ? "新位置准备好了！"
             : type === "buyFeed"
               ? "食槽添满了一些！"
-              : "牧场更新啦";
+              : type === "fuseAnimals"
+                ? "名宠融合完成！"
+                : "牧场更新啦";
     notify(pop.value);
   } catch (e) {
-    error.value = (e as Error).message;
+    actionError =
+      (e as Error).name === "AbortError"
+        ? "操作响应超时"
+        : (e as Error).message;
+    error.value = actionError;
+    const status = (e as { status?: number }).status;
+    if (status && status >= 400 && status < 500) pendingAction.value = null;
     if ((e as { status?: number }).status === 409)
       notify("另一台设备更新了存档，已为你刷新");
   } finally {
+    clearTimeout(timeout);
     busy.value = false;
     await load();
+    if (actionError)
+      error.value =
+        actionError + (pendingAction.value ? "，请重试上次操作确认结果" : "");
   }
   return succeeded;
 }
 function buy(id: RanchSpecies) {
   void action("buyAnimal", { species: id });
+}
+function compactCoins(n: number) {
+  return n >= 100000000
+    ? Number((n / 100000000).toFixed(2)) + "亿"
+    : n >= 10000
+      ? Number((n / 10000).toFixed(2)) + "万"
+      : String(n);
 }
 function duration(ms: number) {
   const minutes = Math.max(0, Math.ceil(ms / 60000));
@@ -292,6 +359,7 @@ const panelTitle = computed(
       journal: "扩建与牧场日记",
       album: "动物图鉴",
       hall: "名宠堂",
+      goals: "收藏目标",
     })[panel.value || "animals"],
 );
 function selectAnimal(id: string) {
@@ -417,11 +485,21 @@ function productAnimal(id: string) {
             <span class="game-offline-note">{{
               owner ? "离线成长 · 缺粮/满存暂停" : "只读参观 · 状态实时刷新"
             }}</span>
+            <div v-if="owner && farm.mutation" class="mutation-hud">
+              <span
+                >变异 {{ farm.mutation.probabilityBp / 100 }}% · 晶露
+                {{ farm.mutation.dew }}</span
+              >
+            </div>
           </div>
         </header>
         <div class="game-wallet">
-          <span v-if="owner" class="wallet-coins" aria-label="我的金币"
-            ><RanchIcon :index="7" />{{ farm.coins }}</span
+          <span
+            v-if="owner"
+            class="wallet-coins"
+            aria-label="我的金币"
+            :title="'完整金币：' + farm.coins"
+            ><RanchIcon :index="7" />{{ compactCoins(farm.coins || 0) }}</span
           >
           <span v-else class="visitor-label">参观中</span>
           <button
@@ -454,7 +532,15 @@ function productAnimal(id: string) {
             aria-label="动物图鉴"
             @click="panel = 'album'"
           >
-            <RanchIcon :index="6" /><small>图鉴</small>
+            <RanchIcon :index="6" /><small>图鉴</small
+            ><small
+              v-if="owner && discoveries.length"
+              class="codex-new-badge"
+              >{{ discoveries.length }}</small
+            >
+          </button>
+          <button v-if="owner" aria-label="收藏目标" @click="panel = 'goals'">
+            <span>✦</span><small>目标</small>
           </button>
           <button aria-label="牧场玩法说明" @click="panel = 'help'">
             <span>?</span><small>玩法</small>
@@ -509,7 +595,10 @@ function productAnimal(id: string) {
       </div>
     </template>
     <div v-if="error && farm" class="game-error" role="alert">
-      {{ error }}<button :disabled="busy || loading" @click="load">重试</button>
+      {{ error
+      }}<button :disabled="busy || loading" @click="retryAction">
+        {{ pendingAction ? "重试上次操作" : "刷新存档" }}
+      </button>
     </div>
   </main>
   <Teleport to="body">
@@ -560,6 +649,18 @@ function productAnimal(id: string) {
         v-if="panel === 'hall'"
         :owner-id="profile!.owner"
         :is-owner="owner"
+        :busy="busy || loading"
+        :run="action"
+      />
+      <RanchCollection
+        v-else-if="
+          owner &&
+          farm.mutation &&
+          (panel === 'album' || panel === 'store' || panel === 'goals')
+        "
+        :key="panel"
+        :farm="farm"
+        :mode="panel"
         :busy="busy || loading"
         :run="action"
       />
@@ -890,6 +991,11 @@ function productAnimal(id: string) {
                 :baby="selected.baby"
               />
             </div>
+            <RanchTraits
+              :grade="selected.grade"
+              :attributes="selected.attributes"
+              :protected="selected.protected"
+            />
             <strong class="animal-state">{{ animalStatus(selected) }}</strong>
           </div>
           <p
@@ -918,6 +1024,18 @@ function productAnimal(id: string) {
           </p>
           <div v-if="owner" class="actions">
             <button
+              class="ranch-secondary"
+              :disabled="busy || loading"
+              @click="
+                action('setAnimalProtected', {
+                  animalId: selected.id,
+                  protected: !selected.protected,
+                })
+              "
+            >
+              {{ selected.protected ? "解除珍藏保护" : "珍藏保护" }}
+            </button>
+            <button
               class="ranch-primary"
               :disabled="busy || loading || !selected.stored"
               @click="action('harvest', { animalId: selected.id })"
@@ -925,7 +1043,9 @@ function productAnimal(id: string) {
               收获这只</button
             ><button
               class="ranch-secondary"
-              :disabled="busy || loading || !!selected.stored"
+              :disabled="
+                busy || loading || !!selected.stored || selected.protected
+              "
               @click="exitChoice = 'sellAnimal'"
             >
               出售 · {{ selected.saleCoins }} 金币
@@ -944,12 +1064,34 @@ function productAnimal(id: string) {
             </button>
             <button
               class="ranch-secondary"
-              :disabled="busy || loading || !!selected.stored"
+              :disabled="
+                busy || loading || !!selected.stored || selected.protected
+              "
               @click="exitChoice = 'releaseAnimal'"
             >
               放生
             </button>
           </div>
+          <p v-if="owner" class="rules-note">
+            认养：{{
+              selected.purchaseRoll === "pending"
+                ? "待判定"
+                : selected.purchaseRoll === "success"
+                  ? "已变异"
+                  : selected.purchaseRoll === "failed"
+                    ? "未变异"
+                    : "旧伙伴不补抽"
+            }}
+            · 成年：{{
+              selected.adultRoll === "pending"
+                ? "待判定"
+                : selected.adultRoll === "success"
+                  ? "已变异"
+                  : selected.adultRoll === "failed"
+                    ? "未变异"
+                    : "已跳过"
+            }}。每次独立判定，最多两种属性。
+          </p>
           <p v-if="owner && selected.status === 'completed'">
             生产已结束，不再耗粮。收完最后产物后，为它选择去向。
           </p>
@@ -1125,15 +1267,29 @@ function productAnimal(id: string) {
         </p>
         <p>
           收获 → 仓库出售 → 认养幼崽 → 喂养成长。每只动物每 30 分钟吃 1
-          份，缺粮暂停、不死亡，最多存 3 轮产物。
+          份，缺粮暂停、不死亡；按各自容量保留产物，满存与生产结束后停止耗粮。
         </p>
         <p>
           36
-          种伙伴按等级解锁，图鉴可以查看幼年与成年外观。拖动场景、双指缩放，右侧按钮可查看全景。
+          种伙伴按等级解锁，商店可以预览幼年与成年外观；图鉴只记录真正发现的品种。拖动场景、双指缩放，右侧按钮可查看全景。
         </p>
         <p>
-          小鸡 8 小时成年，成年后每 6
-          小时产出；其他伙伴各有不同周期。升级经验逐级增加，仅收获获得经验，认养和扩建不加经验。
+          小鸡 {{ duration(farm.species[0]!.growthMs) }} 成年，成年后每
+          {{ duration(farm.species[0]!.cycleMs) }}
+          产出；其他伙伴各有不同周期和有限生产轮次。升级经验逐级增加，仅收获获得经验，认养和扩建不加经验。
+        </p>
+        <h3>变异与名宠收藏</h3>
+        <p>
+          购买和成年各有一次独立变异机会，每次10%起步，完成养殖与发现属性组合可提升到30%。雷、火、水、黄金、梦幻五种属性，成年再次成功可以获得不同的第二属性。
+        </p>
+        <p>
+          普通、优秀、史诗、传奇、无双分别用白、绿、紫、金、红标记。品质与属性提高产物售价，不加快成长、耗粮或经验。仓库售价在产出时冻结，零头累积到钱包余数。
+        </p>
+        <p>
+          完成生产并收完产物，可以进入名宠堂、出售或放生。珍藏保护防止误出售、放生与融合。同物种同品质伙伴可融合：普通/优秀需要2位，史诗/传奇需要3位；主伙伴保留名字和档案，其他材料会被消耗。融合不恢复生产。
+        </p>
+        <p>
+          收获真实批次可获得融合晶露，每个产出日每位伙伴1枚，全牧场最多3枚；新手赠送和功能启用前产物不计入。离线批次按各自产出日结算。
         </p>
         <p>离线时也会成长，多设备共用一份存档。串门为只读参观。</p>
       </section>

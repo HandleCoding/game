@@ -284,14 +284,28 @@ app.get<{ Params: { gameId: string; owner: string } }>(
 );
 app.get<{
   Params: { gameId: string };
-  Querystring: { mode?: string; after?: string; search?: string };
+  Querystring: {
+    mode?: string;
+    after?: string;
+    search?: string;
+    fusion?: string;
+    species?: string;
+    grade?: string;
+  };
 }>("/api/games/:gameId/me/collection", async (req) => {
   const id = (await identity(req)).user;
   return persistent.collection(req.params.gameId, id, id, req.query);
 });
 app.get<{
   Params: { gameId: string; owner: string };
-  Querystring: { mode?: string; after?: string; search?: string };
+  Querystring: {
+    mode?: string;
+    after?: string;
+    search?: string;
+    fusion?: string;
+    species?: string;
+    grade?: string;
+  };
 }>("/api/games/:gameId/players/:owner/collection", async (req) =>
   persistent.collection(
     req.params.gameId,
@@ -346,6 +360,33 @@ app.post<{
       );
     return result;
   },
+);
+app.post<{ Params: { gameId: string }; Body: Record<string, unknown> }>(
+  "/api/games/:gameId/fusion-preview",
+  {
+    schema: {
+      body: {
+        type: "object",
+        additionalProperties: false,
+        required: ["animalIds", "mainAnimalId", "mode", "recipeVersion"],
+        properties: {
+          animalIds: {
+            type: "array",
+            minItems: 2,
+            maxItems: 3,
+            uniqueItems: true,
+            items: { type: "string", maxLength: 80 },
+          },
+          mainAnimalId: { type: "string", maxLength: 80 },
+          mode: { enum: ["inherit", "random"] },
+          retainedAttribute: { type: "string", maxLength: 20 },
+          recipeVersion: { const: 1 },
+        },
+      },
+    },
+  },
+  async (req) =>
+    persistent.preview(req.params.gameId, (await identity(req)).user, req.body),
 );
 const webRoot = process.env.WEB_ROOT || process.cwd() + "/web-dist";
 await app.register(staticFiles, {

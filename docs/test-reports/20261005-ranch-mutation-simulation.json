@@ -1,0 +1,183 @@
+{
+  "seed": 20261005,
+  "totalSamples": 400000,
+  "engine": "actual rollMutation and priceMilli; independent purchase/adult",
+  "results": [
+    {
+      "lifetimeHours": 1,
+      "perChance": 0.1,
+      "samples": 50000,
+      "mutatedRate": 0.18826,
+      "dualRate": 0.00958,
+      "grades": [
+        0.8843,
+        0.0804,
+        0.02922,
+        0.00584,
+        0.00024
+      ],
+      "attributeCounts": {
+        "fire": 2428,
+        "lightning": 2476,
+        "water": 2423,
+        "gold": 1518,
+        "dream": 1047
+      },
+      "averageProductMultiplier": 1.031998
+    },
+    {
+      "lifetimeHours": 1,
+      "perChance": 0.3,
+      "samples": 50000,
+      "mutatedRate": 0.50792,
+      "dualRate": 0.0882,
+      "grades": [
+        0.676,
+        0.22046,
+        0.08646,
+        0.0165,
+        0.00058
+      ],
+      "attributeCounts": {
+        "fire": 7366,
+        "dream": 3020,
+        "lightning": 7439,
+        "gold": 4538,
+        "water": 7443
+      },
+      "averageProductMultiplier": 1.092711
+    },
+    {
+      "lifetimeHours": 12,
+      "perChance": 0.1,
+      "samples": 50000,
+      "mutatedRate": 0.18922,
+      "dualRate": 0.01044,
+      "grades": [
+        0.87644,
+        0.0799,
+        0.03398,
+        0.0086,
+        0.00108
+      ],
+      "attributeCounts": {
+        "fire": 2544,
+        "gold": 1519,
+        "lightning": 2425,
+        "water": 2508,
+        "dream": 987
+      },
+      "averageProductMultiplier": 1.035318
+    },
+    {
+      "lifetimeHours": 12,
+      "perChance": 0.3,
+      "samples": 50000,
+      "mutatedRate": 0.50928,
+      "dualRate": 0.08974,
+      "grades": [
+        0.65592,
+        0.21712,
+        0.0982,
+        0.02594,
+        0.00282
+      ],
+      "attributeCounts": {
+        "gold": 4443,
+        "lightning": 7594,
+        "dream": 3041,
+        "water": 7438,
+        "fire": 7435
+      },
+      "averageProductMultiplier": 1.102392
+    },
+    {
+      "lifetimeHours": 48,
+      "perChance": 0.1,
+      "samples": 50000,
+      "mutatedRate": 0.18976,
+      "dualRate": 0.0098,
+      "grades": [
+        0.86908,
+        0.07914,
+        0.03542,
+        0.01438,
+        0.00198
+      ],
+      "attributeCounts": {
+        "water": 2531,
+        "lightning": 2457,
+        "fire": 2424,
+        "gold": 1519,
+        "dream": 1047
+      },
+      "averageProductMultiplier": 1.039518
+    },
+    {
+      "lifetimeHours": 48,
+      "perChance": 0.3,
+      "samples": 50000,
+      "mutatedRate": 0.51174,
+      "dualRate": 0.0877,
+      "grades": [
+        0.63242,
+        0.21764,
+        0.10224,
+        0.04196,
+        0.00574
+      ],
+      "attributeCounts": {
+        "lightning": 7467,
+        "gold": 4642,
+        "water": 7354,
+        "dream": 3164,
+        "fire": 7345
+      },
+      "averageProductMultiplier": 1.114827
+    },
+    {
+      "lifetimeHours": 120,
+      "perChance": 0.1,
+      "samples": 50000,
+      "mutatedRate": 0.18952,
+      "dualRate": 0.01028,
+      "grades": [
+        0.8621,
+        0.07544,
+        0.03956,
+        0.0154,
+        0.0075
+      ],
+      "attributeCounts": {
+        "fire": 2488,
+        "water": 2414,
+        "gold": 1529,
+        "lightning": 2533,
+        "dream": 1026
+      },
+      "averageProductMultiplier": 1.046194
+    },
+    {
+      "lifetimeHours": 120,
+      "perChance": 0.3,
+      "samples": 50000,
+      "mutatedRate": 0.50712,
+      "dualRate": 0.09072,
+      "grades": [
+        0.61834,
+        0.19988,
+        0.11364,
+        0.04446,
+        0.02368
+      ],
+      "attributeCounts": {
+        "water": 7319,
+        "fire": 7468,
+        "gold": 4516,
+        "dream": 3100,
+        "lightning": 7489
+      },
+      "averageProductMultiplier": 1.134751
+    }
+  ]
+}

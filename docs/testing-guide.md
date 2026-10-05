@@ -81,3 +81,9 @@ npm run test:ui原牧场五尺寸回归已更新到5分钟成长；新node scrip
 ### 本次统一规则修订（已上线）
 
 用户要求已有动物也按新数值，不长期保留旧玩法。全部动物已按成长/当前轮次比例转换；周期、未来产物、终身经验、轮次与出售计算基数统一当前目录，礼物0基数。钱包、等级、库存与身份保留，不追补旧离线、不清空。运行时只有v2新规则，旧v1夹具仅在test-v2；离线转换工具只为一次迁移。实际发布/版本检查修复与恢复维护过程见handover、deployment-runbook和20261005-ranch-lifecycle报告。
+
+
+## 变异与融合专项（2.8.0）
+`npm test` 包含 ranch-mutation.test.ts、ranch-mutation-storage.test.ts；后者强制开发库，随机独立schema。按上方环境加载与3221锁执行。
+`npx tsx scripts/ranch-mutation-simulation.ts` 以实际引擎40万样本验证概率/双属性/售价上限，报告 test-reports/20261005-ranch-mutation-simulation.json。
+UI新增 `node scripts/ranch-mutation-ui-qa.mjs`，覆盖图鉴真实发现/目标、库存数量/锁定/余数、属性融合、服务器已提交而响应503后同ID重试。原 `ranch-ui-qa.mjs` 与 `ranch-hall-ui-qa.mjs` 也需回归。设置 `UI_BROWSER=chromium|webkit`、对应 `UI_BROWSER_EXECUTABLE`；原UI设 `UI_REPORT_PREFIX=20261005-ranch-mutation-scene|20261005-ranch-mutation-hall`。5种尺寸均为浏览器模拟，不代表真机。

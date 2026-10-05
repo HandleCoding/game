@@ -1,0 +1,123 @@
+{
+  "engine": "webkit",
+  "isolatedDevelopmentSchema": true,
+  "results": [
+    {
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "frames": [
+        {
+          "attributes": [],
+          "changedPixelsSampled": 0
+        },
+        {
+          "attributes": [
+            "lightning"
+          ],
+          "changedPixelsSampled": 302
+        },
+        {
+          "attributes": [
+            "fire"
+          ],
+          "changedPixelsSampled": 282
+        },
+        {
+          "attributes": [
+            "water"
+          ],
+          "changedPixelsSampled": 421
+        },
+        {
+          "attributes": [
+            "gold"
+          ],
+          "changedPixelsSampled": 247
+        },
+        {
+          "attributes": [
+            "dream"
+          ],
+          "changedPixelsSampled": 412
+        },
+        {
+          "attributes": [
+            "fire",
+            "water"
+          ],
+          "changedPixelsSampled": 447
+        }
+      ],
+      "checks": [
+        "actual-canvas-pixels",
+        "five-distinct-attributes",
+        "adult-and-juvenile",
+        "dual-effects",
+        "static-reduced-motion",
+        "unchanged-scene-outside-animals",
+        "no-js-errors"
+      ]
+    },
+    {
+      "size": {
+        "width": 1440,
+        "height": 1000
+      },
+      "frames": [
+        {
+          "attributes": [],
+          "changedPixelsSampled": 0
+        },
+        {
+          "attributes": [
+            "lightning"
+          ],
+          "changedPixelsSampled": 420
+        },
+        {
+          "attributes": [
+            "fire"
+          ],
+          "changedPixelsSampled": 379
+        },
+        {
+          "attributes": [
+            "water"
+          ],
+          "changedPixelsSampled": 567
+        },
+        {
+          "attributes": [
+            "gold"
+          ],
+          "changedPixelsSampled": 441
+        },
+        {
+          "attributes": [
+            "dream"
+          ],
+          "changedPixelsSampled": 599
+        },
+        {
+          "attributes": [
+            "fire",
+            "water"
+          ],
+          "changedPixelsSampled": 670
+        }
+      ],
+      "checks": [
+        "actual-canvas-pixels",
+        "five-distinct-attributes",
+        "adult-and-juvenile",
+        "dual-effects",
+        "static-reduced-motion",
+        "unchanged-scene-outside-animals",
+        "no-js-errors"
+      ]
+    }
+  ],
+  "failures": []
+}

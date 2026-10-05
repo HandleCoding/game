@@ -186,7 +186,12 @@ test("生命周期 PostgreSQL：旧存档无损迁移、批次价格、名宠堂
           engine.newAnimal(randomUUID(), engine.species[0]!, future),
         );
       // Fixture settlement is real engine code; sufficient food for all complete careers.
-      const done = engine.settleRanch(s, future, future + 35 * 60000);
+      const done = engine.settleRanch(
+        s,
+        future,
+        future + 35 * 60000,
+        () => 0.999999,
+      );
       assert(
         done.animals.every(
           (a) => a.status === "completed" && a.completedRounds === 6,

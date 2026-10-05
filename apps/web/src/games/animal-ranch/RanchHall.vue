@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick } from "vue";
+import RanchFusion from "./RanchFusion.vue";
+import RanchTraits from "./RanchTraits.vue";
 import AnimalPortrait from "./AnimalPortrait.vue";
 import { api } from "../../platform/lobby";
 import type {
@@ -85,6 +87,7 @@ const labels = {
   hall: "名宠堂",
   sold: "已出售",
   released: "已放生",
+  fused: "已融合",
 };
 function date(t: number | null) {
   return t === null
@@ -94,7 +97,7 @@ function date(t: number | null) {
 watch(mode, () => {
   selected.value = null;
   record.value = null;
-  void load();
+  if (mode.value !== "fusion") void load();
 });
 onMounted(() => void load());
 </script>
@@ -111,184 +114,228 @@ onMounted(() => void load());
       >
         成长档案
       </button>
-      <span>{{ page.total }} 位伙伴</span>
+      <button
+        v-if="isOwner"
+        :class="{ active: mode === 'fusion' }"
+        @click="mode = 'fusion'"
+      >
+        名宠融合
+      </button>
+      <span v-if="mode !== 'fusion'">{{ page.total }} 位伙伴</span>
     </div>
-    <form class="hall-search" @submit.prevent="load()">
-      <input
-        v-model="search"
-        type="search"
-        maxlength="40"
-        placeholder="搜索昵称或动物"
-        aria-label="搜索名宠堂"
-      />
-      <button :disabled="loading" type="submit">查找</button>
-    </form>
-    <p class="hall-intro">
-      {{
-        isOwner
-          ? "这里保存陪你完成养殖的伙伴，不耗粮、不占生产位置。可选6位向来访者展示。"
-          : "这里只展示牧场主公开的名宠堂伙伴。"
-      }}
-    </p>
-    <p v-if="error" role="alert">{{ error }}</p>
-    <div class="hall-layout">
-      <div class="hall-list" :aria-busy="loading">
-        <button
-          v-for="a in page.animals"
-          :key="a.id"
-          class="hall-card"
-          :class="{ selected: selected?.id === a.id }"
-          @click="pick(a)"
-          :aria-label="'查看名宠堂伙伴' + a.name"
-        >
-          <AnimalPortrait :species="a.species" :name="a.name" :baby="a.baby" />
-          <strong>{{ a.name }}</strong
-          ><small
-            >{{ labels[a.status] }}{{ a.display ? " · 已展示" : "" }}</small
+    <RanchFusion v-if="mode === 'fusion'" :busy="busy" :run="run" />
+    <template v-else>
+      <form class="hall-search" @submit.prevent="load()">
+        <input
+          v-model="search"
+          type="search"
+          maxlength="40"
+          placeholder="搜索昵称或动物"
+          aria-label="搜索名宠堂"
+        />
+        <button :disabled="loading" type="submit">查找</button>
+      </form>
+      <p class="hall-intro">
+        {{
+          isOwner
+            ? "这里保存陪你完成养殖的伙伴，不耗粮、不占生产位置。可选6位向来访者展示。"
+            : "这里只展示牧场主公开的名宠堂伙伴。"
+        }}
+      </p>
+      <p v-if="error" role="alert">{{ error }}</p>
+      <div class="hall-layout">
+        <div class="hall-list" :aria-busy="loading">
+          <button
+            v-for="a in page.animals"
+            :key="a.id"
+            class="hall-card"
+            :class="{ selected: selected?.id === a.id }"
+            @click="pick(a)"
+            :aria-label="'查看名宠堂伙伴' + a.name"
           >
-          <small>已生产 {{ a.completedRounds }} / {{ a.maxRounds }} 轮</small>
-        </button>
-        <p v-if="!page.animals.length && !loading" class="hall-empty">
-          {{
-            mode === "hall"
-              ? "还没有名宠堂伙伴。完成全部生产后，就可以让它住进来。"
-              : "还没有符合条件的成长记录。"
-          }}
-        </p>
-        <button
-          v-if="page.next"
-          class="hall-more"
-          :disabled="loading"
-          @click="load(page.next!)"
-        >
-          下一页
-        </button>
-        <button
-          v-if="page.animals.length"
-          class="hall-more"
-          :disabled="loading"
-          @click="load()"
-        >
-          回到第一页
-        </button>
-      </div>
-      <aside ref="detailElement" class="hall-details">
-        <template v-if="selected">
-          <div class="hall-portrait">
             <AnimalPortrait
-              :species="selected.species"
-              :name="selected.name"
-              :baby="selected.baby"
+              :species="a.species"
+              :name="a.name"
+              :baby="a.baby"
             />
-          </div>
-          <h3>{{ selected.name }}</h3>
-          <p>{{ labels[selected.status] }} · 普通个体</p>
-          <dl>
-            <div>
-              <dt>生产轮次</dt>
-              <dd>{{ selected.completedRounds }} / {{ selected.maxRounds }}</dd>
-            </div>
-            <div>
-              <dt>累计产量</dt>
-              <dd>
-                {{
-                  selected.totalProduced === null
-                    ? "早期累计未知"
-                    : selected.totalProduced + " 份"
-                }}
-              </dd>
-            </div>
-            <div>
-              <dt>认养时间</dt>
-              <dd>{{ date(selected.createdAt) }}</dd>
-            </div>
-            <div v-if="selected.completedAt">
-              <dt>完成时间</dt>
-              <dd>{{ date(selected.completedAt) }}</dd>
-            </div>
-          </dl>
-          <template
-            v-if="isOwner && !['sold', 'released'].includes(selected.status)"
+            <RanchTraits
+              :grade="a.grade"
+              :attributes="a.attributes"
+              :protected="a.protected"
+            />
+            <strong>{{ a.name }}</strong
+            ><small
+              >{{ labels[a.status] }}{{ a.display ? " · 已展示" : "" }}</small
+            >
+            <small>已生产 {{ a.completedRounds }} / {{ a.maxRounds }} 轮</small>
+          </button>
+          <p v-if="!page.animals.length && !loading" class="hall-empty">
+            {{
+              mode === "hall"
+                ? "还没有名宠堂伙伴。完成全部生产后，就可以让它住进来。"
+                : "还没有符合条件的成长记录。"
+            }}
+          </p>
+          <button
+            v-if="page.next"
+            class="hall-more"
+            :disabled="loading"
+            @click="load(page.next!)"
           >
-            <form
-              class="hall-rename"
-              @submit.prevent="
-                act('renameAnimal', { animalId: selected!.id, nickname })
+            下一页
+          </button>
+          <button
+            v-if="page.animals.length"
+            class="hall-more"
+            :disabled="loading"
+            @click="load()"
+          >
+            回到第一页
+          </button>
+        </div>
+        <aside ref="detailElement" class="hall-details">
+          <template v-if="selected">
+            <div class="hall-portrait">
+              <AnimalPortrait
+                :species="selected.species"
+                :name="selected.name"
+                :baby="selected.baby"
+              />
+            </div>
+            <h3>{{ selected.name }}</h3>
+            <p>{{ labels[selected.status] }}</p>
+            <RanchTraits
+              :grade="selected.grade"
+              :attributes="selected.attributes"
+              :protected="selected.protected"
+            />
+            <dl>
+              <div>
+                <dt>生产轮次</dt>
+                <dd>
+                  {{ selected.completedRounds }} / {{ selected.maxRounds }}
+                </dd>
+              </div>
+              <div>
+                <dt>累计产量</dt>
+                <dd>
+                  {{
+                    selected.totalProduced === null
+                      ? "早期累计未知"
+                      : selected.totalProduced + " 份"
+                  }}
+                </dd>
+              </div>
+              <div>
+                <dt>认养时间</dt>
+                <dd>{{ date(selected.createdAt) }}</dd>
+              </div>
+              <div v-if="selected.completedAt">
+                <dt>完成时间</dt>
+                <dd>{{ date(selected.completedAt) }}</dd>
+              </div>
+            </dl>
+            <template
+              v-if="
+                isOwner &&
+                !['sold', 'released', 'fused'].includes(selected.status)
               "
             >
-              <input
-                v-model="nickname"
-                maxlength="24"
-                aria-label="名宠堂伙伴昵称"
-                placeholder="给它取个名字（最多12字）"
-              />
-              <button type="submit" :disabled="busy || loading">
-                保存名字
-              </button>
-            </form>
-            <template v-if="selected.status === 'hall'">
               <button
                 :disabled="busy || loading"
                 @click="
-                  act('setHallDisplay', {
+                  act('setAnimalProtected', {
                     animalId: selected.id,
-                    display: !selected.display,
+                    protected: !selected.protected,
                   })
                 "
               >
-                {{ selected.display ? "取消公开展示" : "展示给来访者" }}
+                {{ selected.protected ? "解除珍藏保护" : "珍藏保护" }}
               </button>
-              <div class="hall-exits">
+              <form
+                class="hall-rename"
+                @submit.prevent="
+                  act('renameAnimal', { animalId: selected!.id, nickname })
+                "
+              >
+                <input
+                  v-model="nickname"
+                  maxlength="24"
+                  aria-label="名宠堂伙伴昵称"
+                  placeholder="给它取个名字（最多12字）"
+                />
+                <button type="submit" :disabled="busy || loading">
+                  保存名字
+                </button>
+              </form>
+              <template v-if="selected.status === 'hall'">
                 <button
                   :disabled="busy || loading"
-                  @click="confirmation = 'sellAnimal'"
+                  @click="
+                    act('setHallDisplay', {
+                      animalId: selected.id,
+                      display: !selected.display,
+                    })
+                  "
                 >
-                  出售 · {{ selected.saleCoins }} 金币</button
-                ><button
-                  :disabled="busy || loading"
-                  @click="confirmation = 'releaseAnimal'"
-                >
-                  放生
+                  {{ selected.display ? "取消公开展示" : "展示给来访者" }}
                 </button>
-              </div>
+                <div class="hall-exits">
+                  <button
+                    :disabled="busy || loading || selected.protected"
+                    @click="confirmation = 'sellAnimal'"
+                  >
+                    出售 · {{ selected.saleCoins }} 金币</button
+                  ><button
+                    :disabled="busy || loading || selected.protected"
+                    @click="confirmation = 'releaseAnimal'"
+                  >
+                    放生
+                  </button>
+                </div>
+              </template>
             </template>
+            <div
+              v-if="confirmation"
+              class="hall-confirm"
+              role="alertdialog"
+              aria-label="确认伙伴去向"
+            >
+              <strong
+                >{{
+                  confirmation === "sellAnimal" ? "确认出售" : "确认放生"
+                }}「{{ selected.name }}」？</strong
+              >
+              <p>
+                {{
+                  confirmation === "sellAnimal"
+                    ? "获得 " + selected.saleCoins + " 金币。"
+                    : "不获得出售金币。"
+                }}伙伴将离开，纪念记录保留，不能重新认领。
+              </p>
+              <button
+                :disabled="busy || loading"
+                @click="act(confirmation, { animalId: selected!.id })"
+              >
+                确认{{
+                  confirmation === "sellAnimal" ? "出售" : "放生"
+                }}</button
+              ><button :disabled="busy" @click="confirmation = null">
+                取消
+              </button>
+            </div>
+            <h4 v-if="isOwner">成长日记</h4>
+            <ol class="hall-events">
+              <li v-for="e in record?.events || []" :key="e.id">
+                <span>{{ e.message }}</span
+                ><small>{{ date(e.at) }}</small>
+              </li>
+            </ol>
           </template>
-          <div
-            v-if="confirmation"
-            class="hall-confirm"
-            role="alertdialog"
-            aria-label="确认伙伴去向"
-          >
-            <strong
-              >{{ confirmation === "sellAnimal" ? "确认出售" : "确认放生" }}「{{
-                selected.name
-              }}」？</strong
-            >
-            <p>
-              {{
-                confirmation === "sellAnimal"
-                  ? "获得 " + selected.saleCoins + " 金币。"
-                  : "不获得出售金币。"
-              }}伙伴将离开，纪念记录保留，不能重新认领。
-            </p>
-            <button
-              :disabled="busy || loading"
-              @click="act(confirmation, { animalId: selected!.id })"
-            >
-              确认{{ confirmation === "sellAnimal" ? "出售" : "放生" }}</button
-            ><button :disabled="busy" @click="confirmation = null">取消</button>
-          </div>
-          <h4 v-if="isOwner">成长日记</h4>
-          <ol class="hall-events">
-            <li v-for="e in record?.events || []" :key="e.id">
-              <span>{{ e.message }}</span
-              ><small>{{ date(e.at) }}</small>
-            </li>
-          </ol>
-        </template>
-        <p v-else class="hall-empty">选择一位伙伴，看看它的成长故事。</p>
-      </aside>
-    </div>
+          <p v-else class="hall-empty">选择一位伙伴，看看它的成长故事。</p>
+        </aside>
+      </div>
+    </template>
   </section>
 </template>
 <style scoped>

@@ -1,0 +1,852 @@
+/* Ranch design tokens: the scene stays immersive, controls stay quiet. */
+dialog.ranch-window.ranch-window {
+  --ink: #233c35;
+  --soft-ink: #6b7f76;
+  --paper: #fff;
+  --tile: #f8fbf8;
+  --edge: #dce6df;
+  --accent: #34765b;
+  --panel: #f6f9f6;
+  color: var(--ink) !important;
+  background: var(--paper) !important;
+  border: 1px solid var(--edge) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 24px 80px #14291c40 !important;
+  width: min(980px, calc(100% - 32px));
+  max-height: 88dvh;
+}
+[data-theme="dark"] dialog.ranch-window.ranch-window {
+  --ink: #e0ece4;
+  --soft-ink: #a1b6ab;
+  --paper: #202e28;
+  --tile: #283830;
+  --edge: #40564a;
+  --accent: #9ed1ae;
+  --panel: #26352c;
+}
+dialog.ranch-window.ranch-window::backdrop {
+  background: #0d26185c !important;
+  backdrop-filter: blur(8px) !important;
+}
+dialog.ranch-window .ranch-window-heading {
+  background: var(--paper) !important;
+  border-bottom: 1px solid var(--edge) !important;
+  box-shadow: none !important;
+  min-height: 68px;
+  padding: 10px 60px;
+}
+dialog.ranch-window .ranch-window-heading h2 {
+  color: var(--ink) !important;
+  text-shadow: none !important;
+  letter-spacing: 0 !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+}
+dialog.ranch-window .window-emblem {
+  display: none !important;
+}
+dialog.ranch-window .window-close {
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: var(--panel) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+  width: 40px !important;
+  height: 40px !important;
+  font-weight: 400 !important;
+  top: 14px !important;
+}
+dialog.ranch-window button {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+dialog.ranch-window :is(.ranch-primary, .modern-primary) {
+  background: #34765b !important;
+  border: 1px solid #34765b !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  min-height: 44px;
+}
+dialog.ranch-window
+  :is(
+    .ranch-secondary,
+    .hall-root button,
+    .modern-tabs button,
+    .ranch-modern button:not(.modern-primary),
+    .stage-switch button,
+    .ranch-feed-buttons button
+  ) {
+  background: var(--tile) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--edge) !important;
+  border-radius: 12px !important;
+}
+dialog.ranch-window
+  :is(
+    .item-detail,
+    .hall-details,
+    .modern-detail,
+    .ranch-feed,
+    .ranch-help,
+    .detail-facts,
+    .hall-confirm,
+    .animal-exit-confirm
+  ) {
+  background: var(--tile) !important;
+  border-color: var(--edge) !important;
+  box-shadow: none !important;
+  color: var(--ink) !important;
+}
+dialog.ranch-window
+  :is(
+    .wood-tabs,
+    .ranch-shop-filters,
+    .catalog-summary,
+    .catalog-layout,
+    .ranch-feed-buttons,
+    .ranch-sell-all
+  ) {
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  border-color: var(--edge) !important;
+}
+dialog.ranch-window .wood-tabs {
+  gap: 6px;
+  border-bottom: 1px solid var(--edge) !important;
+}
+dialog.ranch-window .wood-tabs button {
+  background: var(--tile) !important;
+  border: 0 !important;
+  color: var(--soft-ink) !important;
+  border-radius: 10px !important;
+  min-height: 44px !important;
+}
+dialog.ranch-window .wood-tabs button.active {
+  background: #e3f0e7 !important;
+  color: #286349 !important;
+}
+dialog.ranch-window .item-tile {
+  background: var(--tile) !important;
+  border: 1px solid var(--edge) !important;
+  box-shadow: none !important;
+  border-radius: 16px !important;
+  color: var(--ink) !important;
+}
+dialog.ranch-window .item-tile.selected {
+  border-color: #6faa87 !important;
+  box-shadow: inset 0 0 0 1px #6faa87 !important;
+}
+dialog.ranch-window input,
+dialog.ranch-window select {
+  background: var(--paper) !important;
+  border: 1px solid var(--edge) !important;
+  color: var(--ink) !important;
+  min-height: 44px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+dialog.ranch-window .flat-lock {
+  background: #243b335c !important;
+}
+dialog.ranch-window
+  :is(.ranch-window-heading, .item-detail, .hall-root, .ranch-modern)
+  button:focus-visible {
+  outline: 3px solid #78bd96 !important;
+  outline-offset: 2px;
+}
+.ranch-modern {
+  padding: 22px;
+  overflow: auto;
+  min-height: 0;
+  color: var(--ink);
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+}
+.ranch-modern * {
+  box-sizing: border-box;
+}
+.ranch-modern h3 {
+  margin: 6px 0 10px;
+  font-size: 23px;
+  letter-spacing: -0.4px;
+}
+.ranch-modern h4 {
+  margin: 8px 0;
+  font-size: 15px;
+}
+.ranch-modern p {
+  line-height: 1.6;
+  margin: 8px 0;
+  font-size: 14px;
+}
+.ranch-modern small,
+.quiet,
+.rules-note {
+  color: var(--soft-ink);
+}
+.ranch-modern button {
+  min-height: 44px;
+  padding: 10px 14px;
+  font: inherit;
+  cursor: pointer;
+}
+.ranch-modern button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ranch-modern input,
+.ranch-modern select {
+  min-width: 0;
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+}
+.ranch-modern label {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+  font-size: 13px;
+}
+.collection-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.probability-stat {
+  display: grid;
+  text-align: right;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.probability-stat strong {
+  font-size: 32px;
+  color: var(--accent);
+}
+.probability-stat span {
+  font-size: 12px;
+  color: var(--soft-ink);
+}
+.modern-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.ranch-modern button[aria-pressed="true"],
+dialog.ranch-window .hall-root .active {
+  background: #e3f0e7 !important;
+  border-color: #8dbb9e !important;
+  color: #286349 !important;
+}
+.codex-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.codex-card {
+  background: var(--tile);
+  border: 1px solid var(--edge);
+  border-radius: 16px;
+  padding: 12px;
+  min-width: 0;
+}
+.codex-portrait {
+  height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.codex-portrait > * {
+  width: 100%;
+  height: 100%;
+}
+.unknown-species {
+  display: grid;
+  place-items: center;
+  font-size: 42px;
+  font-weight: 600;
+  color: #9aaa99;
+}
+.undiscovered {
+  background: var(--panel);
+}
+.discovery-row {
+  border-top: 1px solid var(--edge);
+  padding-top: 8px;
+  margin-top: 8px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.ranch-traits {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.quality-pill,
+.attribute-pill,
+.protected-pill {
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.quality-pill {
+  background: #edf0ee;
+  color: #49574e;
+  border: 1px solid #d2dbd4;
+}
+.quality-pill[data-grade="1"] {
+  background: #e2f3e8;
+  color: #276d44;
+  border-color: #94bca5;
+}
+.quality-pill[data-grade="2"] {
+  background: #eee7fb;
+  color: #7452a5;
+  border-color: #b6a1d3;
+}
+.quality-pill[data-grade="3"] {
+  background: #fff1c9;
+  color: #856300;
+  border-color: #d6bd72;
+}
+.quality-pill[data-grade="4"] {
+  background: #ffe2e3;
+  color: #ac3743;
+  border-color: #d99ba1;
+}
+.attribute-pill {
+  background: #e7f0fc;
+  color: #426a93;
+}
+.attribute-pill[data-attribute="fire"] {
+  background: #fbe7de;
+  color: #a45e36;
+}
+.attribute-pill[data-attribute="lightning"] {
+  background: #eeebfb;
+  color: #6651ac;
+}
+.attribute-pill[data-attribute="gold"] {
+  background: #fbefc5;
+  color: #8d732b;
+}
+.attribute-pill[data-attribute="dream"] {
+  background: #f7e6f4;
+  color: #926793;
+}
+.protected-pill {
+  color: var(--accent);
+  background: var(--panel);
+}
+dialog.ranch-window .ranch-modern .new-discovery {
+  font-size: 10px;
+  min-height: 28px;
+  padding: 2px 6px;
+  background: #e5f2e8 !important;
+  color: #2d6b46 !important;
+}
+.rules-note {
+  padding: 14px;
+  background: var(--panel);
+  border-radius: 12px;
+  line-height: 1.7;
+  font-size: 13px;
+  margin: 16px 0;
+}
+.inventory-filters,
+.fusion-toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+.inventory-filters .modern-tabs {
+  flex: 2;
+}
+.inventory-filters input,
+.inventory-filters select {
+  flex: 1;
+  width: 0;
+  min-width: 90px;
+}
+.warehouse-layout,
+.fusion-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 18px;
+  align-items: start;
+}
+.warehouse-grid,
+.fusion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.warehouse-card,
+.fusion-card {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  text-align: center;
+}
+.warehouse-card > span,
+.warehouse-card > small {
+  font-size: 12px;
+}
+.product-icon {
+  width: 76px;
+  height: 76px;
+}
+.fusion-card .animal-portrait {
+  width: 100%;
+  height: 105px;
+}
+.modern-detail {
+  padding: 18px;
+  border: 1px solid var(--edge);
+  border-radius: 16px;
+  min-width: 0;
+}
+.modern-detail > button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+.modern-confirm {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  padding: 18px;
+  border-radius: 16px;
+  margin-top: 16px;
+}
+.modern-confirm button {
+  margin-right: 8px;
+}
+.modern-empty {
+  padding: 30px 10px;
+  text-align: center;
+  color: var(--soft-ink);
+}
+.goal-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 0;
+  border-top: 1px solid var(--edge);
+}
+.goal-card > div {
+  flex: 1;
+  min-width: 0;
+}
+.goal-card progress {
+  width: 100%;
+  height: 7px;
+  accent-color: #63a783;
+}
+.fusion-cost {
+  padding: 16px 0;
+  border-top: 1px solid var(--edge);
+}
+.ranch-page.immersive-ranch .game-profile,
+.ranch-page.immersive-ranch .game-wallet > *,
+.ranch-page.immersive-ranch .game-side-actions button {
+  background: #ffffffe6 !important;
+  border: 1px solid #ffffff8c !important;
+  border-radius: 16px !important;
+  box-shadow: 0 5px 20px #1c412a18 !important;
+  color: #233c35 !important;
+  text-shadow: none !important;
+  backdrop-filter: blur(14px);
+}
+.ranch-page.immersive-ranch .game-profile {
+  padding: 10px 14px !important;
+}
+.ranch-page.immersive-ranch .profile-level,
+.ranch-page.immersive-ranch .game-profile h1,
+.ranch-page.immersive-ranch .game-profile small {
+  color: #233c35 !important;
+  text-shadow: none !important;
+}
+.ranch-page.immersive-ranch .ranch-toolbelt {
+  background: #ffffffeb !important;
+  border: 1px solid #ffffffb0;
+  border-radius: 24px;
+  padding: 8px 12px !important;
+  box-shadow: 0 6px 24px #183c2824;
+  backdrop-filter: blur(12px);
+  gap: 6px !important;
+}
+.ranch-page.immersive-ranch .ranch-toolbelt button {
+  min-width: 0 !important;
+  width: 84px !important;
+}
+.ranch-page.immersive-ranch .tool-art {
+  height: 48px !important;
+  width: 48px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.ranch-page.immersive-ranch .tool-name {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  color: #233c35 !important;
+  font-size: 12px !important;
+  padding: 3px 2px !important;
+}
+.mutation-hud {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 6px;
+}
+.mutation-hud button {
+  font: inherit;
+  font-size: 11px;
+  border: 1px solid #d6e5da;
+  background: #eff6ef;
+  color: #34694a;
+  border-radius: 8px;
+  padding: 5px 7px;
+  min-height: 32px;
+}
+.discovery-toast {
+  position: absolute;
+  top: 135px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffffee;
+  border: 1px solid #d3e6d8;
+  border-radius: 16px;
+  box-shadow: 0 10px 35px #152c2325;
+  padding: 12px 18px;
+  color: #233c35;
+  z-index: 8;
+  font: inherit;
+}
+[data-theme="dark"]
+  .ranch-page.immersive-ranch
+  :is(
+    .game-profile,
+    .game-wallet > *,
+    .game-side-actions button,
+    .ranch-toolbelt
+  ) {
+  background: #202e28ed !important;
+  color: #e0ece4 !important;
+  border-color: #657b6c !important;
+}
+[data-theme="dark"]
+  .ranch-page.immersive-ranch
+  :is(.profile-level, .game-profile h1, .game-profile small, .tool-name) {
+  color: #e0ece4 !important;
+}
+@media (max-width: 700px) {
+  dialog.ranch-window.ranch-window {
+    width: 100%;
+    max-width: 100%;
+    margin: auto 0 0 !important;
+    max-height: calc(100dvh - env(safe-area-inset-top) - 18px);
+    border-radius: 22px 22px 0 0 !important;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .ranch-modern {
+    padding: 16px;
+  }
+  .codex-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .codex-card {
+    padding: 8px;
+  }
+  .codex-portrait {
+    height: 76px;
+  }
+  .ranch-modern h3 {
+    font-size: 20px;
+  }
+  .warehouse-layout,
+  .fusion-layout {
+    grid-template-columns: 1fr;
+  }
+  .warehouse-grid,
+  .fusion-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .warehouse-card,
+  .fusion-card {
+    padding: 8px !important;
+  }
+  .fusion-card .animal-portrait {
+    height: 76px;
+  }
+  .inventory-filters {
+    flex-wrap: wrap;
+  }
+  .inventory-filters .modern-tabs {
+    flex-basis: 100%;
+  }
+  .ranch-page.immersive-ranch .ranch-toolbelt {
+    padding: 7px 6px !important;
+    gap: 1px !important;
+    max-width: calc(100vw - 16px) !important;
+  }
+  .ranch-page.immersive-ranch .ranch-toolbelt button {
+    width: calc((100vw - 34px) / 6) !important;
+  }
+  .ranch-page.immersive-ranch .tool-art {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  .ranch-page.immersive-ranch .tool-name {
+    font-size: 10px !important;
+  }
+  .ranch-page.immersive-ranch .game-profile {
+    max-width: 58vw !important;
+  }
+  .mutation-hud {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .mutation-hud button {
+    font-size: 10px;
+    min-height: 28px;
+  }
+  .collection-summary {
+    gap: 10px;
+  }
+  .collection-summary p {
+    font-size: 12px;
+  }
+  .probability-stat strong {
+    font-size: 25px;
+  }
+  .ranch-traits {
+    font-size: 10px;
+  }
+  .quality-pill,
+  .attribute-pill {
+    padding: 1px 5px;
+  }
+}
+@media (max-width: 360px) {
+  .codex-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .warehouse-grid,
+  .fusion-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ranch-modern *,
+  .discovery-toast {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.ranch-page.immersive-ranch .game-profile {
+  align-items: flex-start !important;
+}
+.ranch-page.immersive-ranch .ranch-avatar {
+  width: 38px !important;
+  height: 38px !important;
+  border: 0 !important;
+  background: #e4f0e5 !important;
+}
+.ranch-page.immersive-ranch .ranch-avatar svg {
+  width: 34px !important;
+  height: 34px !important;
+}
+.ranch-page.immersive-ranch .profile-text {
+  text-shadow: none !important;
+}
+.ranch-page.immersive-ranch .game-offline-note {
+  color: #617d6a !important;
+}
+.ranch-page.immersive-ranch .profile-text progress {
+  height: 5px !important;
+  border: 0 !important;
+  background: #dce8dc !important;
+}
+.ranch-page.immersive-ranch .profile-text progress::-webkit-progress-bar {
+  background: #dce8dc !important;
+}
+.ranch-page.immersive-ranch .profile-text progress::-webkit-progress-value {
+  background: #6eaf87 !important;
+}
+.mutation-hud {
+  font-size: 11px;
+  color: #477558;
+  line-height: 1.5;
+}
+.ranch-page.immersive-ranch .game-side-actions {
+  top: 152px !important;
+}
+.ranch-page.immersive-ranch .ranch-toolbelt button {
+  min-height: 68px !important;
+}
+.ranch-page.immersive-ranch .tool-art svg {
+  width: 100% !important;
+  height: 100% !important;
+  filter: none !important;
+}
+.ranch-page.immersive-ranch .scene-controls button {
+  background: #ffffffe6 !important;
+  color: #233c35 !important;
+  box-shadow: none !important;
+  border: 1px solid #d7e3d7 !important;
+  backdrop-filter: blur(10px);
+}
+.ranch-page.immersive-ranch .animal-picker button {
+  background: #ffffffdb !important;
+  border: 1px solid #d7e3d7 !important;
+  color: #233c35 !important;
+  box-shadow: none !important;
+}
+.ranch-page.immersive-ranch .discovery-toast {
+  pointer-events: auto;
+  max-width: calc(100vw - 150px);
+  font-size: 12px;
+}
+.fusion-card .portrait {
+  width: 100%;
+  height: 100px;
+}
+@media (max-width: 700px) {
+  .ranch-page.immersive-ranch .game-profile {
+    gap: 6px !important;
+    padding: 9px 10px !important;
+    max-width: calc(100% - 125px) !important;
+  }
+  .ranch-page.immersive-ranch .ranch-avatar {
+    display: none !important;
+  }
+  .ranch-page.immersive-ranch .game-side-actions {
+    top: 126px !important;
+  }
+  .ranch-page.immersive-ranch .discovery-toast {
+    top: 125px;
+    left: auto;
+    right: 10px;
+    transform: none;
+    max-width: calc(100vw - 80px);
+  }
+  .ranch-page.immersive-ranch .ranch-toolbelt button {
+    min-height: 64px !important;
+  }
+  .fusion-card .portrait {
+    height: 76px;
+  }
+}
+@media (max-height: 500px) and (min-width: 600px) {
+  .ranch-page.immersive-ranch .game-profile {
+    padding: 8px 12px !important;
+  }
+  .ranch-page.immersive-ranch .game-side-actions {
+    top: 124px !important;
+    grid-template-columns: repeat(2, 44px);
+    gap: 6px !important;
+  }
+  .ranch-page.immersive-ranch .ranch-toolbelt {
+    bottom: 6px !important;
+  }
+  .ranch-page.immersive-ranch .discovery-toast {
+    top: 118px;
+  }
+  .ranch-page.immersive-ranch .ranch-toolbelt button {
+    min-height: 62px !important;
+  }
+}
+[data-theme="dark"]
+  .ranch-page.immersive-ranch
+  :is(.scene-controls button, .animal-picker button, .discovery-toast) {
+  background: #202e28ed !important;
+  color: #e0ece4 !important;
+  border-color: #657b6c !important;
+}
+[data-theme="dark"]
+  .ranch-page.immersive-ranch
+  :is(.mutation-hud, .game-offline-note) {
+  color: #bdd5c5 !important;
+}
+
+.album-menu {
+  position: relative;
+}
+.codex-new-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  border-radius: 20px;
+  padding: 2px 5px;
+  background: #39795b !important;
+  color: white !important;
+  font-size: 10px !important;
+  pointer-events: none;
+  text-shadow: none !important;
+}
+
+.ranch-page.immersive-ranch button {
+  transition: transform 0.15s !important;
+}
+
+/* Portrait utilities split across both edges, leaving the actual trough tappable. */
+@media (max-width: 700px) and (min-height: 501px) {
+  .ranch-page.immersive-ranch
+    .game-side-actions
+    button[aria-label="牧场玩法说明"] {
+    position: fixed !important;
+    left: auto !important;
+    right: 10px !important;
+    top: 165px !important;
+  }
+  .ranch-page.immersive-ranch .game-side-actions button[aria-label="名宠堂"] {
+    position: fixed !important;
+    left: auto !important;
+    right: 10px !important;
+    top: 221px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ranch-page.immersive-ranch button {
+    transition: none !important;
+  }
+}
+
+dialog.ranch-window .catalog-search {
+  color: var(--ink) !important;
+}
+@media (max-height: 500px) and (min-width: 600px) {
+  dialog.ranch-window .ranch-window-heading {
+    min-height: 50px !important;
+    padding: 4px 55px !important;
+  }
+  dialog.ranch-window .window-close {
+    top: 5px !important;
+  }
+  dialog.ranch-window .catalog-layout {
+    height: calc(88dvh - 148px) !important;
+  }
+}

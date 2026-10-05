@@ -32,8 +32,13 @@ export function showEffect(
   clearTimeout(effectTimer);
   if (duration) effectTimer = setTimeout(() => (effect.value = null), duration);
 }
-export async function api<T>(path: string, data?: unknown): Promise<T> {
+export async function api<T>(
+  path: string,
+  data?: unknown,
+  signal?: AbortSignal,
+): Promise<T> {
   const r = await fetch("/api/" + path, {
+    signal,
     method: data === undefined ? "GET" : "POST",
     headers: data === undefined ? {} : { "Content-Type": "application/json" },
     body: data === undefined ? undefined : JSON.stringify(data),

@@ -47,11 +47,23 @@ export interface PersistentStorageContext {
   world: string;
   owner: string;
   animalId?: string;
+  action?: { type: string; payload: Record<string, unknown> };
 }
 export interface PersistentStorage {
+  preview?(
+    state: Record<string, unknown>,
+    payload: Record<string, unknown>,
+  ): Record<string, unknown>;
   collection?(
     ctx: PersistentStorageContext,
-    query: { mode?: string; after?: string; search?: string },
+    query: {
+      mode?: string;
+      after?: string;
+      search?: string;
+      fusion?: string;
+      species?: string;
+      grade?: string;
+    },
     isOwner: boolean,
   ): Promise<Record<string, unknown>>;
   record?(

@@ -1,12 +1,21 @@
 import {
   initialRanch,
-  settleRanch,
-  ranchAction,
+  settleRanch as settleRandom,
+  ranchAction as actionRandom,
   species,
   level,
   active,
   feeding,
 } from "../apps/api/src/games/animal-ranch/engine.js";
+// Baseline lifecycle/economy fixtures deliberately disable randomness; mutation has dedicated seeded tests.
+const settleRanch = (s: Record<string, unknown>, last: number, now: number) =>
+  settleRandom(s, last, now, () => 0.999999);
+const ranchAction = (
+  s: Record<string, unknown>,
+  t: string,
+  p: Record<string, unknown>,
+) => actionRandom(s, t, p, () => 0.999999);
+
 import {
   HOUR,
   FEED_UNIT_MS,

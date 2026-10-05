@@ -56,6 +56,11 @@ export interface RanchSpeciesInfo {
 }
 export interface RanchAnimalView {
   id: string;
+  grade?: number;
+  attributes?: string[];
+  protected?: boolean;
+  purchaseRoll?: string;
+  adultRoll?: string;
   species: RanchSpecies;
   name: string;
   nickname: string;
@@ -81,7 +86,43 @@ export interface RanchAnimalView {
   remainingMs: number;
   hungry: boolean;
 }
+export interface RanchMutationView {
+  probabilityBp: number;
+  dew: number;
+  remainder: number;
+  dailyDew: number;
+  codex: {
+    key: string;
+    species: string;
+    attributes: string[];
+    grade: number;
+    firstAt: number | null;
+    source: string;
+    seen: boolean;
+  }[];
+  completedSpecies: string[];
+  tracked: string[];
+  goals: {
+    id: string;
+    name: string;
+    kind: string;
+    target: number;
+    completedAt: number | null;
+  }[];
+  lots: {
+    id: string;
+    product: string;
+    quantity: number;
+    priceMilli: number;
+    grade: number;
+    attributes: string[];
+    locked: boolean;
+    animalId: string | null;
+    at: number;
+  }[];
+}
 export interface RanchView {
+  mutation?: RanchMutationView;
   level: number;
   capacity: number;
   animals: RanchAnimalView[];
@@ -129,7 +170,13 @@ export interface RanchNeighbor {
 }
 
 export type RanchAnimalStatus =
-  "juvenile" | "producing" | "completed" | "hall" | "sold" | "released";
+  | "juvenile"
+  | "producing"
+  | "completed"
+  | "hall"
+  | "sold"
+  | "released"
+  | "fused";
 export interface RanchAffix {
   definitionId: string;
   definitionVersion: number;

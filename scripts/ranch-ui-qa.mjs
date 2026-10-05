@@ -40,10 +40,12 @@ async function checkHudClear(page) {
     return {
       note: rect(".game-offline-note"),
       profile: rect(".game-profile"),
-      menus: [...document.querySelectorAll(".game-side-actions button")].map(b => {
-        const r = b.getBoundingClientRect();
-        return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
-      }),
+      menus: [...document.querySelectorAll(".game-side-actions button")].map(
+        (b) => {
+          const r = b.getBoundingClientRect();
+          return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+        },
+      ),
       picker: rect(".animal-picker"),
       tools: rect(".ranch-toolbelt"),
       width: innerWidth,
@@ -51,16 +53,30 @@ async function checkHudClear(page) {
     };
   });
   const overlaps = (a, b) =>
-    a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-  assert(!overlaps(boxes.note, boxes.picker), "Offline hint covers animal selection");
+    a.left < b.right &&
+    a.right > b.left &&
+    a.top < b.bottom &&
+    a.bottom > b.top;
+  assert(
+    !overlaps(boxes.note, boxes.picker),
+    "Offline hint covers animal selection",
+  );
   assert(!overlaps(boxes.note, boxes.tools), "Offline hint covers game tools");
-  assert(boxes.menus.every(b => !overlaps(boxes.profile, b)),
-    "Profile card covers side menu buttons");
-  assert(boxes.note.left >= boxes.profile.left && boxes.note.right <= boxes.profile.right &&
-    boxes.note.top >= boxes.profile.top && boxes.note.bottom <= boxes.profile.bottom,
-    "Offline hint escapes profile card");
-  assert(boxes.profile.right <= boxes.width && boxes.profile.bottom <= boxes.height,
-    "Profile card escapes viewport");
+  assert(
+    boxes.menus.every((b) => !overlaps(boxes.profile, b)),
+    "Profile card covers side menu buttons",
+  );
+  assert(
+    boxes.note.left >= boxes.profile.left &&
+      boxes.note.right <= boxes.profile.right &&
+      boxes.note.top >= boxes.profile.top &&
+      boxes.note.bottom <= boxes.profile.bottom,
+    "Offline hint escapes profile card",
+  );
+  assert(
+    boxes.profile.right <= boxes.width && boxes.profile.bottom <= boxes.height,
+    "Profile card escapes viewport",
+  );
   return boxes;
 }
 try {
@@ -186,14 +202,28 @@ try {
       );
       await page.getByRole("button", { name: /添饲料/ }).click();
       await page.getByRole("dialog").waitFor();
-      assert((await page.locator(".ranch-feed").textContent()).includes("30 分钟"), "Incorrect feed speed");
-      assert(/天|小时/.test(await page.locator(".ranch-feed").textContent()), "Feed duration not human readable");
-      await page.screenshot({path: folder + "/" + size.width + "-balance-feed.png"});
-      await page.getByRole("button", {name: "关闭牧场面板"}).click();
-      await page.getByRole("button", {name: /扩建 \/ 日记/}).click();
-      assert(await page.locator(".ranch-expand .ranch-primary").isDisabled(), "Expansion bypasses level gate");
-      assert((await page.locator(".ranch-expand").textContent()).includes("Lv. 3"), "Missing expansion requirement");
-      await page.getByRole("button", {name: "关闭牧场面板"}).click();
+      assert(
+        (await page.locator(".ranch-feed").textContent()).includes("30 分钟"),
+        "Incorrect feed speed",
+      );
+      assert(
+        /天|小时/.test(await page.locator(".ranch-feed").textContent()),
+        "Feed duration not human readable",
+      );
+      await page.screenshot({
+        path: folder + "/" + size.width + "-balance-feed.png",
+      });
+      await page.getByRole("button", { name: "关闭牧场面板" }).click();
+      await page.getByRole("button", { name: /扩建 \/ 日记/ }).click();
+      assert(
+        await page.locator(".ranch-expand .ranch-primary").isDisabled(),
+        "Expansion bypasses level gate",
+      );
+      assert(
+        (await page.locator(".ranch-expand").textContent()).includes("Lv. 3"),
+        "Missing expansion requirement",
+      );
+      await page.getByRole("button", { name: "关闭牧场面板" }).click();
       await page.getByRole("button", { name: "查看牧场全景" }).click();
       const feedBox = await page.getByTestId("side-feeder").boundingBox();
       assert(
@@ -228,18 +258,20 @@ try {
       await page.getByRole("button", { name: "播放动物动画" }).click();
       await page.getByRole("button", { name: /一键收获/ }).click();
       await page.getByRole("button", { name: /我的仓库/ }).click();
-      await page.locator(".ranch-product.selected").waitFor();
+      await page.locator('.warehouse-card[aria-pressed="true"]').waitFor();
       await page.screenshot({
         path: folder + "/" + size.width + "-warehouse.png",
         fullPage: true,
       });
       assert(
-        (await page.locator(".ranch-product.selected").count()) === 1,
+        (await page.locator('.warehouse-card[aria-pressed="true"]').count()) ===
+          1,
         "Warehouse did not select available stock",
       );
       await page
-        .getByRole("button", { name: "出售全部产物", exact: true })
+        .getByRole("button", { name: "出售未锁定库存", exact: true })
         .click();
+      await page.getByRole("button", { name: "确认出售", exact: true }).click();
       await page.getByRole("button", { name: "关闭牧场面板" }).click();
       if (!mobile && engine === "chromium") {
         await page.getByRole("button", { name: "切换游戏全屏" }).click();
@@ -288,7 +320,10 @@ try {
             modalBox.y + modalBox.height - 4,
         "Adoption button clipped before interaction",
       );
-      assert((await page.locator(".catalog-detail").textContent()).includes("5分"), "Chick growth is not 5 minutes");
+      assert(
+        (await page.locator(".catalog-detail").textContent()).includes("5分"),
+        "Chick growth is not 5 minutes",
+      );
       const tileHeight = await page
         .locator(".ranch-shop-animal")
         .first()
@@ -373,30 +408,24 @@ try {
         fullPage: true,
       });
       await page.getByRole("button", { name: "动物图鉴", exact: true }).click();
-      await page.getByLabel("搜索动物").fill("");
+      await page.getByLabel("搜索已发现动物").fill("");
       assert.equal(
-        await page.locator(".ranch-shop-animal").count(),
+        await page.locator(".codex-card").count(),
         36,
-        "Album lost species",
+        "Codex lost species placeholders",
+      );
+      assert(
+        (await page.locator(".unknown-species").count()) > 0,
+        "Undiscovered species revealed",
+      );
+      assert(
+        (await page.locator(".codex-card .portrait").count()) > 0,
+        "Discovered species artwork missing",
       );
       assert.equal(
-        await page.locator(".catalog-detail .ranch-primary").count(),
+        await page.locator(".collection-root .modern-primary").count(),
         0,
-        "Album offers unintended spending",
-      );
-      await page
-        .getByRole("button", { name: "查看垂耳兔资料", exact: true })
-        .click();
-      await page
-        .locator(".stage-switch")
-        .getByRole("button", { name: "成年", exact: true })
-        .click();
-      assert(
-        await page
-          .locator(".catalog-detail .detail-art image")
-          .getAttribute("href")
-          .then((h) => h.endsWith("/rabbit-stages-v1.webp")),
-        "Album rabbit artwork missing",
+        "Codex offers unintended spending",
       );
       await page.screenshot({
         path: folder + "/" + size.width + "-album.png",
@@ -415,7 +444,7 @@ try {
           .evaluate((d) =>
             getComputedStyle(d).getPropertyValue("--paper").trim(),
           ),
-        "#463d2b",
+        "#202e28",
         "Night panel theme not applied",
       );
       await page.screenshot({
@@ -454,7 +483,8 @@ try {
         const touch =
           engine === "chromium" ? await context.newCDPSession(page) : null;
         // Landscape HUD sits above the open lawn; start pinch on the canvas, not a menu.
-        const gestureY = c.y + c.height * (size.width > size.height ? 0.5 : 0.36);
+        const gestureY =
+          c.y + c.height * (size.width > size.height ? 0.5 : 0.36);
         const gestureX = c.x + c.width * 0.82;
         if (touch) {
           await touch.send("Input.dispatchTouchEvent", {
@@ -475,10 +505,16 @@ try {
             beforePan,
             "Touch drag did not pan",
           );
-          assert(await page.evaluate(({ x, y }) =>
-            [x + 60, x + 90, x + 180, x + 210].every(px =>
-              document.elementFromPoint(px, y)?.matches(".pasture-canvas")),
-            { x: c.x, y: gestureY }), "Pinch fixture starts over HUD, not canvas");
+          assert(
+            await page.evaluate(
+              ({ x, y }) =>
+                [x + 60, x + 90, x + 180, x + 210].every((px) =>
+                  document.elementFromPoint(px, y)?.matches(".pasture-canvas"),
+                ),
+              { x: c.x, y: gestureY },
+            ),
+            "Pinch fixture starts over HUD, not canvas",
+          );
           await touch.send("Input.dispatchTouchEvent", {
             type: "touchStart",
             touchPoints: [
@@ -767,8 +803,8 @@ try {
           "select-before-purchase",
           "locked-adoption-disabled",
           "baby-adult-catalog-preview",
-          "all-36-species-album-no-spend",
-          "wood-inventory-selection",
+          "36-species-true-discovery-no-spend",
+          "batch-inventory-selection",
           "buy-animal",
           "feed",
           "30-minute-feed-unit",
@@ -804,7 +840,11 @@ try {
     await context.close();
   }
   await writeFile(
-    "docs/test-reports/" + (process.env.UI_REPORT_PREFIX || "20261004-ranch-game-ui") + "-" + engine + ".json",
+    "docs/test-reports/" +
+      (process.env.UI_REPORT_PREFIX || "20261004-ranch-game-ui") +
+      "-" +
+      engine +
+      ".json",
     JSON.stringify(
       {
         browser: engine,

@@ -14,15 +14,17 @@ def health():
  with urllib.request.urlopen('http://127.0.0.1:3210/healthz',timeout=3) as r:return json.load(r)
 if health().get('database')!='postgresql':raise RuntimeError('This procedure requires an already migrated PostgreSQL service')
 lifecycle_requested='--migrate-ranch-lifecycle' in sys.argv
+mutation_requested='--ranch-mutations' in sys.argv
 reset_requested='--reset-ranch' in sys.argv
-if lifecycle_requested and reset_requested:raise RuntimeError('Lifecycle migration must preserve progress; reset flag forbidden')
-if lifecycle_requested and '--deploy' not in sys.argv:raise RuntimeError('Lifecycle migration requires deploy')
+if (lifecycle_requested or mutation_requested) and reset_requested:raise RuntimeError('Lifecycle migration must preserve progress; reset flag forbidden')
+if (lifecycle_requested or mutation_requested) and '--deploy' not in sys.argv:raise RuntimeError('Lifecycle migration requires deploy')
 if version_guard:=int(sql("SELECT count(*) FROM persistent_profiles WHERE game_id='animal-ranch' AND version=1")):
- if '--deploy' in sys.argv and json.loads((ROOT/'package.json').read_text())['version'].startswith('2.7.') and not lifecycle_requested:raise RuntimeError('Use explicit lifecycle migration flag for v1 ranch profiles')
+ if '--deploy' in sys.argv and not lifecycle_requested:raise RuntimeError('Use explicit lifecycle migration flag for v1 ranch profiles')
+if '--deploy' in sys.argv and int(sql('SELECT max(version) FROM schema_migrations'))<5 and not mutation_requested:raise RuntimeError('Schema5 requires --ranch-mutations with latest backup and forward repair')
 if reset_requested and '--deploy' not in sys.argv:raise RuntimeError('Reset requires an explicit deploy')
 if reset_requested and int(sql("SELECT count(*) FROM persistent_profiles WHERE game_id='animal-ranch'"))!=1:raise RuntimeError('Expected exactly one ranch player; reset aborted')
 source=call(['git','rev-parse','HEAD'],cwd=ROOT,stdout=subprocess.PIPE,text=True).stdout.strip()
-if call(['git','status','--porcelain','--untracked-files=no'],cwd=ROOT,stdout=subprocess.PIPE,text=True).stdout.strip():raise RuntimeError('Commit or isolate changes before release')
+if call(['git','status','--porcelain','--untracked-files=no','--','apps','packages','scripts','package.json','package-lock.json'],cwd=ROOT,stdout=subprocess.PIPE,text=True).stdout.strip():raise RuntimeError('Commit or isolate changes before release')
 if call(['git','ls-files','--others','--exclude-standard','apps','packages','scripts'],cwd=ROOT,stdout=subprocess.PIPE,text=True).stdout.strip():raise RuntimeError('Untracked runtime source must be committed before release')
 package=json.loads((ROOT/'package.json').read_text());version=package['version']
 if not (ROOT/'dist/apps/api/src/main.js').exists() or not (ROOT/'web-dist/index.html').exists():raise RuntimeError('Build first')
@@ -39,7 +41,7 @@ print('Prepared PostgreSQL release:',release)
 if '--deploy' not in sys.argv:sys.exit(0)
 playing=int(sql("SELECT count(*) FROM active_rooms WHERE snapshot->'engine'->>'phase' IN ('playing','secrets','dice')"))
 if playing:raise RuntimeError('Active matches detected; release prepared, deploy when they finish')
-if not reset_requested and not lifecycle_requested:
+if not reset_requested and not lifecycle_requested and not mutation_requested:
  call(['python3',str(ROOT/'scripts/backup-postgres.py')],cwd=ROOT)
  manifest['databaseBackup']=str(sorted(BACKUP.glob('postgres-prod-*.dump'))[-1])
 stamp=time.strftime('%Y%m%d-%H%M%S')
@@ -47,7 +49,7 @@ unit=Path('/etc/systemd/system/pair-play.service');caddy=Path('/etc/caddy/Caddyf
 old_unit=BACKUP/('pair-play-before-'+stamp+'.service');old_caddy=BACKUP/('Caddyfile-before-'+stamp)
 resume=[a.split('=',1)[1] for a in sys.argv if a.startswith('--resume-caddy=')]
 resume_source=Path(resume[0]).resolve() if resume else caddy
-if resume and (not lifecycle_requested or resume_source.parent!=BACKUP.resolve() or not resume_source.name.startswith('Caddyfile-before-') or not resume_source.is_file()):raise RuntimeError('Invalid maintenance recovery config')
+if resume and (not (lifecycle_requested or mutation_requested) or resume_source.parent!=BACKUP.resolve() or not resume_source.name.startswith('Caddyfile-before-') or not resume_source.is_file()):raise RuntimeError('Invalid maintenance recovery config')
 shutil.copy2(unit,old_unit);old_unit.chmod(0o600);shutil.copy2(resume_source,old_caddy);old_caddy.chmod(0o600)
 unit_text=unit.read_text()
 unit_text=re.sub(r'^WorkingDirectory=.*$',f'WorkingDirectory={release}',unit_text,flags=re.M)
@@ -98,6 +100,12 @@ try:
  if int(sql("SELECT count(*) FROM active_rooms WHERE snapshot->'engine'->>'phase' IN ('playing','secrets','dice')")):raise RuntimeError('A match started before maintenance; deploy deferred')
  before=counts()
  call(['systemctl','stop','pair-play'])
+ if mutation_requested:
+  # Mutation state is additive but old engines cannot safely sell priced lots or interpret fused pets.
+  call(['python3',str(ROOT/'scripts/backup-postgres.py')],cwd=ROOT)
+  manifest['databaseBackup']=str(sorted(BACKUP.glob('postgres-prod-*.dump'))[-1])
+  mutation_before=sql("SELECT md5(COALESCE(string_agg(row_to_json(w)::text,',' ORDER BY game_id,world_id,\"user\"),'')) FROM ranch_wallets w")
+  lifecycle_started=True # Forward repair only from this point; never open older code on schema5.
  if lifecycle_requested:
   # Latest consistent backup after closing ingress and stopping all application writes.
   call(['python3',str(ROOT/'scripts/backup-postgres.py')],cwd=ROOT)
@@ -120,6 +128,12 @@ try:
   time.sleep(.25)
  if not healthy:raise RuntimeError('New release health failed')
  after=counts()
+ if mutation_requested:
+  if int(sql("SELECT max(version) FROM schema_migrations"))<5:raise RuntimeError('Mutation schema missing')
+  if int(sql("SELECT count(*) FROM ranch_features"))!=int(sql("SELECT count(*) FROM ranch_wallets")):raise RuntimeError('Mutation account initialization incomplete')
+  mutation_after=sql("SELECT md5(COALESCE(string_agg(row_to_json(w)::text,',' ORDER BY game_id,world_id,\"user\"),'')) FROM ranch_wallets w")
+  if mutation_before!=mutation_after:raise RuntimeError('Existing ranch wallets changed during additive migration')
+  manifest['ranchMutations']={'schema':5,'walletsPreserved':True,'reset':False,'forwardRepairOnly':True}
  if lifecycle_requested:
   if int(sql("SELECT count(*) FROM persistent_profiles WHERE game_id='animal-ranch' AND version<>2")) or int(sql("SELECT count(*) FROM ranch_animals WHERE status='legacy'")):raise RuntimeError('Lifecycle migration left legacy profiles')
  if reset_requested:

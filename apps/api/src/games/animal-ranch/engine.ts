@@ -19,12 +19,32 @@ import {
   xpForLevel,
 } from "../../../../../packages/contracts/src/ranch-balance.js";
 import { ranchCatalog as species } from "../../../../../packages/contracts/src/ranch-catalog.js";
+import {
+  prepareFeatures,
+  rollMutation,
+  discover,
+  priceMilli,
+  grantDew,
+  fuse,
+  mutationProbability,
+  GOALS,
+  updateGoals,
+  type RanchFeatures,
+  type Roll,
+  secureRoll,
+} from "./mutation.js";
 export { species };
 export const MINUTE = 60_000;
 export const level = ranchLevel;
 export interface Animal {
   id: string;
   legacyId?: string;
+  grade?: number;
+  attributes?: string[];
+  protected?: boolean;
+  purchaseRoll?: "pending" | "failed" | "success" | "skipped";
+  adultRoll?: "pending" | "failed" | "success" | "skipped";
+  mutationRulesVersion?: number;
   species: RanchSpecies;
   status: RanchAnimalStatus;
   ageMs: number;
@@ -64,6 +84,10 @@ export interface Batch {
   quantity: number;
   xp: number;
   price: number;
+  priceMilli?: number;
+  grade?: number;
+  attributes?: string[];
+  locked?: boolean;
   at: number;
   harvestedAt: number | null;
 }
@@ -74,9 +98,14 @@ export interface Lot {
   product: string;
   quantity: number;
   price: number;
+  priceMilli?: number;
+  grade?: number;
+  attributes?: string[];
+  locked?: boolean;
   at: number;
 }
 export interface RanchState extends Record<string, unknown> {
+  features?: RanchFeatures;
   version: 2;
   feedUnitMs: number;
   at: number;
@@ -180,6 +209,9 @@ function addBatch(
     quantity,
     xp,
     price: a.sellPrice,
+    priceMilli: priceMilli(a),
+    grade: a.grade ?? 0,
+    attributes: [...(a.attributes ?? [])],
     at,
     harvestedAt: null,
   });
@@ -209,6 +241,7 @@ export function initialRanch(at = Date.now()): RanchState {
     collection: {},
     log: [],
   };
+  prepareFeatures(s, at);
   addBatch(s, first, 0, 3, 12, at);
   event(s, first, "gift", "迎来了第一位小鸡伙伴", at);
   return s;
@@ -217,8 +250,10 @@ export function settleRanch(
   raw: Record<string, unknown>,
   last: number,
   now: number,
+  rng: Roll = secureRoll,
 ): RanchState {
   const s = structuredClone(raw) as RanchState;
+  prepareFeatures(s, now);
   check(s.version === 2, "牧场存档版本不支持");
   let cursor = Math.max(last, s.at),
     end = Math.max(cursor, now);
@@ -238,12 +273,13 @@ export function settleRanch(
     check(elapsed > 0, "动物计时状态异常");
     s.feedMs -= elapsed * animals.length;
     cursor += elapsed;
-    for (const a of animals) {
+    for (const a of animals.toSorted((a, b) => a.id.localeCompare(b.id))) {
       a.ageMs += elapsed;
       if (a.status === "juvenile") {
         if (a.ageMs >= a.growthMs) {
           a.status = "producing";
           a.adultAt = cursor;
+          rollMutation(s, a, "adult", cursor, rng);
           event(s, a, "adult", "长大成年，准备第一轮生产", cursor);
         }
       } else {
@@ -260,6 +296,9 @@ export function settleRanch(
           if (k === a.maxRounds) {
             a.status = "completed";
             a.completedAt = cursor;
+            if (!s.features!.completedSpecies.includes(a.species))
+              s.features!.completedSpecies.push(a.species);
+            updateGoals(s, cursor);
             event(
               s,
               a,
@@ -307,8 +346,10 @@ export function ranchAction(
   raw: Record<string, unknown>,
   type: string,
   p: Record<string, unknown>,
+  rng: Roll = secureRoll,
 ): RanchState {
   const s = structuredClone(raw) as RanchState;
+  prepareFeatures(s);
   switch (type) {
     case "buyAnimal": {
       keys(p, ["species", "quantity"]);
@@ -332,6 +373,13 @@ export function ranchAction(
       for (let i = 0; i < quantity; i++) {
         const a = newAnimal(randomUUID(), kind, s.at);
         s.animals.push(a);
+        a.grade = 0;
+        a.attributes = [];
+        a.protected = false;
+        a.purchaseRoll = "pending";
+        a.adultRoll = "pending";
+        rollMutation(s, a, "purchase", s.at, rng);
+        discover(s, a, "purchase", s.at);
         s.nextAnimal++;
         event(s, a, "adopted", "认养了" + kind.name);
       }
@@ -367,7 +415,7 @@ export function ranchAction(
       check(animals.length, "没有找到动物");
       let total = 0,
         xp = 0;
-      for (const a of animals) {
+      for (const a of animals.toSorted((a, b) => a.id.localeCompare(b.id))) {
         for (const b of s.batches.filter(
           (b) => b.animalId === a.id && b.harvestedAt === null,
         )) {
@@ -381,9 +429,14 @@ export function ranchAction(
             product: b.product,
             quantity: b.quantity,
             price: b.price,
+            priceMilli: b.priceMilli ?? b.price * 1000,
+            grade: b.grade ?? 0,
+            attributes: [...(b.attributes ?? [])],
+            locked: false,
             at: s.at,
           });
           a.stored -= b.quantity;
+          grantDew(s, a, b);
           event(
             s,
             a,
@@ -401,20 +454,58 @@ export function ranchAction(
       break;
     }
     case "sellProducts": {
-      keys(p, ["product"]);
+      keys(p, ["product", "lotIds", "quantity"]);
       check(
         p.product === undefined || species.some((k) => k.product === p.product),
         "产物不存在",
       );
+      if (p.lotIds !== undefined)
+        check(
+          Array.isArray(p.lotIds) &&
+            p.lotIds.length > 0 &&
+            p.lotIds.length <= 200 &&
+            p.lotIds.every((id) => typeof id === "string" && id.length <= 80) &&
+            new Set(p.lotIds).size === p.lotIds.length,
+          "库存编号无效",
+        );
+      if (p.quantity !== undefined)
+        check(
+          typeof p.quantity === "number" &&
+            Number.isSafeInteger(p.quantity) &&
+            p.quantity > 0,
+          "出售数量无效",
+        );
+      if (Array.isArray(p.lotIds))
+        check(
+          p.lotIds.every((id) =>
+            s.lots.some((l) => l.id === id && !l.locked && l.quantity > 0),
+          ),
+          "库存已锁定或数量已变化",
+        );
       let total = 0,
-        earned = 0;
+        earned = 0,
+        remaining =
+          (p.quantity as number | undefined) ?? Number.MAX_SAFE_INTEGER,
+        milli = BigInt(s.features!.remainder);
       for (const lot of s.lots)
-        if (!p.product || lot.product === p.product) {
-          total += lot.quantity;
-          earned += lot.quantity * lot.price;
-          lot.quantity = 0;
+        if (
+          !lot.locked &&
+          (!p.product || lot.product === p.product) &&
+          (!p.lotIds || (p.lotIds as string[]).includes(lot.id))
+        ) {
+          const n = Math.min(lot.quantity, remaining);
+          total += n;
+          remaining -= n;
+          milli += BigInt(n) * BigInt(lot.priceMilli ?? lot.price * 1000);
+          lot.quantity -= n;
         }
       check(total > 0, "仓库里没有可出售的产物");
+      check(
+        p.quantity === undefined || remaining === 0,
+        "可出售的库存数量不足",
+      );
+      earned = Number(milli / 1000n);
+      s.features!.remainder = Number(milli % 1000n);
       s.coins += earned;
       inventory(s);
       log(s, "出售 " + total + " 份产物，获得 " + earned + " 金币", earned);
@@ -434,7 +525,10 @@ export function ranchAction(
     case "renameAnimal": {
       keys(p, ["animalId", "nickname"]);
       const a = animal(s, p.animalId);
-      check(!["sold", "released"].includes(a.status), "伙伴已离开牧场");
+      check(
+        !["sold", "released", "fused"].includes(a.status),
+        "伙伴已离开牧场",
+      );
       check(typeof p.nickname === "string", "昵称无效");
       const name = p.nickname.trim();
       check(
@@ -458,7 +552,10 @@ export function ranchAction(
     case "releaseAnimal": {
       keys(p, ["animalId"]);
       const a = animal(s, p.animalId);
-      check(!["sold", "released"].includes(a.status), "伙伴已经离开牧场");
+      check(
+        !["sold", "released", "fused"].includes(a.status),
+        "伙伴已经离开牧场",
+      );
       check(a.stored === 0, "请先收获这只动物的产物");
       const name = a.nickname || species.find((k) => k.id === a.species)!.name;
       if (type === "enterHall") {
@@ -469,6 +566,7 @@ export function ranchAction(
         event(s, a, "hall", "进入名宠堂，永久收藏");
         log(s, name + "进入名宠堂");
       } else {
+        check(!a.protected, "这位伙伴已珍藏，请先解除保护");
         if (a.status === "hall") s.hallCount--;
         const earned = type === "sellAnimal" ? saleCoins(a) : 0;
         a.status = type === "sellAnimal" ? "sold" : "released";
@@ -510,6 +608,85 @@ export function ranchAction(
       );
       break;
     }
+    case "setAnimalProtected": {
+      keys(p, ["animalId", "protected"]);
+      const a = animal(s, p.animalId);
+      check(
+        !["sold", "released", "fused"].includes(a.status) &&
+          typeof p.protected === "boolean",
+        "保护设置无效",
+      );
+      a.protected = p.protected;
+      event(
+        s,
+        a,
+        "protected",
+        a.protected ? "加入珍藏保护" : "解除珍藏保护",
+        s.at,
+        "protected:" + randomUUID(),
+      );
+      break;
+    }
+    case "fuseAnimals": {
+      keys(p, [
+        "animalIds",
+        "mainAnimalId",
+        "mode",
+        "retainedAttribute",
+        "recipeVersion",
+      ]);
+      const before = s.coins;
+      fuse(s, p, rng);
+      log(s, "完成名宠融合", s.coins - before);
+      break;
+    }
+    case "setInventoryLock": {
+      keys(p, ["lotIds", "locked"]);
+      check(
+        Array.isArray(p.lotIds) &&
+          p.lotIds.length > 0 &&
+          p.lotIds.length <= 200 &&
+          typeof p.locked === "boolean",
+        "库存锁定设置无效",
+      );
+      check(
+        p.lotIds.every(
+          (id) =>
+            typeof id === "string" &&
+            s.lots.some((l) => l.id === id && l.quantity > 0),
+        ),
+        "库存已变化",
+      );
+      for (const l of s.lots) if (p.lotIds.includes(l.id)) l.locked = p.locked;
+      break;
+    }
+    case "trackCollectionGoal": {
+      keys(p, ["goalId", "tracked"]);
+      check(
+        GOALS.some((g) => g.id === p.goalId) && typeof p.tracked === "boolean",
+        "目标无效",
+      );
+      const f = s.features!;
+      f.tracked = f.tracked.filter((id) => id !== p.goalId);
+      if (p.tracked) {
+        check(f.tracked.length < 3, "最多追踪3项目标");
+        f.tracked.push(p.goalId as string);
+      }
+      break;
+    }
+    case "markCodexSeen": {
+      keys(p, ["entryKeys"]);
+      check(
+        Array.isArray(p.entryKeys) &&
+          p.entryKeys.length <= 600 &&
+          p.entryKeys.every(
+            (k) => typeof k === "string" && s.features!.codex[k],
+          ),
+        "发现记录无效",
+      );
+      for (const k of p.entryKeys) s.features!.codex[k as string]!.seen = true;
+      break;
+    }
     default:
       check(false, "牧场操作不存在");
   }
@@ -538,6 +715,11 @@ export function animalView(
   const budget = rate ? Math.floor(s.feedMs / rate) : 0;
   return {
     id: a.id,
+    grade: a.grade ?? 0,
+    attributes: a.attributes ?? [],
+    protected: owner ? !!a.protected : undefined,
+    purchaseRoll: owner ? a.purchaseRoll : undefined,
+    adultRoll: owner ? a.adultRoll : undefined,
     species: a.species,
     name: a.nickname || species.find((k) => k.id === a.species)!.name,
     nickname: a.nickname,
@@ -575,9 +757,33 @@ export function changeKey(raw: Record<string, unknown>) {
   const s = raw as RanchState;
   return JSON.stringify([
     s.version,
+    s.features
+      ? [
+          s.features.epoch,
+          s.features.dew,
+          s.features.remainder,
+          s.features.fusionCount ?? 0,
+          [...s.features.completedSpecies].sort(),
+          s.features.tracked,
+          Object.entries(s.features.goals).sort(([a], [b]) =>
+            a.localeCompare(b),
+          ),
+          Object.values(s.features.codex)
+            .sort((a, b) => a.key.localeCompare(b.key))
+            .map((e) => [e.key, e.grade, e.firstAt, e.source, e.seen]),
+        ]
+      : null,
     s.animals
       .toSorted((a, b) => a.id.localeCompare(b.id))
-      .map((a) => [a.id, a.status, a.completedRounds, a.stored]),
+      .map((a) => [
+        a.id,
+        a.status,
+        a.completedRounds,
+        a.stored,
+        a.grade,
+        a.attributes,
+        a.adultRoll,
+      ]),
     s.batches
       ?.toSorted((a, b) => a.id.localeCompare(b.id))
       .map((b) => [b.id, b.harvestedAt]),
@@ -605,7 +811,10 @@ export function ranchView(
           (l) => l.product === k.product && l.quantity > 0,
         ),
         quantity = lots.reduce((n, l) => n + l.quantity, 0);
-      const value = lots.reduce((n, l) => n + l.quantity * l.price, 0);
+      const value = lots.reduce(
+        (n, l) => n + (l.quantity * (l.priceMilli ?? l.price * 1000)) / 1000,
+        0,
+      );
       return {
         id: k.product,
         name: k.productName,
@@ -613,14 +822,45 @@ export function ranchView(
         price: quantity ? value / quantity : k.sellPrice,
         value,
         minPrice: lots.length
-          ? Math.min(...lots.map((l) => l.price))
+          ? Math.min(
+              ...lots.map((l) => (l.priceMilli ?? l.price * 1000) / 1000),
+            )
           : k.sellPrice,
         maxPrice: lots.length
-          ? Math.max(...lots.map((l) => l.price))
+          ? Math.max(
+              ...lots.map((l) => (l.priceMilli ?? l.price * 1000) / 1000),
+            )
           : k.sellPrice,
       };
     });
     Object.assign(v, {
+      mutation: s.features
+        ? {
+            probabilityBp: mutationProbability(s),
+            dew: s.features.dew,
+            remainder: s.features.remainder,
+            codex: Object.values(s.features.codex),
+            completedSpecies: s.features.completedSpecies,
+            tracked: s.features.tracked,
+            goals: GOALS.map((g) => ({
+              ...g,
+              completedAt: s.features!.goals[g.id] ?? null,
+            })),
+            dailyDew:
+              s.features.claims[
+                String(Math.floor((s.at + 8 * 3600000) / 86400000))
+              ]?.count ?? 0,
+            lots: s.lots
+              .filter((l) => l.quantity > 0)
+              .map((l) => ({
+                ...l,
+                priceMilli: l.priceMilli ?? l.price * 1000,
+                grade: l.grade ?? 0,
+                attributes: l.attributes ?? [],
+                locked: !!l.locked,
+              })),
+          }
+        : undefined,
       coins: s.coins,
       xp: s.xp,
       levelStartXp: xpForLevel(level(s.xp)),

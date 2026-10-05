@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import RanchLoading from "./RanchLoading.vue";
+import {
+  materialFrame,
+  drawAttributeAura,
+  attributeColors,
+  clearMaterials,
+} from "./appearance";
 import { ranchAssetUrl, useOriginAsset, rememberRanchAsset } from "./assets";
 import type { RanchAnimalView } from "../../../../../packages/contracts/src/ranch";
 import { spriteLocation, animalExtent } from "./sprites";
@@ -499,6 +505,16 @@ function draw(now: number) {
     ctx.save();
     ctx.translate(w.x, w.y);
     groundShadow(ctx, body.width);
+    drawAttributeAura(
+      ctx,
+      a.attributes ?? [],
+      body.width,
+      body.height,
+      body.ground,
+      elapsed,
+      w.phase,
+      frozen.value,
+    );
     if (a.id === props.chosen) {
       ctx.strokeStyle = "#fff9b4";
       ctx.lineWidth = 2.5;
@@ -522,17 +538,39 @@ function draw(now: number) {
         (w.state === "walk" ? 0.6 : 0.25);
     if (w.state === "eat" && !frozen.value)
       ctx.rotate(Math.sin(elapsed * 3 + w.phase) * 0.018);
-    ctx.drawImage(
-      sheet,
-      (col * body.meta.width) / 4 + row.x,
-      row.y,
-      row.width,
-      row.height,
-      -body.width / 2,
-      -body.ground + bob,
-      body.width,
-      body.height,
-    );
+    const attrs = a.attributes ?? [];
+    if (attrs.length) {
+      const painted = materialFrame(
+        sheet,
+        a.species + ":" + a.baby + ":" + col,
+        (col * body.meta.width) / 4 + row.x,
+        row.y,
+        row.width,
+        row.height,
+        attrs,
+      );
+      ctx.shadowColor = attributeColors[attrs[0]!]!;
+      ctx.shadowBlur = 6;
+      ctx.drawImage(
+        painted,
+        -body.width / 2,
+        -body.ground + bob,
+        body.width,
+        body.height,
+      );
+    } else {
+      ctx.drawImage(
+        sheet,
+        (col * body.meta.width) / 4 + row.x,
+        row.y,
+        row.width,
+        row.height,
+        -body.width / 2,
+        -body.ground + bob,
+        body.width,
+        body.height,
+      );
+    }
     ctx.restore();
     if (a.stored > 0)
       tag(
@@ -557,7 +595,7 @@ function draw(now: number) {
     ctx.restore();
   }
   const age = elapsed - effectAt;
-  if (age >= 0 && age < 2.4) {
+  if (age >= 0 && age < 2.4 && !frozen.value) {
     for (let i = 0; i < 12; i++) {
       const p = (i * Math.PI) / 6,
         dist = age * 65;
@@ -582,7 +620,11 @@ function draw(now: number) {
           ? "金币到账啦"
           : liveEffect === "buyFeed"
             ? "开饭啦！"
-            : "新伙伴来到牧场",
+            : liveEffect === "fuseAnimals"
+              ? "名宠融合完成"
+              : liveEffect === "upgrade"
+                ? "新位置准备好了"
+                : "新伙伴来到牧场",
       600,
       320 - age * 24,
       "#588c37",
@@ -725,6 +767,7 @@ onMounted(() => {
   void prepareScene();
 });
 onUnmounted(() => {
+  clearMaterials();
   disposed = true;
   for (const cancel of cancelLoads) cancel();
   cancelAnimationFrame(frame);

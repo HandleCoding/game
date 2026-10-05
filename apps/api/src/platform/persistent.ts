@@ -5,11 +5,47 @@ export class PersistentService {
   constructor(
     private readonly onChange?: (gameId: string, owner: string) => void,
   ) {}
+  async preview(
+    gameId: string,
+    actor: string,
+    payload: Record<string, unknown>,
+  ) {
+    const def = registry.persistent(gameId);
+    check(def.storage?.preview, "游戏不支持融合预览");
+    return transaction(async (db) => {
+      const row = (
+        await db.query(
+          'SELECT * FROM persistent_profiles WHERE game_id=$1 AND world_id=$2 AND "user"=$3 FOR UPDATE',
+          [gameId, "default", actor],
+        )
+      ).rows[0];
+      check(row, "请先进入游戏");
+      const ctx = {
+        db,
+        gameId,
+        world: "default",
+        owner: actor,
+        action: { type: "fusionPreview", payload },
+      };
+      const loaded = await def.storage!.load(row.state, ctx);
+      return {
+        ...def.storage!.preview!(loaded, payload),
+        revision: row.revision,
+      };
+    });
+  }
   async collection(
     gameId: string,
     actor: string,
     owner: string,
-    query: { mode?: string; after?: string; search?: string },
+    query: {
+      mode?: string;
+      after?: string;
+      search?: string;
+      fusion?: string;
+      species?: string;
+      grade?: string;
+    },
   ) {
     const def = registry.persistent(gameId);
     check(def.storage?.collection, "游戏不支持收藏");
@@ -170,6 +206,7 @@ export class PersistentService {
           gameId,
           world: "default",
           owner: actor,
+          action: { type: b.type, payload: b.payload },
           animalId:
             typeof b.payload.animalId === "string"
               ? b.payload.animalId

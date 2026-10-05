@@ -312,7 +312,11 @@ try {
     await context.close();
   }
   await writeFile(
-    "docs/test-reports/20261005-ranch-hall-ui-" + engine + ".json",
+    "docs/test-reports/" +
+      (process.env.UI_REPORT_PREFIX || "20261005-ranch-hall-ui") +
+      "-" +
+      engine +
+      ".json",
     JSON.stringify(
       { browser: engine, isolatedDevelopmentSchema: true, results, failures },
       null,

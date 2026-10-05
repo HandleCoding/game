@@ -11,6 +11,7 @@
 | [technology-decisions.md](technology-decisions.md) | 目标技术栈、数据库迁移、环境隔离 |
 | [multi-game-architecture.md](multi-game-architecture.md) | 对局型游戏、注册表、人数与可见性 |
 | [persistent-game-architecture.md](persistent-game-architecture.md) | 农场 / 牧场、离线成长、事务和任务 |
+| [ranch-mutation-v2.8.md](ranch-mutation-v2.8.md) | 变异、品质、融合实际实现与数据边界 |
 | [test-reports/](test-reports/) | 每次云端测试的日志与验收记录 |
 
 这些文件包含实际状态和目标方案；以 handover 标注的完成状态为准。代码变化后同步维护文档，不让未来 Agent 依据过时说明操作。

@@ -12,6 +12,10 @@ const tables = [
   "ranch_inventory",
   "ranch_ledger",
   "action_receipts",
+  "ranch_features",
+  "ranch_codex",
+  "ranch_material_daily",
+  "ranch_fusions",
 ] as const;
 export interface RanchBackup {
   format: 1;
@@ -47,6 +51,10 @@ export async function captureRanch(
 }
 async function clearChildren(db: PoolClient, owners: unknown[]) {
   for (const table of [
+    "ranch_codex",
+    "ranch_material_daily",
+    "ranch_fusions",
+    "ranch_features",
     "ranch_animal_events",
     "ranch_inventory_lots",
     "ranch_animal_batches",
@@ -123,7 +131,7 @@ export async function restoreRanch(db: PoolClient, backup: RanchBackup) {
     );
   }
   for (const table of tables.slice(1))
-    for (const row of backup.rows[table]!) {
+    for (const row of backup.rows[table] ?? []) {
       const cols = Object.keys(row),
         values = Object.values(row).map((v) =>
           typeof v === "object" && v !== null ? JSON.stringify(v) : v,

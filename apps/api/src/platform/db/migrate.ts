@@ -92,6 +92,30 @@ CREATE TABLE ranch_animal_events(
 CREATE INDEX ranch_events_time ON ranch_animal_events(game_id,world_id,"user",animal_id,created DESC);
 INSERT INTO schema_migrations(version) VALUES(4);
 `);
+    const mutations = await db.query(
+      "SELECT version FROM schema_migrations WHERE version=5",
+    );
+    if (!mutations.rowCount)
+      await db.query(`
+ALTER TABLE ranch_animals DROP CONSTRAINT ranch_animals_status_check;
+ALTER TABLE ranch_animals ADD CONSTRAINT ranch_animals_status_check CHECK(status IN ('legacy','juvenile','producing','completed','hall','sold','released','fused'));
+CREATE TABLE ranch_features(
+ game_id text NOT NULL,world_id text NOT NULL,"user" text NOT NULL,
+ epoch bigint NOT NULL,dew bigint NOT NULL DEFAULT 0 CHECK(dew>=0),remainder integer NOT NULL DEFAULT 0 CHECK(remainder BETWEEN 0 AND 999),data jsonb NOT NULL DEFAULT '{}',
+ PRIMARY KEY(game_id,world_id,"user"),FOREIGN KEY(game_id,world_id,"user") REFERENCES ranch_wallets(game_id,world_id,"user"));
+CREATE TABLE ranch_codex(
+ game_id text NOT NULL,world_id text NOT NULL,"user" text NOT NULL,key text NOT NULL,data jsonb NOT NULL CHECK((data->>'grade')::int BETWEEN 0 AND 4),
+ PRIMARY KEY(game_id,world_id,"user",key),FOREIGN KEY(game_id,world_id,"user") REFERENCES ranch_wallets(game_id,world_id,"user"));
+CREATE TABLE ranch_material_daily(
+ game_id text NOT NULL,world_id text NOT NULL,"user" text NOT NULL,day text NOT NULL,count integer NOT NULL CHECK(count BETWEEN 0 AND 3),animals jsonb NOT NULL,
+ PRIMARY KEY(game_id,world_id,"user",day),FOREIGN KEY(game_id,world_id,"user") REFERENCES ranch_wallets(game_id,world_id,"user"));
+CREATE TABLE ranch_fusions(
+ game_id text NOT NULL,world_id text NOT NULL,"user" text NOT NULL,id text NOT NULL,created bigint NOT NULL,data jsonb NOT NULL,
+ PRIMARY KEY(game_id,world_id,"user",id),FOREIGN KEY(game_id,world_id,"user") REFERENCES ranch_wallets(game_id,world_id,"user"));
+INSERT INTO ranch_features(game_id,world_id,"user",epoch) SELECT game_id,world_id,"user",floor(extract(epoch from clock_timestamp())*1000)::bigint FROM ranch_wallets;
+INSERT INTO ranch_codex SELECT game_id,world_id,"user",data->>'species'||':',jsonb_build_object('key',data->>'species'||':','species',data->>'species','attributes','[]'::jsonb,'grade',0,'firstAt',min((data->>'createdAt')::bigint),'source','legacy','seen',true) FROM ranch_animals GROUP BY game_id,world_id,"user",data->>'species';
+INSERT INTO schema_migrations(version) VALUES(5);
+`);
   });
 }
 if (process.argv[1]?.endsWith("/migrate.ts")) {

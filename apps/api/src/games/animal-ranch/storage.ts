@@ -12,6 +12,11 @@ import {
   type Batch,
   type Lot,
 } from "./engine.js";
+import {
+  fusionPreview,
+  prepareFeatures,
+  type RanchFeatures,
+} from "./mutation.js";
 import { check } from "../../platform/errors.js";
 async function stats(ctx: PersistentStorageContext) {
   const rows = (
@@ -41,10 +46,19 @@ export const ranchStorage: PersistentStorage = {
     ).rows[0];
     if (!wallet) return summary;
     const legacy = summary.version === 1;
+    const ids = Array.isArray(ctx.action?.payload.animalIds)
+      ? ctx.action!.payload.animalIds
+      : [];
+    check(
+      ids.length <= 3 &&
+        ids.every((id) => typeof id === "string" && id.length <= 80),
+      "材料编号无效",
+    );
+    const targets = [ctx.animalId ?? "", ...ids];
     const animals = (
       await ctx.db.query(
-        "SELECT data FROM ranch_animals WHERE game_id=$1 AND world_id=$2 AND \"user\"=$3 AND (status IN ('legacy','juvenile','producing','completed') OR id=$4)",
-        [...args, ctx.animalId ?? ""],
+        "SELECT data FROM ranch_animals WHERE game_id=$1 AND world_id=$2 AND \"user\"=$3 AND (status IN ('legacy','juvenile','producing','completed') OR id=ANY($4::text[]))",
+        [...args, targets],
       )
     ).rows.map((r) => r.data);
     const entries = (
@@ -91,8 +105,62 @@ export const ranchStorage: PersistentStorage = {
         (n, v: any) => n + v.hall,
         0,
       );
+    const featureRow = (
+      await ctx.db.query(
+        'SELECT * FROM ranch_features WHERE game_id=$1 AND world_id=$2 AND "user"=$3',
+        args,
+      )
+    ).rows[0];
+    const codex = (
+      await ctx.db.query(
+        'SELECT key,data FROM ranch_codex WHERE game_id=$1 AND world_id=$2 AND "user"=$3',
+        args,
+      )
+    ).rows;
+    const dayKeys = [
+      ...new Set([
+        ...batches.map((b) =>
+          String(Math.floor((b.at + 8 * 3600000) / 86400000)),
+        ),
+        String(Math.floor((Date.now() + 8 * 3600000) / 86400000)),
+      ]),
+    ];
+    // New offline batches may fall on a prior production day that has already granted dew.
+    // Feed bounds the advancing interval (at most 500h); load those daily counters before settling.
+    const start = Number(summary.at),
+      end = Math.min(Date.now(), start + Number(wallet.feed_ms));
+    if (Number.isFinite(start) && Number.isFinite(end))
+      for (
+        let day = Math.floor((start + 8 * 3600000) / 86400000);
+        day <= Math.floor((end + 8 * 3600000) / 86400000);
+        day++
+      )
+        if (!dayKeys.includes(String(day))) dayKeys.push(String(day));
+    const days = (
+      await ctx.db.query(
+        'SELECT day,count,animals FROM ranch_material_daily WHERE game_id=$1 AND world_id=$2 AND "user"=$3 AND day=ANY($4::text[])',
+        [...args, dayKeys],
+      )
+    ).rows;
+    const features: RanchFeatures | undefined = featureRow
+      ? {
+          epoch: Number(featureRow.epoch),
+          dew: Number(featureRow.dew),
+          remainder: featureRow.remainder,
+          codex: Object.fromEntries(codex.map((c) => [c.key, c.data])),
+          completedSpecies: [],
+          tracked: ["first-variant", "six-species"],
+          goals: {},
+          ...featureRow.data,
+          claims: Object.fromEntries(
+            days.map((d) => [d.day, { count: d.count, animals: d.animals }]),
+          ),
+          fusions: [],
+        }
+      : undefined;
     return {
       ...summary,
+      features,
       coins: wallet.coins,
       xp: wallet.xp,
       feedMs: wallet.feed_ms,
@@ -111,6 +179,7 @@ export const ranchStorage: PersistentStorage = {
   async save(raw, ctx) {
     const s = raw as RanchState,
       args = [ctx.gameId, ctx.world, ctx.owner];
+    const f = prepareFeatures(s);
     await ctx.db.query(
       'INSERT INTO ranch_wallets VALUES($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT(game_id,world_id,"user") DO UPDATE SET coins=EXCLUDED.coins,xp=EXCLUDED.xp,feed_ms=EXCLUDED.feed_ms,capacity=EXCLUDED.capacity,next_animal=EXCLUDED.next_animal',
       [...args, s.coins, s.xp, s.feedMs, s.capacity, s.nextAnimal],
@@ -160,12 +229,57 @@ export const ranchStorage: PersistentStorage = {
         "INSERT INTO ranch_ledger VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING",
         [...args, e.id, e.at, e.message, e.coins],
       );
+    await ctx.db.query(
+      'INSERT INTO ranch_features(game_id,world_id,"user",epoch,dew,remainder,data) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT(game_id,world_id,"user") DO UPDATE SET dew=EXCLUDED.dew,remainder=EXCLUDED.remainder,data=EXCLUDED.data',
+      [
+        ...args,
+        f.epoch,
+        f.dew,
+        f.remainder,
+        JSON.stringify({
+          completedSpecies: f.completedSpecies,
+          tracked: f.tracked,
+          goals: f.goals,
+          fusionCount: f.fusionCount ?? 0,
+        }),
+      ],
+    );
+    for (const e of Object.values(f.codex))
+      await ctx.db.query(
+        'INSERT INTO ranch_codex VALUES($1,$2,$3,$4,$5) ON CONFLICT(game_id,world_id,"user",key) DO UPDATE SET data=EXCLUDED.data',
+        [...args, e.key, JSON.stringify(e)],
+      );
+    for (const [day, d] of Object.entries(f.claims))
+      await ctx.db.query(
+        'INSERT INTO ranch_material_daily VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(game_id,world_id,"user",day) DO UPDATE SET count=EXCLUDED.count,animals=EXCLUDED.animals',
+        [...args, day, d.count, JSON.stringify(d.animals)],
+      );
+    for (const record of f.fusions)
+      await ctx.db.query(
+        "INSERT INTO ranch_fusions VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING",
+        [...args, record.id, record.at, JSON.stringify(record)],
+      );
     s.collection = await stats(ctx);
     s.hallCount = Object.values(s.collection).reduce(
       (n, v) => n + (v?.hall ?? 0),
       0,
     );
     return { version: 2, at: s.at, feedUnitMs: s.feedUnitMs };
+  },
+  preview(raw, payload) {
+    const s = structuredClone(raw) as unknown as RanchState;
+    prepareFeatures(s);
+    const v = fusionPreview(s, payload);
+    return {
+      recipeVersion: v.recipeVersion,
+      targetGrade: v.targetGrade,
+      dew: v.dew,
+      coins: v.coins,
+      affordable: v.affordable,
+      attributes: v.attributes,
+      mainAnimalId: v.main.id,
+      materialIds: v.material.map((a) => a.id),
+    };
   },
   async collection(ctx, q, isOwner) {
     const args: unknown[] = [ctx.gameId, ctx.world, ctx.owner];
@@ -192,6 +306,27 @@ export const ranchStorage: PersistentStorage = {
         " OR data->>'species'=ANY($" +
         args.length +
         "::text[]))";
+    }
+    if (q.fusion !== undefined) {
+      check(
+        isOwner && mode === "hall" && q.fusion === "1",
+        "融合材料只能查看自己的名宠堂",
+      );
+      where +=
+        " AND COALESCE(data->>'protected','false')='false' AND COALESCE((data->>'grade')::int,0)<4";
+      if (q.species !== undefined) {
+        check(
+          ranchCatalog.some((k) => k.id === q.species),
+          "物种无效",
+        );
+        args.push(q.species);
+        where += " AND data->>'species'=$" + args.length;
+      }
+      if (q.grade !== undefined) {
+        check(/^[0-3]$/.test(q.grade), "品质无效");
+        args.push(Number(q.grade));
+        where += " AND COALESCE((data->>'grade')::int,0)=$" + args.length;
+      }
     }
     const total = (
       await ctx.db.query(
